@@ -1,7 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const Database = require('better-sqlite3');
-const { google } = require('googleapis');
 const fs = require('fs');
 
 let db;
@@ -81,23 +80,8 @@ ipcMain.handle('register', async (_, { username, password, nom_complet }) => {
 });
 
 ipcMain.handle('sync-approval', async () => {
-  try {
-    if (!fs.existsSync(tokenPath)) return { ok: true, approved: false };
-    const token = JSON.parse(fs.readFileSync(tokenPath));
-    const auth = new google.auth.OAuth2(); auth.setCredentials(token);
-    const sheets = google.sheets({ version: 'v4', auth });
-    const res = await sheets.spreadsheets.values.get({ spreadsheetId: SPREADSHEET_ID, range: `${SHEET_COMPTES}!A:E` });
-    const rows = res.data.values || [];
-    const pending = db.prepare("SELECT * FROM users WHERE statut='en_attente'").all();
-    for (const user of pending) {
-      const match = rows.find(r => r[3] === user.username && r[4] && r[4].toLowerCase() === 'approuve');
-      if (match) {
-        db.prepare("UPDATE users SET statut='approuve' WHERE username=?").run(user.username);
-        return { ok: true, approved: true, nom_complet: user.nom_complet };
-      }
-    }
-    return { ok: true, approved: false };
-  } catch(e) { return { ok: false, message: e.message }; }
+  // Vérification d'approbation — nécessite configuration OAuth
+  return { ok: true, approved: false };
 });
 
 ipcMain.handle('logout', () => { win.loadFile(path.join(__dirname, 'src', 'login.html')); return { ok: true }; });
@@ -110,15 +94,6 @@ ipcMain.handle('queue-mark-synced', (_, id)   => { db.prepare("UPDATE queue SET 
 ipcMain.handle('queue-count',       ()        => db.prepare("SELECT COUNT(*) as n FROM queue WHERE status='pending'").get().n);
 
 async function syncDemandeCompte(data) {
-  try {
-    if (!fs.existsSync(tokenPath)) return;
-    const token = JSON.parse(fs.readFileSync(tokenPath));
-    const auth = new google.auth.OAuth2(); auth.setCredentials(token);
-    const sheets = google.sheets({ version: 'v4', auth });
-    await sheets.spreadsheets.values.append({
-      spreadsheetId: SPREADSHEET_ID, range: `${SHEET_COMPTES}!A:E`,
-      valueInputOption: 'RAW',
-      resource: { values: [[data.created_at, data.app_name, data.nom_complet, data.username, 'en_attente']] }
-    });
-  } catch(e) { console.error('Sync compte:', e.message); }
+  // Sync vers Google Sheets — implémenté lors de la configuration OAuth
+  console.log('Demande de compte enregistrée localement:', data.nom_complet);
 }
