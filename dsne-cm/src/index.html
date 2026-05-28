@@ -4,6 +4,27 @@
 <meta charset="UTF-8">
 <title>DSNE — Clinique Mobile</title>
 <link rel="stylesheet" href="styles.css">
+<style>
+/* DATE-LIEU ROWS */
+.date-lieu-row { margin-bottom: 10px; }
+.date-lieu-inner { display: flex; gap: 12px; align-items: flex-start; }
+.btn-add-date { 
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; font-size: 12px; font-weight: 600;
+  color: var(--c600); background: var(--c50); 
+  border: 1.5px dashed var(--c200); border-radius: 7px;
+  cursor: pointer; margin-top: 8px; transition: all 0.15s;
+}
+.btn-add-date:hover { background: var(--c100); border-color: var(--c400); }
+.btn-remove-date {
+  flex-shrink: 0; margin-top: 28px; padding: 6px 10px;
+  font-size: 11px; font-weight: 600; color: var(--danger);
+  background: var(--danger-bg); border: 1px solid var(--danger);
+  border-radius: 6px; cursor: pointer;
+}
+.btn-remove-date:hover { background: #f7c1c1; }
+input[type="date"] { font-family: var(--font); }
+</style>
 </head>
 <body>
 
@@ -79,14 +100,29 @@
   </div>
 
   <!-- SECTION 2 -->
-  <div class="section-header">Section 2 — Modalités de l'intervention</div>
+  <div class="section-header">Section 2 — Dates et lieux de l'intervention</div>
   <div class="card">
-    <div class="field">
-      <label>Modalités et objectifs de la clinique mobile <span class="required">*</span></label>
-      <span class="field-desc">Décrivez les modalités de l'intervention : lieu, date prévue, population cible, services offerts, et tout autre élément pertinent pour l'évaluation de la demande.</span>
-      <textarea id="f_modalites" placeholder="Décrivez les modalités de l'intervention..."></textarea>
-      <div class="field-error" id="err_modalites">Ce champ est obligatoire.</div>
+    <p style="font-size:13px;color:var(--g600);margin-bottom:1rem;line-height:1.6">
+      Indiquez la ou les dates prévues de l'intervention ainsi que le lieu correspondant. Si l'intervention se déroule sur plusieurs jours ou dans plusieurs localités, cliquez sur <strong>+ Ajouter une date</strong> pour chaque entrée supplémentaire. Chaque ligne correspond à une date et un lieu d'intervention distincts.
+    </p>
+    <div id="dates-container">
+      <div class="date-lieu-row" id="date-row-1">
+        <div class="date-lieu-inner">
+          <div class="field" style="flex:0 0 180px">
+            <label>Date <span class="required">*</span></label>
+            <span class="field-desc">Sélectionner la date dans le calendrier.</span>
+            <input type="date" id="f_date_1" class="date-field">
+          </div>
+          <div class="field" style="flex:1">
+            <label>Commune / Lieu <span class="required">*</span></label>
+            <span class="field-desc">Inscrire la commune, la section communale ou tout autre repère géographique pertinent.</span>
+            <input type="text" id="f_lieu_1" placeholder="Ex. : Ouanaminthe, Section communale de Savane au Lait…">
+          </div>
+        </div>
+      </div>
     </div>
+    <button type="button" class="btn-add-date" onclick="ajouterDate()">+ Ajouter une date</button>
+    <div class="field-error" id="err_modalites">Veuillez indiquer au moins une date et un lieu.</div>
   </div>
 
   <!-- SECTION 3 -->
@@ -280,6 +316,52 @@ async function fileToBase64(f) {
   })
 }
 
+
+let dateCount = 1
+
+function ajouterDate() {
+  dateCount++
+  const container = document.getElementById('dates-container')
+  const div = document.createElement('div')
+  div.className = 'date-lieu-row'
+  div.id = 'date-row-' + dateCount
+  div.innerHTML = `
+    <div class="date-lieu-inner">
+      <div class="field" style="flex:0 0 180px">
+        <label>Date <span class="required">*</span></label>
+        <span class="field-desc">Sélectionner la date dans le calendrier.</span>
+        <input type="date" id="f_date_${dateCount}" class="date-field">
+      </div>
+      <div class="field" style="flex:1">
+        <label>Commune / Lieu <span class="required">*</span></label>
+        <span class="field-desc">Inscrire la commune ou le lieu de l'intervention.</span>
+        <input type="text" id="f_lieu_${dateCount}" placeholder="Ex. : Fort-Liberté, Trou-du-Nord…">
+      </div>
+      <button type="button" class="btn-remove-date" onclick="supprimerDate(${dateCount})">Retirer</button>
+    </div>
+  `
+  container.appendChild(div)
+}
+
+function supprimerDate(n) {
+  const el = document.getElementById('date-row-' + n)
+  if (el) el.remove()
+}
+
+function getDatesLieux() {
+  const rows = document.querySelectorAll('.date-lieu-row')
+  const result = []
+  rows.forEach((row, i) => {
+    const n = i + 1
+    const dateEl = row.querySelector('input[type="date"]')
+    const lieuEl = row.querySelector('input[type="text"]')
+    if (dateEl && lieuEl) {
+      result.push({ date: dateEl.value, lieu: lieuEl.value.trim() })
+    }
+  })
+  return result
+}
+
 function getVal(id) { return document.getElementById(id).value.trim() }
 function getRadio(name) { const el = document.querySelector(`input[name=${name}]:checked`); return el ? el.value : '' }
 function showErr(id) { document.getElementById(id).style.display = 'block' }
@@ -289,7 +371,9 @@ function validate() {
   let ok = true
   if (!getRadio('r_identite'))     { showErr('err_identite'); ok=false }     else hideErr('err_identite')
   if (!getVal('f_organisation'))   { showErr('err_organisation'); ok=false } else hideErr('err_organisation')
-  if (!getVal('f_modalites'))      { showErr('err_modalites'); ok=false }    else hideErr('err_modalites')
+  const datesLieux = getDatesLieux()
+  const datesValides = datesLieux.every(d => d.date && d.lieu)
+  if (!datesLieux.length || !datesValides) { showErr('err_modalites'); ok=false } else hideErr('err_modalites')
   if (!files.lettre)               { showErr('err_lettre'); ok=false }       else hideErr('err_lettre')
   if (!files.personnel)            { showErr('err_personnel'); ok=false }    else hideErr('err_personnel')
   if (!files.medicaments)          { showErr('err_medicaments'); ok=false }  else hideErr('err_medicaments')
@@ -324,7 +408,7 @@ async function submitForm() {
     organisation: getVal('f_organisation'),
     identite: getRadio('r_identite'),
     email: getVal('f_email'),
-    modalites: getVal('f_modalites'),
+    dates_lieux: getDatesLieux(),
     dossier: getRadio('r_dossier'),
     axes: getRadio('r_axes'),
     recommandation: getRadio('r_recommandation'),
