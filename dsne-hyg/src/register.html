@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>DSNE — Créer un compte</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-dsne">DSNE</div>
+      <div class="login-appname">Enregistrement Hygiène Publique</div>
+    </div>
+    <p style="font-size:12px;color:var(--g400);text-align:center;margin-bottom:1.25rem;line-height:1.6">
+      Première utilisation — créez votre compte. Votre demande sera envoyée à la Direction Sanitaire du Nord-Est pour approbation.
+    </p>
+    <div id="alert" class="alert alert-error" style="display:none"></div>
+    <div class="field" style="margin-bottom:12px">
+      <label>Nom complet</label>
+      <input type="text" id="nom_complet" placeholder="Prénom et nom">
+    </div>
+    <div class="field" style="margin-bottom:12px">
+      <label>Nom d'utilisateur</label>
+      <input type="text" id="username" placeholder="Identifiant de connexion">
+    </div>
+    <div class="field" style="margin-bottom:1.5rem">
+      <label>Mot de passe</label>
+      <input type="password" id="password" placeholder="••••••••">
+    </div>
+    <button class="btn btn-primary btn-full" id="regBtn" onclick="doRegister()">Envoyer la demande</button>
+  </div>
+</div>
+<script>
+async function doRegister() {
+  const nom_complet = document.getElementById('nom_complet').value.trim()
+  const username = document.getElementById('username').value.trim()
+  const password = document.getElementById('password').value.trim()
+  const alertEl = document.getElementById('alert')
+  const btn = document.getElementById('regBtn')
+  if (!nom_complet || !username || !password) {
+    alertEl.textContent = 'Tous les champs sont requis.'; alertEl.style.display = 'block'; return
+  }
+  btn.disabled = true; btn.textContent = 'Envoi en cours...'
+  const result = await window.dsne.register({ username, password, nom_complet })
+  if (result.ok) {
+    window.dsne.navigate('pending.html')
+  } else {
+    alertEl.textContent = result.message; alertEl.style.display = 'block'
+    btn.disabled = false; btn.textContent = 'Envoyer la demande'
+  }
+}
+</script>
+</body>
+</html>
