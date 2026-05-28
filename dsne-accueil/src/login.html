@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSNE — Accueil</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">
+      <h2>DSNE — Accueil</h2>
+      <p>Direction Sanitaire du Nord-Est<br>PROC-004 · Gestion des visiteurs</p>
+    </div>
+
+    <div id="alert" class="alert alert-error" style="display:none"></div>
+
+    <div class="field" style="margin-bottom:12px">
+      <label>Nom d'utilisateur</label>
+      <input type="text" id="username" placeholder="Votre identifiant" autocomplete="username">
+    </div>
+    <div class="field" style="margin-bottom:1.5rem">
+      <label>Mot de passe</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+
+    <button class="btn btn-primary btn-full" id="loginBtn" onclick="doLogin()">
+      Se connecter
+    </button>
+  </div>
+</div>
+
+<script>
+async function doLogin() {
+  const username = document.getElementById('username').value.trim()
+  const password = document.getElementById('password').value.trim()
+  const alert = document.getElementById('alert')
+  const btn = document.getElementById('loginBtn')
+
+  if (!username || !password) {
+    alert.textContent = 'Veuillez remplir tous les champs.'
+    alert.style.display = 'block'
+    return
+  }
+
+  btn.disabled = true
+  btn.textContent = 'Connexion...'
+
+  const result = await window.api.login({ username, password })
+  if (result.ok) {
+    sessionStorage.setItem('user', JSON.stringify(result.user))
+    window.api.navigate('app.html')
+  } else {
+    alert.textContent = result.message
+    alert.style.display = 'block'
+    btn.disabled = false
+    btn.textContent = 'Se connecter'
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') doLogin()
+})
+</script>
+</body>
+</html>

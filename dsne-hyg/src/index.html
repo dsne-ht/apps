@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>DSNE – Hygiène Publique</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; color: #1a1a2e; font-size: 14px; }
+
+  header { background: #1a5276; color: #fff; padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+  header h1 { font-size: 15px; font-weight: 600; letter-spacing: .4px; }
+  #status-bar { font-size: 12px; padding: 4px 14px; border-radius: 20px; font-weight: 600; }
+  .online  { background: #d4edda; color: #155724; }
+  .offline { background: #f8d7da; color: #721c24; }
+  #sync-badge { background: #fff3cd; color: #856404; font-size: 11px; padding: 2px 10px; border-radius: 20px; margin-left: 10px; display: none; font-weight: 600; }
+
+  main { max-width: 760px; margin: 28px auto; padding: 0 16px 60px; }
+
+  .form-header {
+    background: #fff; border-radius: 10px 10px 0 0;
+    border-top: 8px solid #1a5276;
+    padding: 24px 28px; margin-bottom: 2px;
+    box-shadow: 0 1px 8px rgba(0,0,0,.07);
+  }
+  .form-header h2 { font-size: 22px; font-weight: 700; color: #1a1a2e; margin-bottom: 10px; }
+
+  .card { background: #fff; border-radius: 8px; padding: 20px 24px; box-shadow: 0 1px 8px rgba(0,0,0,.07); margin-bottom: 4px; }
+
+  .question-title { font-size: 14px; font-weight: 500; color: #1a1a2e; margin-bottom: 6px; }
+  .question-hint { font-size: 13px; color: #666; line-height: 1.6; margin-bottom: 12px; }
+  .required-mark { color: #d93025; }
+
+  input[type=text], input[type=email], textarea {
+    width: 100%; padding: 9px 0; border: none; border-bottom: 1px solid #999;
+    font-size: 14px; font-family: inherit; background: transparent;
+    transition: border-color .2s; outline: none; color: #1a1a2e;
+  }
+  input:focus, textarea:focus { border-bottom: 2px solid #1a5276; }
+  textarea { resize: vertical; min-height: 70px; }
+
+  .date-row { display: flex; gap: 12px; margin-top: 8px; }
+  .date-col { display: flex; flex-direction: column; flex: 1; }
+  .date-col label { font-size: 11px; color: #888; margin-bottom: 4px; }
+  .date-col select {
+    padding: 8px 4px; border: none; border-bottom: 1px solid #999;
+    font-size: 14px; font-family: inherit; background: transparent;
+    outline: none; color: #1a1a2e; cursor: pointer;
+  }
+  .date-col select:focus { border-bottom: 2px solid #1a5276; }
+
+  .radio-group { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+  .radio-option { display: flex; align-items: center; gap: 12px; padding: 8px 4px; cursor: pointer; border-radius: 4px; }
+  .radio-option:hover { background: #f5f8ff; }
+  .radio-option input[type=radio] { width: 18px; height: 18px; accent-color: #1a5276; flex-shrink: 0; cursor: pointer; }
+  .radio-option-label { font-size: 14px; color: #1a1a2e; cursor: pointer; }
+
+  .file-zone {
+    border: 1px solid #dadce0; border-radius: 4px; padding: 14px 18px;
+    background: #fff; cursor: pointer; transition: border-color .2s, background .2s;
+    display: flex; align-items: center; gap: 12px; margin-top: 8px;
+  }
+  .file-zone:hover { border-color: #1a5276; background: #f5f8ff; }
+  .file-zone input[type=file] { display: none; }
+  .file-zone-icon { font-size: 20px; color: #1a5276; }
+  .file-zone-text { font-size: 13px; color: #444; }
+  .file-zone-sub { font-size: 11px; color: #999; margin-top: 2px; }
+  .file-attached { border-color: #1e8449; background: #f0fff4; }
+  .file-attached .file-zone-text { color: #1e8449; font-weight: 600; }
+  .file-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: #e8f5e9; border-radius: 4px; margin-top: 8px; font-size: 12px; border: 1px solid #c8e6c9; }
+  .file-item button { background: none; border: none; color: #c0392b; cursor: pointer; font-size: 12px; padding: 0 4px; width: auto; font-weight: 600; }
+
+  .field-error { font-size: 12px; color: #d93025; margin-top: 6px; display: none; }
+
+  button.submit { background: #1a5276; color: #fff; border: none; border-radius: 4px; padding: 12px 32px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background .2s; margin-top: 20px; }
+  button.submit:hover { background: #154360; }
+  button.submit:disabled { background: #aaa; cursor: not-allowed; }
+
+  #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(60px); color: #fff; padding: 12px 28px; border-radius: 4px; font-size: 14px; font-weight: 500; opacity: 0; transition: opacity .3s, transform .3s; z-index: 999; box-shadow: 0 4px 16px rgba(0,0,0,.25); min-width: 300px; text-align: center; }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toast.error   { background: #d93025; }
+  #toast.success { background: #1e8449; }
+  #toast.info    { background: #1a5276; }
+
+  .queue-card { background: #fff; border-radius: 8px; padding: 16px 22px; box-shadow: 0 1px 8px rgba(0,0,0,.07); margin-top: 16px; }
+  .queue-card h3 { font-size: 11px; color: #888; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .8px; }
+  .q-item { padding: 6px 0; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; font-size: 12px; color: #555; }
+  .q-item:last-child { border-bottom: none; }
+  .q-pending { color: #e67e22; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>DSNE — Certificat d'Hygiène Publique</h1>
+  <div style="display:flex;align-items:center">
+    <span id="status-bar" class="offline">Hors ligne</span>
+    <span id="sync-badge"></span>
+  </div>
+</header>
+
+<main>
+
+  <div class="form-header">
+    <h2>Certificat d'Hygiène Publique et de Securite Sanitaire — DSNE</h2>
+  </div>
+
+  <div class="card">
+    <div class="question-title">Nom de l'établissement <span class="required-mark">*</span></div>
+    <input type="text" id="f_nom" placeholder="Votre réponse">
+    <div class="field-error" id="err_nom">Ce champ est obligatoire.</div>
+  </div>
+
+  <div class="card">
+    <div class="question-title">NIF (Numéro d'Identification Fiscale) <span class="required-mark">*</span></div>
+    <input type="text" id="f_nif" placeholder="Votre réponse">
+    <div class="field-error" id="err_nif">Ce champ est obligatoire.</div>
+  </div>
+
+  <div class="card">
+    <div class="question-title">Adresse complète de l'établissement <span class="required-mark">*</span></div>
+    <textarea id="f_adresse" placeholder="Votre réponse"></textarea>
+    <div class="field-error" id="err_adresse">Ce champ est obligatoire.</div>
+  </div>
+
+  <div class="card">
+    <div class="question-title">Nom du responsable <span class="required-mark">*</span></div>
+    <input type="text" id="f_responsable" placeholder="Votre réponse">
+    <div class="field-error" id="err_responsable">Ce champ est obligatoire.</div>
+  </div>
+
+  <div class="card">
+    <div class="question-title">Email de l'établissement</div>
+    <div class="question-hint">Adresse a laquelle la copie numérique du certificat pourra etre envoyée.</div>
+    <input type="email" id="f_email" placeholder="Votre réponse">
+  </div>
+
+  <div class="card">
+    <div class="question-title">Date d'évaluation / inspection <span class="required-mark">*</span></div>
+    <div class="question-hint">Exemple : 7 janvier 2019</div>
+    <div class="date-row">
+      <div class="date-col">
+        <label>Jour</label>
+        <select id="f_jour">
+          <option value="">—</option>
+          <script>for(let i=1;i<=31;i++) document.write(`<option value="${i}">${i}</option>`)</script>
+        </select>
+      </div>
+      <div class="date-col">
+        <label>Mois</label>
+        <select id="f_mois">
+          <option value="">—</option>
+          <option value="janvier">Janvier</option>
+          <option value="fevrier">Fevrier</option>
+          <option value="mars">Mars</option>
+          <option value="avril">Avril</option>
+          <option value="mai">Mai</option>
+          <option value="juin">Juin</option>
+          <option value="juillet">Juillet</option>
+          <option value="aout">Aout</option>
+          <option value="septembre">Septembre</option>
+          <option value="octobre">Octobre</option>
+          <option value="novembre">Novembre</option>
+          <option value="decembre">Decembre</option>
+        </select>
+      </div>
+      <div class="date-col">
+        <label>Annee</label>
+        <select id="f_annee">
+          <option value="">—</option>
+          <script>for(let y=2024;y<=2030;y++) document.write(`<option value="${y}">${y}</option>`)</script>
+        </select>
+      </div>
+    </div>
+    <div class="field-error" id="err_date">Veuillez selectionner une date complète.</div>
+  </div>
+
+  <div class="card">
+    <div class="question-title">Rapport d'inspection <span class="required-mark">*</span></div>
+    <div class="question-hint">Veuillez attacher le rapport d'inspection établi suite a la visite de l'établissement. Formats acceptes : PDF ou Word. Ce document est requis pour la demande.</div>
+    <div class="file-zone" id="zone_rapport" onclick="document.getElementById('f_rapport').click()">
+      <input type="file" id="f_rapport" accept=".pdf,.doc,.docx" onchange="handleFile(this)">
+      <span class="file-zone-icon">&#128206;</span>
+      <div>
+        <div class="file-zone-text">Ajouter un fichier</div>
+        <div class="file-zone-sub">PDF ou Word</div>
+      </div>
+    </div>
+    <div id="preview_rapport"></div>
+    <div class="field-error" id="err_rapport">Le rapport d'inspection est obligatoire.</div>
+  </div>
+
+  <div class="card">
+    <div class="question-title">Frais d'inspection réglés (15 000 HTG) ? <span class="required-mark">*</span></div>
+    <div class="question-hint">Une seule réponse possible.</div>
+    <div class="radio-group">
+      <label class="radio-option"><input type="radio" name="r_paiement" value="Oui — paiement confirmé"><span class="radio-option-label">Oui — paiement confirmé</span></label>
+      <label class="radio-option"><input type="radio" name="r_paiement" value="Non — paiement en attente"><span class="radio-option-label">Non — paiement en attente</span></label>
+    </div>
+    <div class="field-error" id="err_paiement">Ce champ est obligatoire.</div>
+  </div>
+
+  <div class="card">
+    <div class="question-title">Je confirmé que l'établissement a fait l'objet d'une inspection complète et satisfait a l'ensemble des exigences d'hygiène, de salubrité et de sécurité sanitaire prescrites par le MSPP. <span class="required-mark">*</span></div>
+    <div class="question-hint">Une seule réponse possible.</div>
+    <div class="radio-group">
+      <label class="radio-option"><input type="radio" name="r_confirmation" value="Oui"><span class="radio-option-label">Oui</span></label>
+      <label class="radio-option"><input type="radio" name="r_confirmation" value="Non"><span class="radio-option-label">Non</span></label>
+    </div>
+    <div class="field-error" id="err_confirmation">Ce champ est obligatoire.</div>
+  </div>
+
+  <button class="submit" id="btn-submit" onclick="submitForm()">Soumettre</button>
+
+  <div class="queue-card">
+    <h3>File d'attente de synchronisation</h3>
+    <div id="queue-list"><em style="color:#999">Chargement...</em></div>
+  </div>
+
+</main>
+
+<div id="toast"></div>
+
+<script>
+const DOPOST_URL = 'https://script.google.com/macros/s/AKfycby9flmhuiJDu_tx4pl1uckBK2FR2QQZCrzD0Pqms2gC-Z8bOii8iIfJMip0NBiCvYhJ0w/exec';
+
+let isOnline = navigator.onLine;
+let rapportFile = null;
+
+function updateOnlineStatus() {
+  isOnline = navigator.onLine;
+  const bar = document.getElementById('status-bar');
+  bar.textContent = isOnline ? 'En ligne' : 'Hors ligne';
+  bar.className = isOnline ? 'online' : 'offline';
+  if (isOnline) syncQueue();
+}
+window.addEventListener('online',  updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+
+function handleFile(input) {
+  const f = input.files[0]; if (!f) return;
+  rapportFile = f;
+  const zone = document.getElementById('zone_rapport');
+  zone.classList.add('file-attached');
+  zone.querySelector('.file-zone-text').textContent = f.name;
+  zone.querySelector('.file-zone-sub').textContent = (f.size/1024).toFixed(0) + ' Ko';
+  document.getElementById('preview_rapport').innerHTML =
+    `<div class="file-item"><span>${f.name}</span><button onclick="removeFile()">Retirer</button></div>`;
+  document.getElementById('err_rapport').style.display = 'none';
+}
+
+function removeFile() {
+  rapportFile = null;
+  const zone = document.getElementById('zone_rapport');
+  zone.classList.remove('file-attached');
+  zone.querySelector('.file-zone-text').textContent = 'Ajouter un fichier';
+  zone.querySelector('.file-zone-sub').textContent = 'PDF ou Word';
+  document.getElementById('preview_rapport').innerHTML = '';
+  document.getElementById('f_rapport').value = '';
+}
+
+async function fileToBase64(f) {
+  return new Promise((res,rej) => {
+    const r = new FileReader();
+    r.onload  = () => res({ name: f.name, type: f.type, data: r.result.split(',')[1] });
+    r.onerror = rej;
+    r.readAsDataURL(f);
+  });
+}
+
+function getVal(id) { return document.getElementById(id).value.trim(); }
+function getRadio(name) { const el = document.querySelector(`input[name=${name}]:checked`); return el ? el.value : ''; }
+function showErr(id) { document.getElementById(id).style.display='block'; }
+function hideErr(id) { document.getElementById(id).style.display='none'; }
+
+function getDate() {
+  const j=getVal('f_jour'), m=getVal('f_mois'), a=getVal('f_annee');
+  if (!j||!m||!a) return '';
+  return `${j} ${m} ${a}`;
+}
+
+function validate() {
+  let ok=true;
+  if (!getVal('f_nom'))           { showErr('err_nom'); ok=false; }          else hideErr('err_nom');
+  if (!getVal('f_nif'))           { showErr('err_nif'); ok=false; }          else hideErr('err_nif');
+  if (!getVal('f_adresse'))       { showErr('err_adresse'); ok=false; }      else hideErr('err_adresse');
+  if (!getVal('f_responsable'))   { showErr('err_responsable'); ok=false; }  else hideErr('err_responsable');
+  if (!getDate())                 { showErr('err_date'); ok=false; }         else hideErr('err_date');
+  if (!rapportFile)               { showErr('err_rapport'); ok=false; }      else hideErr('err_rapport');
+  if (!getRadio('r_paiement'))    { showErr('err_paiement'); ok=false; }     else hideErr('err_paiement');
+  if (!getRadio('r_confirmation')){ showErr('err_confirmation'); ok=false; } else hideErr('err_confirmation');
+  return ok;
+}
+
+async function submitForm() {
+  if (!validate()) { toast('Veuillez remplir tous les champs obligatoires et joindre le rapport.', 'error'); return; }
+  const btn = document.getElementById('btn-submit');
+  btn.disabled=true; btn.textContent='Enregistrement...';
+
+  const fichier = await fileToBase64(rapportFile);
+  fichier.label = "Rapport d'inspection";
+
+  const payload = {
+    timestamp: new Date().toISOString(),
+    'entry.421513926':  getVal('f_nom'),
+    'entry.2026287626': getVal('f_nif'),
+    'entry.1349778689': getVal('f_adresse'),
+    'entry.533218416':  getVal('f_responsable'),
+    'entry.1530802035': getVal('f_email'),
+    'entry.692914453':  getDate(),
+    'entry.2129633823': getRadio('r_paiement'),
+    'entry.1020990664': getRadio('r_confirmation'),
+    fichiers: [fichier]
+  };
+
+  await window.dsne.queueSave(payload);
+  if (isOnline) { await syncQueue(); }
+  else { toast('Enregistré localement. Synchronisation automatique a la reconnexion.', 'info'); }
+  resetForm();
+  btn.disabled=false; btn.textContent='Soumettre';
+  renderQueue();
+}
+
+let syncing=false;
+async function syncQueue() {
+  if (syncing) return; syncing=true;
+  const pending = await window.dsne.queuePending();
+  const badge = document.getElementById('sync-badge');
+  if (!pending.length) { badge.style.display='none'; syncing=false; return; }
+  badge.style.display='inline'; badge.textContent=`${pending.length} en attente`;
+  let errors=0;
+  for (const row of pending) {
+    try {
+      const res = await fetch(DOPOST_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: row.data });
+      if (res.ok) await window.dsne.queueMarkSynced(row.id); else errors++;
+    } catch(e) { errors++; }
+  }
+  const remaining = await window.dsne.queueCount();
+  if (!remaining) { badge.style.display='none'; toast('Synchronisation réussie.','success'); }
+  else { badge.textContent=`${remaining} en attente`; if(errors) toast(`${errors} non synchronisée(s).`,'error'); }
+  syncing=false; renderQueue();
+}
+
+async function renderQueue() {
+  const pending = await window.dsne.queuePending();
+  const el = document.getElementById('queue-list');
+  if (!pending.length) { el.innerHTML='<em style="color:#27ae60">Tout est synchronisé.</em>'; return; }
+  el.innerHTML = pending.map(r => {
+    const d = JSON.parse(r.data);
+    return `<div class="q-item"><span>${d['entry.421513926']||'—'} (${(d.timestamp||'').slice(0,10)})</span><span class="q-pending">En attente</span></div>`;
+  }).join('');
+}
+
+function resetForm() {
+  ['f_nom','f_nif','f_adresse','f_responsable','f_email'].forEach(id=>document.getElementById(id).value='');
+  ['f_jour','f_mois','f_annee'].forEach(id=>document.getElementById(id).value='');
+  document.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);
+  removeFile();
+}
+
+function toast(msg, type='info') {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=`toast show ${type}`;
+  setTimeout(()=>t.className='toast',4500);
+}
+
+renderQueue();
+setInterval(async()=>{ if(isOnline) await syncQueue(); },30000);
+</script>
+</body>
+</html>

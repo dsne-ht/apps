@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>DSNE – Clinique Mobile</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; color: #1a1a2e; font-size: 14px; }
+
+  header { background: #1a5276; color: #fff; padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+  header h1 { font-size: 15px; font-weight: 600; letter-spacing: .4px; }
+  #status-bar { font-size: 12px; padding: 4px 14px; border-radius: 20px; font-weight: 600; }
+  .online  { background: #d4edda; color: #155724; }
+  .offline { background: #f8d7da; color: #721c24; }
+  #sync-badge { background: #fff3cd; color: #856404; font-size: 11px; padding: 2px 10px; border-radius: 20px; margin-left: 10px; display: none; font-weight: 600; }
+
+  main { max-width: 760px; margin: 28px auto; padding: 0 16px 60px; }
+
+  /* Form header card */
+  .form-header {
+    background: #fff; border-radius: 10px 10px 0 0;
+    border-top: 8px solid #1a5276;
+    padding: 24px 28px; margin-bottom: 2px;
+    box-shadow: 0 1px 8px rgba(0,0,0,.07);
+  }
+  .form-header h2 { font-size: 22px; font-weight: 700; color: #1a1a2e; margin-bottom: 14px; }
+  .form-header p { font-size: 13px; color: #444; line-height: 1.7; margin-bottom: 8px; }
+  .form-header ul { font-size: 13px; color: #444; line-height: 1.9; padding-left: 20px; margin-bottom: 8px; }
+  .form-header .warning { font-size: 13px; color: #444; line-height: 1.7; margin-top: 10px; }
+
+  /* Section header */
+  .section-card {
+    background: #fff; border-radius: 8px;
+    border-left: 6px solid #1a5276;
+    padding: 18px 24px; margin: 16px 0 4px;
+    box-shadow: 0 1px 8px rgba(0,0,0,.07);
+  }
+  .section-card h3 { font-size: 15px; font-weight: 700; color: #1a5276; margin-bottom: 6px; }
+  .section-card p { font-size: 13px; color: #555; line-height: 1.6; }
+
+  /* Question card */
+  .card { background: #fff; border-radius: 8px; padding: 20px 24px; box-shadow: 0 1px 8px rgba(0,0,0,.07); margin-bottom: 4px; }
+
+  .question-title { font-size: 14px; font-weight: 500; color: #1a1a2e; margin-bottom: 6px; }
+  .question-hint { font-size: 13px; color: #666; line-height: 1.6; margin-bottom: 12px; }
+  .required-mark { color: #d93025; }
+
+  input[type=text], input[type=email], textarea {
+    width: 100%; padding: 9px 0; border: none; border-bottom: 1px solid #999;
+    font-size: 14px; font-family: inherit; background: transparent;
+    transition: border-color .2s; outline: none; color: #1a1a2e;
+  }
+  input:focus, textarea:focus { border-bottom: 2px solid #1a5276; }
+  textarea { resize: vertical; min-height: 80px; }
+
+  .radio-group { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+  .radio-option { display: flex; align-items: center; gap: 12px; padding: 8px 4px; cursor: pointer; border-radius: 4px; }
+  .radio-option:hover { background: #f5f8ff; }
+  .radio-option input[type=radio] { width: 18px; height: 18px; accent-color: #1a5276; flex-shrink: 0; cursor: pointer; }
+  .radio-option-label { font-size: 14px; color: #1a1a2e; cursor: pointer; }
+
+  .file-zone {
+    border: 1px solid #dadce0; border-radius: 4px; padding: 14px 18px;
+    background: #fff; cursor: pointer; transition: border-color .2s, background .2s;
+    display: flex; align-items: center; gap: 12px; margin-top: 8px;
+  }
+  .file-zone:hover { border-color: #1a5276; background: #f5f8ff; }
+  .file-zone input[type=file] { display: none; }
+  .file-zone-icon { font-size: 20px; color: #1a5276; }
+  .file-zone-text { font-size: 13px; color: #444; }
+  .file-zone-sub { font-size: 11px; color: #999; margin-top: 2px; }
+  .file-attached { border-color: #1e8449; background: #f0fff4; }
+  .file-attached .file-zone-text { color: #1e8449; font-weight: 600; }
+  .file-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: #e8f5e9; border-radius: 4px; margin-top: 8px; font-size: 12px; border: 1px solid #c8e6c9; }
+  .file-item button { background: none; border: none; color: #c0392b; cursor: pointer; font-size: 12px; padding: 0 4px; width: auto; font-weight: 600; }
+
+  .field-error { font-size: 12px; color: #d93025; margin-top: 6px; display: none; }
+
+  button.submit {
+    background: #1a5276; color: #fff; border: none; border-radius: 4px;
+    padding: 12px 32px; font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: background .2s; margin-top: 20px;
+  }
+  button.submit:hover { background: #154360; }
+  button.submit:disabled { background: #aaa; cursor: not-allowed; }
+
+  #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(60px); color: #fff; padding: 12px 28px; border-radius: 4px; font-size: 14px; font-weight: 500; opacity: 0; transition: opacity .3s, transform .3s; z-index: 999; box-shadow: 0 4px 16px rgba(0,0,0,.25); min-width: 300px; text-align: center; }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toast.error   { background: #d93025; }
+  #toast.success { background: #1e8449; }
+  #toast.info    { background: #1a5276; }
+
+  .queue-card { background: #fff; border-radius: 8px; padding: 16px 22px; box-shadow: 0 1px 8px rgba(0,0,0,.07); margin-top: 16px; }
+  .queue-card h3 { font-size: 11px; color: #888; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .8px; }
+  .q-item { padding: 6px 0; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; font-size: 12px; color: #555; }
+  .q-item:last-child { border-bottom: none; }
+  .q-pending { color: #e67e22; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>DSNE — Demande d'Autorisation de Clinique Mobile</h1>
+  <div style="display:flex;align-items:center">
+    <span id="status-bar" class="offline">Hors ligne</span>
+    <span id="sync-badge"></span>
+  </div>
+</header>
+
+<main>
+
+  <!-- FORM HEADER -->
+  <div class="form-header">
+    <h2>DEMANDE D'AUTORISATION DE CLINIQUE MOBILE | DSNE</h2>
+    <p>Ce formulaire est reserve aux Unités d'Arrondissement de Santé (UAS) du département du Nord-Est. Il permet de soumettre une demande officielle d'autorisation de clinique mobile a la Direction Sanitaire du Nord-Est (DSNE).</p>
+    <p><strong>Avant de remplir ce formulaire, les conditions suivantes doivent etre reunies :</strong></p>
+    <ul>
+      <li>Le Directeur Médical de l'institution concernee a ete informé et a donne son accord</li>
+      <li>Le responsable de clinique mobile a ete consulte et confirmé la conformite de l'intervention</li>
+      <li>Tous les documents requis sont disponibles et prets a etre joints a la demande</li>
+    </ul>
+    <p class="warning">Ce formulaire ne doit etre soumis que lorsque toutes ces conditions sont confirmées. Toute demande incomplète ou soumise sans les pièces justificatives necessaires sera automatiquement rejetée.</p>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="section-card">
+    <h3>Section 1 — Identification du répondant</h3>
+    <p>Ce formulaire est reserve aux Unités d'Arrondissement de Santé (UAS) autorisées. Toute demande doit etre soumise au moins 7 jours avant la date prévue de l'activite. Assurez-vous que le Directeur Médical de l'institution et le Responsable de Clinique Mobile ont ete informés et ont donne leur accord avant de proceder.</p>
+  </div>
+
+  <div class="card">
+    <div class="question-title">Vous soumettez ce formulaire en tant que : <span class="required-mark">*</span></div>
+    <div class="question-hint">Sélectionnez votre identite dans la liste. Seuls les répondants enregistrés aupres de la DSNE sont autorisés a soumettre ce formulaire.</div>
+    <div class="radio-group" id="rg_identite">
+      <label class="radio-option"><input type="radio" name="r_identite" value="UAS Ouanaminthe — Dieulin Toussaint"><span class="radio-option-label">UAS Ouanaminthe — Dieulin Toussaint</span></label>
+      <label class="radio-option"><input type="radio" name="r_identite" value="UAS Fort-Liberté — John Y. Milien"><span class="radio-option-label">UAS Fort-Liberte — John Y. Milien</span></label>
+      <label class="radio-option"><input type="radio" name="r_identite" value="Responsable Clinique Mobile — Jodlyn Etienne"><span class="radio-option-label">Responsable Clinique Mobile — Jodlyn Etienne</span></label>
+      <label class="radio-option"><input type="radio" name="r_identite" value="Secrétariat de Direction — DSNE"><span class="radio-option-label">Secrétariat de Direction — DSNE</span></label>
+    </div>
+    <div class="field-error" id="err_identite">Ce champ est obligatoire.</div>
+  </div>
+
+  <div class="card">
+    <div class="question-title">Organisation demandeuse <span class="required-mark">*</span></div>
+    <div class="question-hint">Indiquez le nom complet de l'institution ou de l'organisation qui sollicite l'autorisation. Ce champ est destine aux notifications directes a l'organisation — il ne s'agit pas d'un champ interne DSNE.</div>
+    <input type="text" id="f_organisation" placeholder="Votre réponse">
+    <div class="field-error" id="err_organisation">Ce champ est obligatoire.</div>
+  </div>
+
+  <div class="card">
+    <div class="question-title">Email de l'organisation demandeuse</div>
+    <div class="question-hint">Adresse email de contact de l'organisation. Si vous souhaitez que l'organisation soit notifiée directement lors de l'approbation, indiquez son email ici. En cas de rejet, vous serez chargé(e) de les en informér vous-meme.</div>
+    <input type="email" id="f_email" placeholder="Votre réponse">
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="section-card">
+    <h3>Section 2 — Détails de l'intervention</h3>
+    <p>Précisez les modalités de la clinique mobile. Rappel : la demande doit etre soumise au moins 7 jours avant la date de debut de l'activite.</p>
+  </div>
+
+  <div class="card">
+    <div class="question-title">Modalités de l'intervention <span class="required-mark">*</span></div>
+    <div class="question-hint">Indiquez chaque commune suivie de sa date, séparées par des virgules. Format requis : Commune le JJ mois AAAA. Exemple : Fort-Liberte le 20 mai 2026, Perches le 21 mai 2026, Ferrier le 22 mai 2026</div>
+    <textarea id="f_modalités" placeholder="Modalités de l'intervention&#10;Votre réponse"></textarea>
+    <div class="field-error" id="err_modalités">Ce champ est obligatoire.</div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="section-card">
+    <h3>Section 3 — Documents requis</h3>
+    <p>Veuillez joindre l'ensemble des pièces justificatives listees ci-dessous. Tout dossier incomplet sera automatiquement rejeté sans transmission au Directeur Départemental. Les documents doivent etre lisibles et a jour.</p>
+  </div>
+
+  <div class="card">
+    <div class="question-title">Lettre de demande officielle <span class="required-mark">*</span></div>
+    <div class="file-zone" id="zone_lettre" onclick="document.getElementById('f_lettre').click()">
+      <input type="file" id="f_lettre" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="handleFile(this,'lettre')">
+      <span class="file-zone-icon">&#128206;</span>
+      <div>
+        <div class="file-zone-text">Ajouter un fichier</div>
+        <div class="file-zone-sub">PDF, Word ou image</div>
+      </div>
+    </div>
+    <div id="preview_lettre"></div>
+    <div class="field-error" id="err_lettre">Ce document est obligatoire.</div>
+  </div>
+
+  <div class="card">
+    <div class="question-title">Liste du personnel mobilisé et licences correspondantes <span class="required-mark">*</span></div>
+    <div class="file-zone" id="zone_personnel" onclick="document.getElementById('f_personnel').click()">
+      <input type="file" id="f_personnel" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="handleFile(this,'personnel')">
+      <span class="file-zone-icon">&#128206;</span>
+      <div>
+        <div class="file-zone-text">Ajouter un fichier</div>
+        <div class="file-zone-sub">PDF, Word ou image</div>
+      </div>
+    </div>
+    <div id="preview_personnel"></div>
+    <div class="field-error" id="err_personnel">Ce document est obligatoire.</div>
+  </div>
+
+  <div class="card">
+    <div class="question-title">Échantillon de la liste des médicaments prévus (noms et dates d'expiration visibles) <span class="required-mark">*</span></div>
+    <div class="file-zone" id="zone_médicaments" onclick="document.getElementById('f_médicaments').click()">
+      <input type="file" id="f_médicaments" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="handleFile(this,'médicaments')">
+      <span class="file-zone-icon">&#128206;</span>
+      <div>
+        <div class="file-zone-text">Ajouter un fichier</div>
+        <div class="file-zone-sub">PDF, Word ou image</div>
+      </div>
+    </div>
+    <div id="preview_médicaments"></div>
+    <div class="field-error" id="err_médicaments">Ce document est obligatoire.</div>
+  </div>
+
+  <div class="card">
+    <div class="question-title">Lettre de recommandation de l'Unité d'Arrondissement de Santé <span class="required-mark">*</span></div>
+    <div class="file-zone" id="zone_recommandation" onclick="document.getElementById('f_recommandation').click()">
+      <input type="file" id="f_recommandation" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="handleFile(this,'recommandation')">
+      <span class="file-zone-icon">&#128206;</span>
+      <div>
+        <div class="file-zone-text">Ajouter un fichier</div>
+        <div class="file-zone-sub">PDF, Word ou image</div>
+      </div>
+    </div>
+    <div id="preview_recommandation"></div>
+    <div class="field-error" id="err_recommandation">Ce document est obligatoire.</div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="section-card">
+    <h3>Section 4 — Validation UAS</h3>
+    <p>Cette section engage la responsabilité de l'Unité d'Arrondissement de Santé. En répondant a ces questions, le répondant certifié avoir personnellement vérifié la conformite du dossier et l'adéquation de l'activite avec les besoins du terrain.</p>
+  </div>
+
+  <div class="card">
+    <div class="question-title">Certifiez-vous que le dossier du demandeur est complet ? <span class="required-mark">*</span></div>
+    <div class="question-hint">Vérifiez que toutes les pièces requises ont ete jointes : lettre de demande, liste du personnel avec licences, lettre de recommandation et preuve de verification des médicaments.</div>
+    <div class="radio-group">
+      <label class="radio-option"><input type="radio" name="r_dossier" value="Oui"><span class="radio-option-label">Oui</span></label>
+      <label class="radio-option"><input type="radio" name="r_dossier" value="Non"><span class="radio-option-label">Non</span></label>
+    </div>
+    <div class="field-error" id="err_dossier">Ce champ est obligatoire.</div>
+  </div>
+
+  <div class="card">
+    <div class="question-title">La commune ciblee s'inscrit-elle dans les axes prioritaires ou besoins identifiés par la Direction ? <span class="required-mark">*</span></div>
+    <div class="question-hint">Évaluez si cette intervention repond a un besoin sanitaire identifié ou s'inscrit dans les priorites départementales en cours. Une réponse negative sera signalée au Directeur.</div>
+    <div class="radio-group">
+      <label class="radio-option"><input type="radio" name="r_axes" value="Oui"><span class="radio-option-label">Oui</span></label>
+      <label class="radio-option"><input type="radio" name="r_axes" value="Non"><span class="radio-option-label">Non</span></label>
+    </div>
+    <div class="field-error" id="err_axes">Ce champ est obligatoire.</div>
+  </div>
+
+  <div class="card">
+    <div class="question-title">Recommandez-vous cette activite au Directeur Départemental ? <span class="required-mark">*</span></div>
+    <div class="question-hint">Votre recommandation est determinante. Une réponse negative entrainera le rejet automatique de la demande sans transmission au Directeur.</div>
+    <div class="radio-group">
+      <label class="radio-option"><input type="radio" name="r_recommandation" value="Oui"><span class="radio-option-label">Oui</span></label>
+      <label class="radio-option"><input type="radio" name="r_recommandation" value="Non"><span class="radio-option-label">Non</span></label>
+    </div>
+    <div class="field-error" id="err_recommandation_q">Ce champ est obligatoire.</div>
+  </div>
+
+  <div class="card">
+    <div class="question-title">Souhaitez-vous que l'organisation soit notifiée directement par email lors de l'approbation ? <span class="required-mark">*</span></div>
+    <div class="question-hint">Si vous sélectionnez Oui, l'organisation recevra automatiquement la lettre d'autorisation par email a l'adresse indiquee ci-dessus. En cas de rejet, la notification vous sera envoyée uniquement a vous — vous serez chargé(e) d'en informér l'organisation vous-meme.</div>
+    <div class="radio-group">
+      <label class="radio-option"><input type="radio" name="r_notification" value="Oui"><span class="radio-option-label">Oui</span></label>
+      <label class="radio-option"><input type="radio" name="r_notification" value="Non"><span class="radio-option-label">Non</span></label>
+    </div>
+    <div class="field-error" id="err_notification">Ce champ est obligatoire.</div>
+  </div>
+
+  <div class="card">
+    <div class="question-title">Commentaires ou observations complémentaires</div>
+    <div class="question-hint">Champ optionnel. Utilisez cet espace pour signaler toute information pertinente, préciser un motif de refus, ou formuler des recommandations spécifiques a l'attention du Directeur.</div>
+    <textarea id="f_commentaires" placeholder="Commentaires ou observations complémentaires"></textarea>
+  </div>
+
+  <button class="submit" id="btn-submit" onclick="submitForm()">Soumettre</button>
+
+  <div class="queue-card">
+    <h3>File d'attente de synchronisation</h3>
+    <div id="queue-list"><em style="color:#999">Chargement...</em></div>
+  </div>
+
+</main>
+
+<div id="toast"></div>
+
+<script>
+const DOPOST_URL = 'https://script.google.com/macros/s/AKfycbwVvN_1hTQxPry3aeLCr98YCXPwK6Pkcykzw0QDNiRt3ZGzRwTgdnieyGJcp2TgaxWA/exec';
+
+let isOnline = navigator.onLine;
+const files = { lettre: null, personnel: null, médicaments: null, recommandation: null };
+
+function updateOnlineStatus() {
+  isOnline = navigator.onLine;
+  const bar = document.getElementById('status-bar');
+  bar.textContent = isOnline ? 'En ligne' : 'Hors ligne';
+  bar.className = isOnline ? 'online' : 'offline';
+  if (isOnline) syncQueue();
+}
+window.addEventListener('online',  updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+
+function handleFile(input, key) {
+  const f = input.files[0]; if (!f) return;
+  files[key] = f;
+  const zone = document.getElementById('zone_' + key);
+  zone.classList.add('file-attached');
+  zone.querySelector('.file-zone-text').textContent = f.name;
+  zone.querySelector('.file-zone-sub').textContent = (f.size/1024).toFixed(0) + ' Ko';
+  document.getElementById('preview_' + key).innerHTML =
+    `<div class="file-item"><span>${f.name}</span><button onclick="removeFile('${key}')">Retirer</button></div>`;
+  document.getElementById('err_' + key).style.display = 'none';
+}
+
+function removeFile(key) {
+  files[key] = null;
+  const zone = document.getElementById('zone_' + key);
+  zone.classList.remove('file-attached');
+  zone.querySelector('.file-zone-text').textContent = 'Ajouter un fichier';
+  zone.querySelector('.file-zone-sub').textContent = 'PDF, Word ou image';
+  document.getElementById('preview_' + key).innerHTML = '';
+  document.getElementById('f_' + key).value = '';
+}
+
+async function fileToBase64(f) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload  = () => res({ name: f.name, type: f.type, data: r.result.split(',')[1] });
+    r.onerror = rej;
+    r.readAsDataURL(f);
+  });
+}
+
+function getVal(id) { return document.getElementById(id).value.trim(); }
+function getRadio(name) { const el = document.querySelector(`input[name=${name}]:checked`); return el ? el.value : ''; }
+function showErr(id) { document.getElementById(id).style.display = 'block'; }
+function hideErr(id) { document.getElementById(id).style.display = 'none'; }
+
+function validate() {
+  let ok = true;
+  if (!getRadio('r_identite'))       { showErr('err_identite'); ok=false; }      else hideErr('err_identite');
+  if (!getVal('f_organisation'))     { showErr('err_organisation'); ok=false; }  else hideErr('err_organisation');
+  if (!getVal('f_modalités'))        { showErr('err_modalités'); ok=false; }     else hideErr('err_modalités');
+  if (!files.lettre)                 { showErr('err_lettre'); ok=false; }        else hideErr('err_lettre');
+  if (!files.personnel)              { showErr('err_personnel'); ok=false; }     else hideErr('err_personnel');
+  if (!files.médicaments)            { showErr('err_médicaments'); ok=false; }   else hideErr('err_médicaments');
+  if (!files.recommandation)         { showErr('err_recommandation'); ok=false; } else hideErr('err_recommandation');
+  if (!getRadio('r_dossier'))        { showErr('err_dossier'); ok=false; }       else hideErr('err_dossier');
+  if (!getRadio('r_axes'))           { showErr('err_axes'); ok=false; }          else hideErr('err_axes');
+  if (!getRadio('r_recommandation')) { showErr('err_recommandation_q'); ok=false; } else hideErr('err_recommandation_q');
+  if (!getRadio('r_notification'))   { showErr('err_notification'); ok=false; }  else hideErr('err_notification');
+  return ok;
+}
+
+async function submitForm() {
+  if (!validate()) { toast('Veuillez remplir tous les champs obligatoires et joindre les quatre documents requis.', 'error'); return; }
+  const btn = document.getElementById('btn-submit');
+  btn.disabled=true; btn.textContent='Enregistrement...';
+
+  const fichiers = await Promise.all([
+    fileToBase64(files.lettre),
+    fileToBase64(files.personnel),
+    fileToBase64(files.médicaments),
+    fileToBase64(files.recommandation),
+  ]);
+  fichiers[0].label = 'Lettre de demande officielle';
+  fichiers[1].label = 'Liste du personnel et licences';
+  fichiers[2].label = 'Liste des médicaments';
+  fichiers[3].label = 'Lettre de recommandation UAS';
+
+  const payload = {
+    timestamp: new Date().toISOString(),
+    'entry.1394021071': getRadio('r_identite'),
+    'entry.220685891':  getVal('f_organisation'),
+    'entry.1135269564': getVal('f_email'),
+    'entry.1910996914': getVal('f_modalités'),
+    'entry.539229797':  getRadio('r_dossier'),
+    'entry.127836088':  getRadio('r_axes'),
+    'entry.179673149':  getRadio('r_recommandation'),
+    'entry.372781918':  getRadio('r_notification'),
+    'entry.1437045337': getVal('f_commentaires'),
+    fichiers
+  };
+
+  await window.dsne.queueSave(payload);
+  if (isOnline) { await syncQueue(); }
+  else { toast('Enregistré localement. Synchronisation automatique a la reconnexion.', 'info'); }
+  resetForm();
+  btn.disabled=false; btn.textContent='Soumettre';
+  renderQueue();
+}
+
+let syncing=false;
+async function syncQueue() {
+  if (syncing) return; syncing=true;
+  const pending = await window.dsne.queuePending();
+  const badge = document.getElementById('sync-badge');
+  if (!pending.length) { badge.style.display='none'; syncing=false; return; }
+  badge.style.display='inline'; badge.textContent=`${pending.length} en attente`;
+  let errors=0;
+  for (const row of pending) {
+    try {
+      const res = await fetch(DOPOST_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: row.data });
+      if (res.ok) await window.dsne.queueMarkSynced(row.id); else errors++;
+    } catch(e) { errors++; }
+  }
+  const remaining = await window.dsne.queueCount();
+  if (!remaining) { badge.style.display='none'; toast('Synchronisation réussie.','success'); }
+  else { badge.textContent=`${remaining} en attente`; if(errors) toast(`${errors} entree(s) non synchronisée(s).`,'error'); }
+  syncing=false; renderQueue();
+}
+
+async function renderQueue() {
+  const pending = await window.dsne.queuePending();
+  const el = document.getElementById('queue-list');
+  if (!pending.length) { el.innerHTML='<em style="color:#27ae60">Tout est synchronisé.</em>'; return; }
+  el.innerHTML = pending.map(r => {
+    const d = JSON.parse(r.data);
+    return `<div class="q-item"><span>${d['entry.220685891']||'—'} (${(d.timestamp||'').slice(0,10)})</span><span class="q-pending">En attente</span></div>`;
+  }).join('');
+}
+
+function resetForm() {
+  ['f_organisation','f_email','f_modalités','f_commentaires'].forEach(id=>document.getElementById(id).value='');
+  document.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);
+  ['lettre','personnel','médicaments','recommandation'].forEach(k=>removeFile(k));
+}
+
+function toast(msg, type='info') {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=`toast show ${type}`;
+  setTimeout(()=>t.className='toast',4500);
+}
+
+renderQueue();
+setInterval(async()=>{ if(isOnline) await syncQueue(); },30000);
+</script>
+</body>
+</html>

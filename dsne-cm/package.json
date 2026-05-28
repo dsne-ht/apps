@@ -1,0 +1,38 @@
+{
+  "name": "dsne-clinique-mobile",
+  "version": "1.0.0",
+  "description": "DSNE – Autorisation Clinique Mobile",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win --x64"
+  },
+  "build": {
+    "appId": "ht.gouv.mspp.dsne.cm",
+    "productName": "DSNE Clinique Mobile",
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "files": [
+      "main.js",
+      "src/**/*",
+      "package.json"
+    ],
+    "electronVersion": "28.3.3"
+  },
+  "devDependencies": {
+    "electron": "^28.3.3",
+    "electron-builder": "^24.13.3"
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.4.3",
+    "scripts": "^0.1.0"
+  },
+  "author": "DSNE"
+}

@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSNE — Accueil</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <div>
+      <h1>DSNE — Accueil</h1>
+      <span>PROC-004 · Fort-Liberté</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-sync">
+      <span class="sync-dot" id="syncDot"></span>
+      <span id="syncLabel">Vérification...</span>
+    </div>
+    <span class="topbar-user" id="topbarUser"></span>
+    <button class="btn-logout" onclick="doLogout()">Déconnexion</button>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('entree', this)">Enregistrement d'entrée</div>
+  <div class="tab" onclick="switchTab('sortie', this)">Enregistrement de sortie</div>
+  <div class="tab" onclick="switchTab('journal', this)">Journal du jour</div>
+  <div class="tab" onclick="switchTab('uids', this)">Gestion des UIDs</div>
+</div>
+
+<!-- ══════════════════════ TAB: ENTREE ══════════════════════ -->
+<div id="tab-entree" class="content pb-sync">
+
+  <div id="alertEntree" class="alert" style="display:none"></div>
+
+  <div class="card">
+    <div class="card-title">Section 1 — Carte visiteur</div>
+    <div class="field">
+      <label>UID de la carte visiteur</label>
+      <select id="e_uid">
+        <option value="">-- Sélectionner une carte --</option>
+      </select>
+      <span class="field-desc">Sélectionner l'identifiant de la carte physique remise au visiteur. Pour ajouter des cartes, aller dans l'onglet Gestion des UIDs.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Section 2 — Identité du visiteur</div>
+    <div class="form-grid" style="margin-bottom:12px">
+      <div class="field">
+        <label>Nom complet</label>
+        <input type="text" id="e_nom" placeholder="Prénom Nom">
+        <span class="field-desc">Tel qu'il apparaît sur la pièce d'identité.</span>
+      </div>
+      <div class="field">
+        <label>Type de pièce d'identité</label>
+        <select id="e_type_piece">
+          <option value="">-- Sélectionner --</option>
+          <option>Carte d'identité nationale (CIN)</option>
+          <option>Passeport</option>
+          <option>Permis de conduire</option>
+          <option>Carte d'employé</option>
+          <option>Autre document officiel</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-grid" style="margin-bottom:12px">
+      <div class="field">
+        <label>Numéro de la pièce</label>
+        <input type="text" id="e_num_piece" placeholder="Ex. : CIN-448821">
+        <span class="field-desc">Tel qu'il figure sur le document.</span>
+      </div>
+      <div class="field">
+        <label>Numéro de téléphone</label>
+        <input type="tel" id="e_tel" placeholder="+509 3700 0000">
+      </div>
+    </div>
+    <div class="field">
+      <label>Organisation / Provenance</label>
+      <input type="text" id="e_org" placeholder="Nom de l'institution ou N/A si sans emploi">
+      <span class="field-desc">Inscrire N/A si le visiteur est sans emploi ou se présente à titre personnel.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Section 3 — Motif de visite et service destinataire</div>
+    <div class="form-grid" style="margin-bottom:12px">
+      <div class="field">
+        <label>Service destinataire</label>
+        <select id="e_service">
+          <option value="">-- Sélectionner --</option>
+          <option>DIR — Direction</option>
+          <option>ADM — Administration</option>
+          <option>COMP — Comptabilité</option>
+          <option>RH — Ressources Humaines</option>
+          <option>EPID — Épidémiologie</option>
+          <option>VIH — Programme VIH/SIDA</option>
+          <option>TB — Programme Tuberculose</option>
+          <option>SM — Santé Maternelle</option>
+          <option>LOG — Logistique</option>
+          <option>SI — Système d'Information</option>
+          <option>HP — Hygiène Publique</option>
+          <option>STAT — Statistiques</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Personne à visiter</label>
+        <input type="text" id="e_personne" placeholder="Nom complet de l'agent">
+      </div>
+    </div>
+    <div class="form-grid" style="margin-bottom:12px">
+      <div class="field">
+        <label>Motif de la visite</label>
+        <select id="e_motif" onchange="toggleMotifAutre()">
+          <option value="">-- Sélectionner --</option>
+          <option>Réunion ou rencontre</option>
+          <option>Dépôt de document</option>
+          <option>Retrait de document</option>
+          <option>Consultation ou demande d'information</option>
+          <option>Livraison</option>
+          <option>Autre</option>
+        </select>
+      </div>
+      <div class="field" id="motifAutreField" style="display:none">
+        <label>Préciser le motif</label>
+        <input type="text" id="e_motif_autre" placeholder="Décrire l'objet de la visite">
+        <span class="field-desc">Remplir uniquement si « Autre » sélectionné.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Section 4 — Autorisation d'accès</div>
+    <p style="font-size:13px;color:#5F5E5A;margin-bottom:1rem">
+      Contacter le service destinataire avant de remplir cette section. Ne pas faire monter le visiteur avant confirmation.
+    </p>
+    <div class="auth-group">
+      <div class="auth-btn auth-oui" id="btnOui" onclick="selectAuth('Oui — la visite est autorisée')">
+        ✓ Oui — Autorisé
+      </div>
+      <div class="auth-btn auth-non" id="btnNon" onclick="selectAuth('Non — la visite est refusée')">
+        ✗ Non — Refusé
+      </div>
+    </div>
+    <div id="champAutorisateur" style="display:none;margin-bottom:12px">
+      <div class="field">
+        <label>Nom de la personne ayant autorisé</label>
+        <input type="text" id="e_autorisateur" placeholder="Nom de l'agent ayant confirmé">
+        <span class="field-desc">Requis pour traçabilité.</span>
+      </div>
+    </div>
+    <div id="champRefus" style="display:none">
+      <div class="field">
+        <label>Motif du refus</label>
+        <input type="text" id="e_motif_refus" placeholder="Motif communiqué par le service">
+        <span class="field-desc">Rappel : remettre immédiatement la pièce d'identité au visiteur.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Section 5 — Agent d'accueil</div>
+    <div class="field">
+      <label>Nom de l'agent d'accueil</label>
+      <input type="text" id="e_agent" placeholder="Votre nom complet">
+      <span class="field-desc">Vous êtes responsable de l'exactitude des informations saisies.</span>
+    </div>
+  </div>
+
+  <button class="btn btn-primary btn-full" id="btnEntree" onclick="soumettrEntree()">
+    Enregistrer l'entrée
+  </button>
+</div>
+
+<!-- ══════════════════════ TAB: SORTIE ══════════════════════ -->
+<div id="tab-sortie" class="content pb-sync" style="display:none">
+
+  <div id="alertSortie" class="alert" style="display:none"></div>
+
+  <div class="card">
+    <div class="card-title">Section 1 — Identification du visiteur</div>
+    <div class="field">
+      <label>Visiteur actuellement dans les locaux</label>
+      <select id="s_visite">
+        <option value="">-- Sélectionner le visiteur --</option>
+      </select>
+      <span class="field-desc">Format : Nom — Service — Heure d'arrivée — ID de visite. Si un visiteur n'apparaît pas, vérifier que son entrée a bien été soumise.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Section 2 — Confirmation de sortie</div>
+    <div class="field" style="margin-bottom:12px">
+      <label>La carte visiteur a-t-elle été récupérée ?</label>
+      <select id="s_carte">
+        <option value="">-- Sélectionner --</option>
+        <option>Oui — carte récupérée</option>
+        <option>Non — carte non récupérée (signaler au responsable)</option>
+      </select>
+      <span class="field-desc">La carte doit impérativement être récupérée avant que le visiteur ne quitte les locaux.</span>
+    </div>
+    <div class="field">
+      <label>Nom de l'agent d'accueil</label>
+      <input type="text" id="s_agent" placeholder="Votre nom complet">
+    </div>
+  </div>
+
+  <button class="btn btn-primary btn-full" id="btnSortie" onclick="soumettreSortie()">
+    Enregistrer la sortie
+  </button>
+</div>
+
+<!-- ══════════════════════ TAB: JOURNAL ══════════════════════ -->
+<div id="tab-journal" class="content pb-sync" style="display:none">
+  <div class="stats-row" id="statsRow"></div>
+  <div class="visit-list" id="journalList"></div>
+</div>
+
+<!-- ══════════════════════ TAB: UIDs ══════════════════════ -->
+<div id="tab-uids" class="content pb-sync" style="display:none">
+  <div class="card">
+    <div class="uid-header">
+      <div class="card-title" style="margin:0;border:none;padding:0">Cartes UID enregistrées</div>
+      <button class="btn btn-primary btn-sm" onclick="showAddUID()">+ Ajouter</button>
+    </div>
+    <div id="uidList" style="margin-top:0.75rem"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════ MODAL AJOUT UID ══════════════════════ -->
+<div id="modalUID" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <h3>Ajouter une carte UID</h3>
+    <div class="field" style="margin-bottom:12px">
+      <label>UID</label>
+      <input type="text" id="m_uid" placeholder="Ex. : ADM-003">
+    </div>
+    <div class="field" style="margin-bottom:12px">
+      <label>Service</label>
+      <select id="m_service">
+        <option>DIR</option><option>ADM</option><option>COMP</option><option>RH</option>
+        <option>EPID</option><option>VIH</option><option>TB</option><option>SM</option>
+        <option>LOG</option><option>SI</option><option>HP</option><option>STAT</option><option>PROG</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Description</label>
+      <input type="text" id="m_desc" placeholder="Ex. : Carte Administration 003">
+    </div>
+    <div id="alertModal" class="alert alert-error" style="display:none;margin-top:10px"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveUID()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- SYNC BAR -->
+<div class="sync-bar">
+  <div class="sync-info">
+    <span class="sync-dot" id="syncBarDot"></span>
+    <span id="syncBarLabel">Vérification...</span>
+  </div>
+  <button class="btn btn-sm btn-primary" onclick="doSync()">Synchroniser</button>
+</div>
+
+<script>
+let currentUser = null
+let selectedAuth = null
+
+// ── INIT
+window.addEventListener('DOMContentLoaded', async () => {
+  const userData = sessionStorage.getItem('user')
+  if (!userData) { window.api.navigate('login.html'); return }
+  currentUser = JSON.parse(userData)
+  document.getElementById('topbarUser').textContent = currentUser.nom_complet
+  await loadUIDs()
+  await updateSyncStatus()
+  setInterval(updateSyncStatus, 30000)
+})
+
+// ── TABS
+function switchTab(name, el) {
+  ['entree','sortie','journal','uids'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===name ? 'block' : 'none'
+  })
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
+  el.classList.add('active')
+  if (name==='sortie') loadVisitesActives()
+  if (name==='journal') loadJournal()
+  if (name==='uids') loadAllUIDs()
+}
+
+// ── LOGOUT
+async function doLogout() {
+  sessionStorage.removeItem('user')
+  await window.api.logout()
+}
+
+// ── UIDs
+async function loadUIDs() {
+  const uids = await window.api.getUids()
+  const sel = document.getElementById('e_uid')
+  sel.innerHTML = '<option value="">-- Sélectionner une carte --</option>'
+  uids.forEach(u => {
+    const opt = document.createElement('option')
+    opt.value = u.uid
+    opt.textContent = u.uid + ' — ' + u.service + ' (' + u.description + ')'
+    sel.appendChild(opt)
+  })
+}
+
+async function loadAllUIDs() {
+  const uids = await window.api.getAllUids()
+  const list = document.getElementById('uidList')
+  if (!uids.length) { list.innerHTML = '<div class="empty">Aucune carte enregistrée.</div>'; return }
+  list.innerHTML = uids.map(u => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--g100)">
+      <div>
+        <span style="font-weight:600;font-size:13px">${u.uid}</span>
+        <span style="font-size:11px;color:var(--g400);margin-left:8px">${u.service} · ${u.description}</span>
+      </div>
+      <button class="btn btn-sm ${u.actif ? 'btn-secondary' : 'btn-primary'}"
+        onclick="toggleUID(${u.id}, ${u.actif ? 0 : 1})">
+        ${u.actif ? 'Désactiver' : 'Activer'}
+      </button>
+    </div>
+  `).join('')
+}
+
+function showAddUID() { document.getElementById('modalUID').style.display = 'flex' }
+function closeModal() { document.getElementById('modalUID').style.display = 'none' }
+
+async function saveUID() {
+  const uid = document.getElementById('m_uid').value.trim()
+  const service = document.getElementById('m_service').value
+  const description = document.getElementById('m_desc').value.trim()
+  if (!uid || !description) { showAlert('alertModal', 'error', 'Tous les champs sont requis.'); return }
+  const result = await window.api.addUid({ uid, service, description })
+  if (result.ok) {
+    closeModal()
+    await loadUIDs()
+    await loadAllUIDs()
+  } else {
+    showAlert('alertModal', 'error', result.message)
+  }
+}
+
+async function toggleUID(id, actif) {
+  await window.api.toggleUid({ id, actif })
+  await loadUIDs()
+  await loadAllUIDs()
+}
+
+// ── AUTH SELECTION
+function selectAuth(val) {
+  selectedAuth = val
+  document.getElementById('btnOui').classList.remove('selected')
+  document.getElementById('btnNon').classList.remove('selected')
+  if (val.startsWith('Oui')) {
+    document.getElementById('btnOui').classList.add('selected')
+    document.getElementById('champAutorisateur').style.display = 'block'
+    document.getElementById('champRefus').style.display = 'none'
+  } else {
+    document.getElementById('btnNon').classList.add('selected')
+    document.getElementById('champAutorisateur').style.display = 'none'
+    document.getElementById('champRefus').style.display = 'block'
+  }
+}
+
+function toggleMotifAutre() {
+  const motif = document.getElementById('e_motif').value
+  document.getElementById('motifAutreField').style.display = motif === 'Autre' ? 'block' : 'none'
+}
+
+// ── ENTRÉE
+async function soumettrEntree() {
+  const fields = {
+    uid_carte: document.getElementById('e_uid').value,
+    nom_complet: document.getElementById('e_nom').value.trim(),
+    type_piece: document.getElementById('e_type_piece').value,
+    numero_piece: document.getElementById('e_num_piece').value.trim(),
+    telephone: document.getElementById('e_tel').value.trim(),
+    organisation: document.getElementById('e_org').value.trim(),
+    service_destinataire: document.getElementById('e_service').value,
+    personne_a_visiter: document.getElementById('e_personne').value.trim(),
+    motif_visite: document.getElementById('e_motif').value,
+    motif_autre_detail: document.getElementById('e_motif_autre').value.trim() || 'N/A',
+    visite_autorisee: selectedAuth || '',
+    nom_autorisateur: document.getElementById('e_autorisateur').value.trim() || 'N/A',
+    motif_refus: document.getElementById('e_motif_refus').value.trim() || 'N/A',
+    agent_accueil: document.getElementById('e_agent').value.trim()
+  }
+
+  const required = ['uid_carte','nom_complet','type_piece','numero_piece','telephone',
+    'organisation','service_destinataire','personne_a_visiter','motif_visite','agent_accueil']
+  for (const f of required) {
+    if (!fields[f]) { showAlert('alertEntree', 'error', 'Tous les champs sont obligatoires.'); return }
+  }
+  if (!selectedAuth) { showAlert('alertEntree', 'error', 'Sélectionner l\'autorisation (Oui ou Non).'); return }
+  if (selectedAuth.startsWith('Oui') && !fields.nom_autorisateur.trim()) {
+    showAlert('alertEntree', 'error', 'Inscrire le nom de la personne ayant autorisé.'); return
+  }
+
+  const btn = document.getElementById('btnEntree')
+  btn.disabled = true; btn.textContent = 'Enregistrement...'
+
+  const result = await window.api.enregistrerEntree(fields)
+  if (result.ok) {
+    showAlert('alertEntree', 'success', `Entrée enregistrée — ${result.id_visite} · Statut : ${result.statut === 'Entre' ? 'Entré' : 'Refusé'}`)
+    resetEntreeForm()
+    await updateSyncStatus()
+  } else {
+    showAlert('alertEntree', 'error', result.message)
+  }
+  btn.disabled = false; btn.textContent = 'Enregistrer l\'entrée'
+}
+
+function resetEntreeForm() {
+  ['e_uid','e_type_piece','e_service','e_motif'].forEach(id => document.getElementById(id).value = '')
+  ['e_nom','e_num_piece','e_tel','e_org','e_personne','e_motif_autre','e_autorisateur','e_motif_refus','e_agent'].forEach(id => document.getElementById(id).value = '')
+  selectedAuth = null
+  document.getElementById('btnOui').classList.remove('selected')
+  document.getElementById('btnNon').classList.remove('selected')
+  document.getElementById('champAutorisateur').style.display = 'none'
+  document.getElementById('champRefus').style.display = 'none'
+  document.getElementById('motifAutreField').style.display = 'none'
+}
+
+// ── SORTIE
+async function loadVisitesActives() {
+  const visites = await window.api.getVisitesActives()
+  const sel = document.getElementById('s_visite')
+  sel.innerHTML = '<option value="">-- Sélectionner le visiteur --</option>'
+  if (!visites.length) {
+    const opt = document.createElement('option')
+    opt.textContent = 'Aucun visiteur actif pour le moment'
+    opt.disabled = true
+    sel.appendChild(opt)
+    return
+  }
+  visites.forEach(v => {
+    const opt = document.createElement('option')
+    const heure = new Date(v.horodateur_entree).toLocaleTimeString('fr-HT', {hour:'2-digit',minute:'2-digit'})
+    opt.value = v.id_visite
+    opt.textContent = v.nom_complet + ' — ' + v.service_destinataire + ' — ' + heure + ' — ' + v.id_visite
+    sel.appendChild(opt)
+  })
+}
+
+async function soumettreSortie() {
+  const id_visite = document.getElementById('s_visite').value
+  const carte_recuperee = document.getElementById('s_carte').value
+  const agent_sortie = document.getElementById('s_agent').value.trim()
+
+  if (!id_visite || !carte_recuperee || !agent_sortie) {
+    showAlert('alertSortie', 'error', 'Tous les champs sont obligatoires.'); return
+  }
+
+  const btn = document.getElementById('btnSortie')
+  btn.disabled = true; btn.textContent = 'Enregistrement...'
+
+  const result = await window.api.enregistrerSortie({ id_visite, carte_recuperee, agent_sortie })
+  if (result.ok) {
+    showAlert('alertSortie', 'success', 'Sortie enregistrée avec succès.')
+    document.getElementById('s_visite').value = ''
+    document.getElementById('s_carte').value = ''
+    document.getElementById('s_agent').value = ''
+    await loadVisitesActives()
+    await updateSyncStatus()
+  } else {
+    showAlert('alertSortie', 'error', result.message)
+  }
+  btn.disabled = false; btn.textContent = 'Enregistrer la sortie'
+}
+
+// ── JOURNAL
+async function loadJournal() {
+  const [stats, visites] = await Promise.all([window.api.getStatsJour(), window.api.getVisitesJour()])
+
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-card"><div class="stat-n">${stats.total}</div><div class="stat-l">Total aujourd'hui</div></div>
+    <div class="stat-card"><div class="stat-n green">${stats.entres}</div><div class="stat-l">Dans les locaux</div></div>
+    <div class="stat-card"><div class="stat-n gray">${stats.sortis}</div><div class="stat-l">Sortis</div></div>
+    <div class="stat-card"><div class="stat-n red">${stats.refuses}</div><div class="stat-l">Refusés</div></div>
+  `
+
+  const list = document.getElementById('journalList')
+  if (!visites.length) { list.innerHTML = '<div class="empty">Aucune visite enregistrée aujourd\'hui.</div>'; return }
+
+  list.innerHTML = visites.map(v => {
+    const heure = new Date(v.horodateur_entree).toLocaleTimeString('fr-HT', {hour:'2-digit',minute:'2-digit'})
+    const statutClass = v.statut === 'Entre' ? '' : v.statut === 'Sorti' ? 'sorti' : 'refuse'
+    const statutLabel = v.statut === 'Entre' ? 'Entré' : v.statut === 'Sorti' ? 'Sorti' : 'Refusé'
+    const badgeClass = v.statut === 'Entre' ? 'badge-entre' : v.statut === 'Sorti' ? 'badge-sorti' : 'badge-refuse'
+    const syncBadge = v.synced ? '' : '<span class="badge" style="background:var(--o50);color:var(--o800)">Non sync.</span>'
+    return `
+      <div class="visit-card ${statutClass}">
+        <div class="vc-top">
+          <div>
+            <div class="vc-name">${v.nom_complet}</div>
+            <div class="vc-id">${v.uid_carte || ''} · ${v.id_visite}</div>
+          </div>
+          <div class="vc-time">${heure}</div>
+        </div>
+        <div class="vc-meta">
+          <span class="badge badge-svc">${v.service_destinataire.split(' — ')[0]}</span>
+          <span class="badge ${badgeClass}">${statutLabel}</span>
+          <span class="badge" style="background:var(--g100);color:var(--g600)">${v.motif_visite}</span>
+          ${syncBadge}
+        </div>
+      </div>
+    `
+  }).join('')
+}
+
+// ── SYNC
+async function updateSyncStatus() {
+  const status = await window.api.getSyncStatus()
+  const dot = document.getElementById('syncDot')
+  const label = document.getElementById('syncLabel')
+  const barDot = document.getElementById('syncBarDot')
+  const barLabel = document.getElementById('syncBarLabel')
+  if (status.pending > 0) {
+    dot.className = 'sync-dot pending'
+    barDot.className = 'sync-dot pending'
+    label.textContent = status.pending + ' en attente de sync'
+    barLabel.textContent = status.pending + ' enregistrement(s) non synchronisé(s)'
+  } else {
+    dot.className = 'sync-dot'
+    barDot.className = 'sync-dot'
+    label.textContent = 'Synchronisé'
+    barLabel.textContent = 'Toutes les données sont synchronisées'
+  }
+}
+
+async function doSync() {
+  const result = await window.api.syncSheets()
+  if (result.ok) {
+    if (result.synced > 0) alert(result.synced + ' enregistrement(s) synchronisé(s) avec Google Sheets.')
+    else alert('Aucun enregistrement en attente.')
+  } else {
+    alert('Erreur de synchronisation : ' + result.message)
+  }
+  await updateSyncStatus()
+}
+
+// ── UTILS
+function showAlert(id, type, msg) {
+  const el = document.getElementById(id)
+  el.className = 'alert alert-' + (type === 'success' ? 'success' : 'error')
+  el.textContent = msg
+  el.style.display = 'block'
+  setTimeout(() => el.style.display = 'none', 5000)
+}
+</script>
+</body>
+</html>
