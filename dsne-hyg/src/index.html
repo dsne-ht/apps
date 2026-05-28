@@ -191,7 +191,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const userData = sessionStorage.getItem('user')
   if (!userData) { window.location.href = 'login.html'; return }
   const user = JSON.parse(userData)
-  document.getElementById('topbarUser').textContent = user.nom_complet
+  document.getElementById('topbarUser').textContent = 'Salut ' + user.nom_complet.split(' ')[0] + ' !'
   await updateSyncStatus()
   setInterval(updateSyncStatus, 30000)
   window.addEventListener('online', () => { updateSyncStatus(); doSync() })
