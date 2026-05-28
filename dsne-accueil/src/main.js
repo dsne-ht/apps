@@ -3,7 +3,7 @@ const path = require('path')
 const Database = require('better-sqlite3')
 const { google } = require('googleapis')
 const fs = require('fs')
-const nodemailer = require('nodemailer')
+// nodemailer removed — using Gmail API
 
 const userDataPath = app.getPath('userData')
 const dbPath = path.join(userDataPath, 'dsne_accueil.db')
