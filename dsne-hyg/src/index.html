@@ -2,370 +2,394 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>DSNE – Hygiène Publique</title>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; color: #1a1a2e; font-size: 14px; }
-
-  header { background: #1a5276; color: #fff; padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
-  header h1 { font-size: 15px; font-weight: 600; letter-spacing: .4px; }
-  #status-bar { font-size: 12px; padding: 4px 14px; border-radius: 20px; font-weight: 600; }
-  .online  { background: #d4edda; color: #155724; }
-  .offline { background: #f8d7da; color: #721c24; }
-  #sync-badge { background: #fff3cd; color: #856404; font-size: 11px; padding: 2px 10px; border-radius: 20px; margin-left: 10px; display: none; font-weight: 600; }
-
-  main { max-width: 760px; margin: 28px auto; padding: 0 16px 60px; }
-
-  .form-header {
-    background: #fff; border-radius: 10px 10px 0 0;
-    border-top: 8px solid #1a5276;
-    padding: 24px 28px; margin-bottom: 2px;
-    box-shadow: 0 1px 8px rgba(0,0,0,.07);
-  }
-  .form-header h2 { font-size: 22px; font-weight: 700; color: #1a1a2e; margin-bottom: 10px; }
-
-  .card { background: #fff; border-radius: 8px; padding: 20px 24px; box-shadow: 0 1px 8px rgba(0,0,0,.07); margin-bottom: 4px; }
-
-  .question-title { font-size: 14px; font-weight: 500; color: #1a1a2e; margin-bottom: 6px; }
-  .question-hint { font-size: 13px; color: #666; line-height: 1.6; margin-bottom: 12px; }
-  .required-mark { color: #d93025; }
-
-  input[type=text], input[type=email], textarea {
-    width: 100%; padding: 9px 0; border: none; border-bottom: 1px solid #999;
-    font-size: 14px; font-family: inherit; background: transparent;
-    transition: border-color .2s; outline: none; color: #1a1a2e;
-  }
-  input:focus, textarea:focus { border-bottom: 2px solid #1a5276; }
-  textarea { resize: vertical; min-height: 70px; }
-
-  .date-row { display: flex; gap: 12px; margin-top: 8px; }
-  .date-col { display: flex; flex-direction: column; flex: 1; }
-  .date-col label { font-size: 11px; color: #888; margin-bottom: 4px; }
-  .date-col select {
-    padding: 8px 4px; border: none; border-bottom: 1px solid #999;
-    font-size: 14px; font-family: inherit; background: transparent;
-    outline: none; color: #1a1a2e; cursor: pointer;
-  }
-  .date-col select:focus { border-bottom: 2px solid #1a5276; }
-
-  .radio-group { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
-  .radio-option { display: flex; align-items: center; gap: 12px; padding: 8px 4px; cursor: pointer; border-radius: 4px; }
-  .radio-option:hover { background: #f5f8ff; }
-  .radio-option input[type=radio] { width: 18px; height: 18px; accent-color: #1a5276; flex-shrink: 0; cursor: pointer; }
-  .radio-option-label { font-size: 14px; color: #1a1a2e; cursor: pointer; }
-
-  .file-zone {
-    border: 1px solid #dadce0; border-radius: 4px; padding: 14px 18px;
-    background: #fff; cursor: pointer; transition: border-color .2s, background .2s;
-    display: flex; align-items: center; gap: 12px; margin-top: 8px;
-  }
-  .file-zone:hover { border-color: #1a5276; background: #f5f8ff; }
-  .file-zone input[type=file] { display: none; }
-  .file-zone-icon { font-size: 20px; color: #1a5276; }
-  .file-zone-text { font-size: 13px; color: #444; }
-  .file-zone-sub { font-size: 11px; color: #999; margin-top: 2px; }
-  .file-attached { border-color: #1e8449; background: #f0fff4; }
-  .file-attached .file-zone-text { color: #1e8449; font-weight: 600; }
-  .file-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: #e8f5e9; border-radius: 4px; margin-top: 8px; font-size: 12px; border: 1px solid #c8e6c9; }
-  .file-item button { background: none; border: none; color: #c0392b; cursor: pointer; font-size: 12px; padding: 0 4px; width: auto; font-weight: 600; }
-
-  .field-error { font-size: 12px; color: #d93025; margin-top: 6px; display: none; }
-
-  button.submit { background: #1a5276; color: #fff; border: none; border-radius: 4px; padding: 12px 32px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background .2s; margin-top: 20px; }
-  button.submit:hover { background: #154360; }
-  button.submit:disabled { background: #aaa; cursor: not-allowed; }
-
-  #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(60px); color: #fff; padding: 12px 28px; border-radius: 4px; font-size: 14px; font-weight: 500; opacity: 0; transition: opacity .3s, transform .3s; z-index: 999; box-shadow: 0 4px 16px rgba(0,0,0,.25); min-width: 300px; text-align: center; }
-  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  #toast.error   { background: #d93025; }
-  #toast.success { background: #1e8449; }
-  #toast.info    { background: #1a5276; }
-
-  .queue-card { background: #fff; border-radius: 8px; padding: 16px 22px; box-shadow: 0 1px 8px rgba(0,0,0,.07); margin-top: 16px; }
-  .queue-card h3 { font-size: 11px; color: #888; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .8px; }
-  .q-item { padding: 6px 0; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; font-size: 12px; color: #555; }
-  .q-item:last-child { border-bottom: none; }
-  .q-pending { color: #e67e22; font-weight: 600; }
-</style>
+<title>DSNE — Hygiène Publique</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header>
-  <h1>DSNE — Certificat d'Hygiène Publique</h1>
-  <div style="display:flex;align-items:center">
-    <span id="status-bar" class="offline">Hors ligne</span>
-    <span id="sync-badge"></span>
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <span class="topbar-dsne">DSNE</span>
+    <span class="topbar-sep"></span>
+    <span class="topbar-name">Certificats Hygiène Publique</span>
   </div>
-</header>
-
-<main>
-
-  <div class="form-header">
-    <h2>Certificat d'Hygiène Publique et de Securite Sanitaire — DSNE</h2>
-  </div>
-
-  <div class="card">
-    <div class="question-title">Nom de l'établissement <span class="required-mark">*</span></div>
-    <input type="text" id="f_nom" placeholder="Votre réponse">
-    <div class="field-error" id="err_nom">Ce champ est obligatoire.</div>
-  </div>
-
-  <div class="card">
-    <div class="question-title">NIF (Numéro d'Identification Fiscale) <span class="required-mark">*</span></div>
-    <input type="text" id="f_nif" placeholder="Votre réponse">
-    <div class="field-error" id="err_nif">Ce champ est obligatoire.</div>
-  </div>
-
-  <div class="card">
-    <div class="question-title">Adresse complète de l'établissement <span class="required-mark">*</span></div>
-    <textarea id="f_adresse" placeholder="Votre réponse"></textarea>
-    <div class="field-error" id="err_adresse">Ce champ est obligatoire.</div>
-  </div>
-
-  <div class="card">
-    <div class="question-title">Nom du responsable <span class="required-mark">*</span></div>
-    <input type="text" id="f_responsable" placeholder="Votre réponse">
-    <div class="field-error" id="err_responsable">Ce champ est obligatoire.</div>
-  </div>
-
-  <div class="card">
-    <div class="question-title">Email de l'établissement</div>
-    <div class="question-hint">Adresse a laquelle la copie numérique du certificat pourra etre envoyée.</div>
-    <input type="email" id="f_email" placeholder="Votre réponse">
-  </div>
-
-  <div class="card">
-    <div class="question-title">Date d'évaluation / inspection <span class="required-mark">*</span></div>
-    <div class="question-hint">Exemple : 7 janvier 2019</div>
-    <div class="date-row">
-      <div class="date-col">
-        <label>Jour</label>
-        <select id="f_jour">
-          <option value="">—</option>
-          <script>for(let i=1;i<=31;i++) document.write(`<option value="${i}">${i}</option>`)</script>
-        </select>
-      </div>
-      <div class="date-col">
-        <label>Mois</label>
-        <select id="f_mois">
-          <option value="">—</option>
-          <option value="janvier">Janvier</option>
-          <option value="fevrier">Fevrier</option>
-          <option value="mars">Mars</option>
-          <option value="avril">Avril</option>
-          <option value="mai">Mai</option>
-          <option value="juin">Juin</option>
-          <option value="juillet">Juillet</option>
-          <option value="aout">Aout</option>
-          <option value="septembre">Septembre</option>
-          <option value="octobre">Octobre</option>
-          <option value="novembre">Novembre</option>
-          <option value="decembre">Decembre</option>
-        </select>
-      </div>
-      <div class="date-col">
-        <label>Annee</label>
-        <select id="f_annee">
-          <option value="">—</option>
-          <script>for(let y=2024;y<=2030;y++) document.write(`<option value="${y}">${y}</option>`)</script>
-        </select>
-      </div>
+  <div class="topbar-right">
+    <div class="topbar-sync">
+      <span class="sync-dot" id="syncDot"></span>
+      <span id="syncLabel">Vérification...</span>
     </div>
-    <div class="field-error" id="err_date">Veuillez selectionner une date complète.</div>
+    <span class="topbar-user" id="topbarUser"></span>
+    <button class="btn-logout" onclick="doLogout()">Déconnexion</button>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('formulaire', this)">Formulaire de certificat</div>
+  <div class="tab" onclick="switchTab('journal', this)">Journal des certificats</div>
+</div>
+
+<!-- ══ TAB: FORMULAIRE ══ -->
+<div id="tab-formulaire" class="content pb-sync">
+
+  <div id="alertForm" class="alert alert-error" style="display:none"></div>
+
+  <div class="form-intro">
+    <h2>CERTIFICAT D'HYGIÈNE PUBLIQUE ET DE SÉCURITÉ SANITAIRE — DSNE</h2>
+    <p>Ce formulaire permet d'enregistrer une demande de certificat d'hygiène publique et de sécurité sanitaire auprès de la Direction Sanitaire du Nord-Est (DSNE). Il est destiné aux établissements du département du Nord-Est souhaitant obtenir ou renouveler leur certification.</p>
+    <div class="warning">Tous les champs marqués d'un astérisque (*) sont obligatoires. Toute demande incomplète ne pourra pas être traitée.</div>
   </div>
 
+  <!-- SECTION 1 -->
+  <div class="section-header">Section 1 — Identification de l'établissement</div>
   <div class="card">
-    <div class="question-title">Rapport d'inspection <span class="required-mark">*</span></div>
-    <div class="question-hint">Veuillez attacher le rapport d'inspection établi suite a la visite de l'établissement. Formats acceptes : PDF ou Word. Ce document est requis pour la demande.</div>
-    <div class="file-zone" id="zone_rapport" onclick="document.getElementById('f_rapport').click()">
-      <input type="file" id="f_rapport" accept=".pdf,.doc,.docx" onchange="handleFile(this)">
-      <span class="file-zone-icon">&#128206;</span>
-      <div>
-        <div class="file-zone-text">Ajouter un fichier</div>
-        <div class="file-zone-sub">PDF ou Word</div>
+    <div class="field">
+      <label>Nom de l'établissement <span class="required">*</span></label>
+      <span class="field-desc">Inscrire le nom officiel de l'établissement tel qu'il figure sur les documents légaux.</span>
+      <input type="text" id="f_nom" placeholder="Nom de l'établissement">
+      <div class="field-error" id="err_nom">Ce champ est obligatoire.</div>
+    </div>
+
+    <div class="field">
+      <label>NIF (Numéro d'Identification Fiscale) <span class="required">*</span></label>
+      <span class="field-desc">Numéro d'identification fiscale délivré par la Direction Générale des Impôts (DGI).</span>
+      <input type="text" id="f_nif" placeholder="Numéro d'identification fiscale">
+      <div class="field-error" id="err_nif">Ce champ est obligatoire.</div>
+    </div>
+
+    <div class="field">
+      <label>Adresse complète de l'établissement <span class="required">*</span></label>
+      <span class="field-desc">Adresse physique complète incluant la commune, la section communale et tout repère pertinent.</span>
+      <textarea id="f_adresse" placeholder="Adresse complète de l'établissement"></textarea>
+      <div class="field-error" id="err_adresse">Ce champ est obligatoire.</div>
+    </div>
+
+    <div class="field">
+      <label>Nom du responsable <span class="required">*</span></label>
+      <span class="field-desc">Nom complet du directeur ou du responsable légal de l'établissement.</span>
+      <input type="text" id="f_responsable" placeholder="Prénom et nom du responsable">
+      <div class="field-error" id="err_responsable">Ce champ est obligatoire.</div>
+    </div>
+
+    <div class="field">
+      <label>Adresse e-mail de l'établissement</label>
+      <span class="field-desc">Adresse à laquelle la copie numérique du certificat pourra être envoyée.</span>
+      <input type="email" id="f_email" placeholder="exemple@etablissement.ht">
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="section-header">Section 2 — Inspection et évaluation</div>
+  <div class="card">
+    <div class="field">
+      <label>Date d'évaluation / inspection <span class="required">*</span></label>
+      <span class="field-desc">Date à laquelle l'inspection sanitaire de l'établissement a été effectuée.</span>
+      <div class="date-row">
+        <div class="date-col">
+          <label>Jour</label>
+          <select id="f_jour">
+            <option value="">—</option>
+            <script>for(let i=1;i<=31;i++) document.write(`<option value="${i}">${i}</option>`)</script>
+          </select>
+        </div>
+        <div class="date-col">
+          <label>Mois</label>
+          <select id="f_mois">
+            <option value="">—</option>
+            <option value="janvier">Janvier</option>
+            <option value="février">Février</option>
+            <option value="mars">Mars</option>
+            <option value="avril">Avril</option>
+            <option value="mai">Mai</option>
+            <option value="juin">Juin</option>
+            <option value="juillet">Juillet</option>
+            <option value="août">Août</option>
+            <option value="septembre">Septembre</option>
+            <option value="octobre">Octobre</option>
+            <option value="novembre">Novembre</option>
+            <option value="décembre">Décembre</option>
+          </select>
+        </div>
+        <div class="date-col">
+          <label>Année</label>
+          <select id="f_annee">
+            <option value="">—</option>
+            <script>for(let i=new Date().getFullYear();i>=2020;i--) document.write(`<option value="${i}">${i}</option>`)</script>
+          </select>
+        </div>
       </div>
+      <div class="field-error" id="err_date">La date d'inspection est obligatoire.</div>
     </div>
-    <div id="preview_rapport"></div>
-    <div class="field-error" id="err_rapport">Le rapport d'inspection est obligatoire.</div>
+
+    <div class="field">
+      <label>Rapport d'inspection <span class="required">*</span></label>
+      <span class="field-desc">Rapport officiel établi suite à l'inspection de l'établissement, signé par l'inspecteur responsable.</span>
+      <div class="file-zone" id="zone_rapport" onclick="document.getElementById('f_rapport').click()">
+        <span class="file-zone-icon">📎</span>
+        <div><div class="file-zone-text">Ajouter un fichier</div><div class="file-zone-sub">PDF ou Word</div></div>
+        <input type="file" id="f_rapport" accept=".pdf,.doc,.docx" onchange="handleFile(this)">
+      </div>
+      <div id="preview_rapport"></div>
+      <div class="field-error" id="err_rapport">Le rapport d'inspection est obligatoire.</div>
+    </div>
   </div>
 
+  <!-- SECTION 3 -->
+  <div class="section-header">Section 3 — Confirmations</div>
   <div class="card">
-    <div class="question-title">Frais d'inspection réglés (15 000 HTG) ? <span class="required-mark">*</span></div>
-    <div class="question-hint">Une seule réponse possible.</div>
-    <div class="radio-group">
-      <label class="radio-option"><input type="radio" name="r_paiement" value="Oui — paiement confirmé"><span class="radio-option-label">Oui — paiement confirmé</span></label>
-      <label class="radio-option"><input type="radio" name="r_paiement" value="Non — paiement en attente"><span class="radio-option-label">Non — paiement en attente</span></label>
+    <div class="field">
+      <label>Les frais de traitement ont-ils été acquittés ? <span class="required">*</span></label>
+      <span class="field-desc">Confirmez que les frais administratifs liés au traitement de la demande de certificat ont été payés auprès du service compétent.</span>
+      <div class="radio-group">
+        <label class="radio-option"><input type="radio" name="r_paiement" value="Oui"><span class="radio-option-label">Oui</span></label>
+        <label class="radio-option"><input type="radio" name="r_paiement" value="Non"><span class="radio-option-label">Non</span></label>
+      </div>
+      <div class="field-error" id="err_paiement">Ce champ est obligatoire.</div>
     </div>
-    <div class="field-error" id="err_paiement">Ce champ est obligatoire.</div>
-  </div>
 
-  <div class="card">
-    <div class="question-title">Je confirmé que l'établissement a fait l'objet d'une inspection complète et satisfait a l'ensemble des exigences d'hygiène, de salubrité et de sécurité sanitaire prescrites par le MSPP. <span class="required-mark">*</span></div>
-    <div class="question-hint">Une seule réponse possible.</div>
-    <div class="radio-group">
-      <label class="radio-option"><input type="radio" name="r_confirmation" value="Oui"><span class="radio-option-label">Oui</span></label>
-      <label class="radio-option"><input type="radio" name="r_confirmation" value="Non"><span class="radio-option-label">Non</span></label>
+    <div class="field">
+      <label>Les informations fournies sont-elles exactes et complètes ? <span class="required">*</span></label>
+      <span class="field-desc">En sélectionnant « Oui », vous attestez que toutes les informations fournies dans ce formulaire sont exactes, complètes et conformes à la réalité. Toute fausse déclaration engage la responsabilité du déclarant.</span>
+      <div class="radio-group">
+        <label class="radio-option"><input type="radio" name="r_confirmation" value="Oui"><span class="radio-option-label">Oui — je confirme l'exactitude des informations</span></label>
+        <label class="radio-option"><input type="radio" name="r_confirmation" value="Non"><span class="radio-option-label">Non</span></label>
+      </div>
+      <div class="field-error" id="err_confirmation">Ce champ est obligatoire.</div>
     </div>
-    <div class="field-error" id="err_confirmation">Ce champ est obligatoire.</div>
   </div>
 
-  <button class="submit" id="btn-submit" onclick="submitForm()">Soumettre</button>
+  <button class="btn btn-primary btn-full" id="btnSubmit" onclick="submitForm()" style="margin-top:1rem">
+    Soumettre la demande
+  </button>
 
-  <div class="queue-card">
-    <h3>File d'attente de synchronisation</h3>
-    <div id="queue-list"><em style="color:#999">Chargement...</em></div>
+</div>
+
+<!-- ══ TAB: JOURNAL ══ -->
+<div id="tab-journal" class="content pb-sync" style="display:none">
+  <div class="stats-row" id="statsRow"></div>
+  <div class="log-list" id="logList"></div>
+</div>
+
+<!-- SYNC BAR -->
+<div class="sync-bar">
+  <div class="sync-info">
+    <span class="sync-dot" id="syncBarDot"></span>
+    <span id="syncBarLabel">Vérification...</span>
   </div>
-
-</main>
+  <button class="btn btn-sm btn-primary" onclick="doSync()">Synchroniser</button>
+</div>
 
 <div id="toast"></div>
 
 <script>
-const DOPOST_URL = 'https://script.google.com/macros/s/AKfycby9flmhuiJDu_tx4pl1uckBK2FR2QQZCrzD0Pqms2gC-Z8bOii8iIfJMip0NBiCvYhJ0w/exec';
+const DOPOST_URL = 'https://script.google.com/macros/s/AKfycby9flmhuiJDu_tx4pl1uckBK2FR2QQZCrzD0Pqms2gC-Z8bOii8iIfJMip0NBiCvYhJ0w/exec'
+let rapportFile = null
+let syncing = false
 
-let isOnline = navigator.onLine;
-let rapportFile = null;
+window.addEventListener('DOMContentLoaded', async () => {
+  const userData = sessionStorage.getItem('user')
+  if (!userData) { window.location.href = 'login.html'; return }
+  const user = JSON.parse(userData)
+  document.getElementById('topbarUser').textContent = user.nom_complet
+  await updateSyncStatus()
+  setInterval(updateSyncStatus, 30000)
+  window.addEventListener('online', () => { updateSyncStatus(); doSync() })
+  window.addEventListener('offline', updateSyncStatus)
+})
 
-function updateOnlineStatus() {
-  isOnline = navigator.onLine;
-  const bar = document.getElementById('status-bar');
-  bar.textContent = isOnline ? 'En ligne' : 'Hors ligne';
-  bar.className = isOnline ? 'online' : 'offline';
-  if (isOnline) syncQueue();
+function switchTab(name, el) {
+  document.getElementById('tab-formulaire').style.display = name === 'formulaire' ? 'block' : 'none'
+  document.getElementById('tab-journal').style.display = name === 'journal' ? 'block' : 'none'
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
+  el.classList.add('active')
+  if (name === 'journal') loadJournal()
 }
-window.addEventListener('online',  updateOnlineStatus);
-window.addEventListener('offline', updateOnlineStatus);
-updateOnlineStatus();
+
+async function doLogout() {
+  sessionStorage.removeItem('user')
+  await window.dsne.logout()
+  window.location.href = 'login.html'
+}
 
 function handleFile(input) {
-  const f = input.files[0]; if (!f) return;
-  rapportFile = f;
-  const zone = document.getElementById('zone_rapport');
-  zone.classList.add('file-attached');
-  zone.querySelector('.file-zone-text').textContent = f.name;
-  zone.querySelector('.file-zone-sub').textContent = (f.size/1024).toFixed(0) + ' Ko';
+  const f = input.files[0]; if (!f) return
+  rapportFile = f
+  const zone = document.getElementById('zone_rapport')
+  zone.classList.add('file-attached')
+  zone.querySelector('.file-zone-text').textContent = f.name
+  zone.querySelector('.file-zone-sub').textContent = (f.size/1024).toFixed(0) + ' Ko'
   document.getElementById('preview_rapport').innerHTML =
-    `<div class="file-item"><span>${f.name}</span><button onclick="removeFile()">Retirer</button></div>`;
-  document.getElementById('err_rapport').style.display = 'none';
+    `<div class="file-item"><span>${f.name}</span><button onclick="removeFile()">Retirer</button></div>`
+  document.getElementById('err_rapport').style.display = 'none'
 }
 
 function removeFile() {
-  rapportFile = null;
-  const zone = document.getElementById('zone_rapport');
-  zone.classList.remove('file-attached');
-  zone.querySelector('.file-zone-text').textContent = 'Ajouter un fichier';
-  zone.querySelector('.file-zone-sub').textContent = 'PDF ou Word';
-  document.getElementById('preview_rapport').innerHTML = '';
-  document.getElementById('f_rapport').value = '';
+  rapportFile = null
+  const zone = document.getElementById('zone_rapport')
+  zone.classList.remove('file-attached')
+  zone.querySelector('.file-zone-text').textContent = 'Ajouter un fichier'
+  zone.querySelector('.file-zone-sub').textContent = 'PDF ou Word'
+  document.getElementById('preview_rapport').innerHTML = ''
+  document.getElementById('f_rapport').value = ''
 }
 
 async function fileToBase64(f) {
-  return new Promise((res,rej) => {
-    const r = new FileReader();
-    r.onload  = () => res({ name: f.name, type: f.type, data: r.result.split(',')[1] });
-    r.onerror = rej;
-    r.readAsDataURL(f);
-  });
+  return new Promise((res, rej) => {
+    const r = new FileReader()
+    r.onload = () => res({ name: f.name, type: f.type, data: r.result.split(',')[1] })
+    r.onerror = rej
+    r.readAsDataURL(f)
+  })
 }
 
-function getVal(id) { return document.getElementById(id).value.trim(); }
-function getRadio(name) { const el = document.querySelector(`input[name=${name}]:checked`); return el ? el.value : ''; }
-function showErr(id) { document.getElementById(id).style.display='block'; }
-function hideErr(id) { document.getElementById(id).style.display='none'; }
+function getVal(id) { return document.getElementById(id).value.trim() }
+function getRadio(name) { const el = document.querySelector(`input[name=${name}]:checked`); return el ? el.value : '' }
+function showErr(id) { document.getElementById(id).style.display = 'block' }
+function hideErr(id) { document.getElementById(id).style.display = 'none' }
 
 function getDate() {
-  const j=getVal('f_jour'), m=getVal('f_mois'), a=getVal('f_annee');
-  if (!j||!m||!a) return '';
-  return `${j} ${m} ${a}`;
+  const j = getVal('f_jour'), m = getVal('f_mois'), a = getVal('f_annee')
+  if (!j || !m || !a) return ''
+  return `${j} ${m} ${a}`
 }
 
 function validate() {
-  let ok=true;
-  if (!getVal('f_nom'))           { showErr('err_nom'); ok=false; }          else hideErr('err_nom');
-  if (!getVal('f_nif'))           { showErr('err_nif'); ok=false; }          else hideErr('err_nif');
-  if (!getVal('f_adresse'))       { showErr('err_adresse'); ok=false; }      else hideErr('err_adresse');
-  if (!getVal('f_responsable'))   { showErr('err_responsable'); ok=false; }  else hideErr('err_responsable');
-  if (!getDate())                 { showErr('err_date'); ok=false; }         else hideErr('err_date');
-  if (!rapportFile)               { showErr('err_rapport'); ok=false; }      else hideErr('err_rapport');
-  if (!getRadio('r_paiement'))    { showErr('err_paiement'); ok=false; }     else hideErr('err_paiement');
-  if (!getRadio('r_confirmation')){ showErr('err_confirmation'); ok=false; } else hideErr('err_confirmation');
-  return ok;
+  let ok = true
+  if (!getVal('f_nom'))            { showErr('err_nom'); ok=false }          else hideErr('err_nom')
+  if (!getVal('f_nif'))            { showErr('err_nif'); ok=false }          else hideErr('err_nif')
+  if (!getVal('f_adresse'))        { showErr('err_adresse'); ok=false }      else hideErr('err_adresse')
+  if (!getVal('f_responsable'))    { showErr('err_responsable'); ok=false }  else hideErr('err_responsable')
+  if (!getDate())                  { showErr('err_date'); ok=false }         else hideErr('err_date')
+  if (!rapportFile)                { showErr('err_rapport'); ok=false }      else hideErr('err_rapport')
+  if (!getRadio('r_paiement'))     { showErr('err_paiement'); ok=false }     else hideErr('err_paiement')
+  if (!getRadio('r_confirmation')) { showErr('err_confirmation'); ok=false } else hideErr('err_confirmation')
+  return ok
 }
 
 async function submitForm() {
-  if (!validate()) { toast('Veuillez remplir tous les champs obligatoires et joindre le rapport.', 'error'); return; }
-  const btn = document.getElementById('btn-submit');
-  btn.disabled=true; btn.textContent='Enregistrement...';
+  if (!validate()) { toast('Veuillez remplir tous les champs obligatoires et joindre le rapport.', 'error'); return }
+  const btn = document.getElementById('btnSubmit')
+  btn.disabled = true; btn.textContent = 'Enregistrement...'
 
-  const fichier = await fileToBase64(rapportFile);
-  fichier.label = "Rapport d'inspection";
+  const fichier = await fileToBase64(rapportFile)
+  fichier.label = "Rapport d'inspection"
 
+  const user = JSON.parse(sessionStorage.getItem('user') || '{}')
   const payload = {
     timestamp: new Date().toISOString(),
-    'entry.421513926':  getVal('f_nom'),
-    'entry.2026287626': getVal('f_nif'),
-    'entry.1349778689': getVal('f_adresse'),
-    'entry.533218416':  getVal('f_responsable'),
-    'entry.1530802035': getVal('f_email'),
-    'entry.692914453':  getDate(),
-    'entry.2129633823': getRadio('r_paiement'),
-    'entry.1020990664': getRadio('r_confirmation'),
+    soumis_par: user.nom_complet || '',
+    nom_etablissement: getVal('f_nom'),
+    nif: getVal('f_nif'),
+    adresse: getVal('f_adresse'),
+    responsable: getVal('f_responsable'),
+    email: getVal('f_email'),
+    date_inspection: getDate(),
+    paiement: getRadio('r_paiement'),
+    confirmation: getRadio('r_confirmation'),
     fichiers: [fichier]
-  };
+  }
 
-  await window.dsne.queueSave(payload);
-  if (isOnline) { await syncQueue(); }
-  else { toast('Enregistré localement. Synchronisation automatique a la reconnexion.', 'info'); }
-  resetForm();
-  btn.disabled=false; btn.textContent='Soumettre';
-  renderQueue();
+  await window.dsne.queueSave(payload)
+  if (navigator.onLine) await syncQueue()
+  else toast('Enregistré localement. Synchronisation automatique à la reconnexion.', 'info')
+  resetForm()
+  btn.disabled = false; btn.textContent = 'Soumettre la demande'
+  toast('Demande enregistrée avec succès.', 'success')
+  await updateSyncStatus()
 }
 
-let syncing=false;
 async function syncQueue() {
-  if (syncing) return; syncing=true;
-  const pending = await window.dsne.queuePending();
-  const badge = document.getElementById('sync-badge');
-  if (!pending.length) { badge.style.display='none'; syncing=false; return; }
-  badge.style.display='inline'; badge.textContent=`${pending.length} en attente`;
-  let errors=0;
+  if (syncing) return; syncing = true
+  const pending = await window.dsne.queuePending()
+  if (!pending.length) { syncing = false; return }
+  let errors = 0
   for (const row of pending) {
     try {
-      const res = await fetch(DOPOST_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: row.data });
-      if (res.ok) await window.dsne.queueMarkSynced(row.id); else errors++;
-    } catch(e) { errors++; }
+      const res = await fetch(DOPOST_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: row.data })
+      if (res.ok) await window.dsne.queueMarkSynced(row.id); else errors++
+    } catch(e) { errors++ }
   }
-  const remaining = await window.dsne.queueCount();
-  if (!remaining) { badge.style.display='none'; toast('Synchronisation réussie.','success'); }
-  else { badge.textContent=`${remaining} en attente`; if(errors) toast(`${errors} non synchronisée(s).`,'error'); }
-  syncing=false; renderQueue();
+  syncing = false
+  await updateSyncStatus()
+  if (!errors) toast('Synchronisation réussie.', 'success')
+  else toast(`${errors} entrée(s) non synchronisée(s).`, 'error')
 }
 
-async function renderQueue() {
-  const pending = await window.dsne.queuePending();
-  const el = document.getElementById('queue-list');
-  if (!pending.length) { el.innerHTML='<em style="color:#27ae60">Tout est synchronisé.</em>'; return; }
-  el.innerHTML = pending.map(r => {
-    const d = JSON.parse(r.data);
-    return `<div class="q-item"><span>${d['entry.421513926']||'—'} (${(d.timestamp||'').slice(0,10)})</span><span class="q-pending">En attente</span></div>`;
-  }).join('');
+async function doSync() {
+  if (!navigator.onLine) { toast('Aucune connexion disponible.', 'error'); return }
+  await syncQueue()
+}
+
+async function updateSyncStatus() {
+  const n = await window.dsne.queueCount()
+  const online = navigator.onLine
+  const dot = document.getElementById('syncDot')
+  const label = document.getElementById('syncLabel')
+  const barDot = document.getElementById('syncBarDot')
+  const barLabel = document.getElementById('syncBarLabel')
+  if (n > 0) {
+    dot.className = 'sync-dot pending'; barDot.className = 'sync-dot pending'
+    label.textContent = n + ' en attente'; barLabel.textContent = n + ' enregistrement(s) non synchronisé(s)'
+  } else {
+    dot.className = 'sync-dot'; barDot.className = 'sync-dot'
+    label.textContent = online ? 'Synchronisé' : 'Hors ligne'
+    barLabel.textContent = online ? 'Toutes les données sont synchronisées' : 'Hors ligne — données sauvegardées localement'
+  }
+}
+
+async function loadJournal() {
+  const all = await window.dsne.queueAll()
+  const total = all.length
+  const enAttente = all.filter(r => r.status === 'pending').length
+  const synced = total - enAttente
+
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-card"><div class="stat-n">${total}</div><div class="stat-l">Total des demandes</div></div>
+    <div class="stat-card"><div class="stat-n synced">${synced}</div><div class="stat-l">Synchronisées</div></div>
+    <div class="stat-card"><div class="stat-n pending">${enAttente}</div><div class="stat-l">En attente</div></div>
+  `
+
+  const list = document.getElementById('logList')
+  if (!all.length) { list.innerHTML = '<div class="empty">Aucune demande enregistrée.</div>'; return }
+
+  list.innerHTML = all.map(row => {
+    let d = {}; try { d = JSON.parse(row.data) } catch(e) {}
+    const date = new Date(d.timestamp || row.created_at)
+    const dateStr = date.toLocaleDateString('fr-HT', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    const heureStr = date.toLocaleTimeString('fr-HT', { hour: '2-digit', minute: '2-digit' })
+    const isSynced = row.status === 'synced'
+    return `
+      <div class="log-card ${isSynced ? 'synced' : ''}">
+        <div class="log-top">
+          <div>
+            <div class="log-name">${d.nom_etablissement || '—'}</div>
+            <div class="log-id">${d.responsable || ''} · NIF : ${d.nif || '—'}</div>
+          </div>
+          <div class="log-time">${dateStr} · ${heureStr}</div>
+        </div>
+        <div class="log-meta">
+          <span class="badge ${isSynced ? 'badge-synced' : 'badge-pending'}">${isSynced ? 'Synchronisée' : 'En attente'}</span>
+          ${d.date_inspection ? `<span class="badge" style="background:var(--g100);color:var(--g600)">Inspection : ${d.date_inspection}</span>` : ''}
+          ${d.soumis_par ? `<span class="badge" style="background:var(--g100);color:var(--g600)">${d.soumis_par}</span>` : ''}
+        </div>
+      </div>
+    `
+  }).join('')
 }
 
 function resetForm() {
-  ['f_nom','f_nif','f_adresse','f_responsable','f_email'].forEach(id=>document.getElementById(id).value='');
-  ['f_jour','f_mois','f_annee'].forEach(id=>document.getElementById(id).value='');
-  document.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);
-  removeFile();
+  ['f_nom','f_nif','f_adresse','f_responsable','f_email'].forEach(id => document.getElementById(id).value = '')
+  ;['f_jour','f_mois','f_annee'].forEach(id => document.getElementById(id).value = '')
+  document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false)
+  removeFile()
 }
 
 function toast(msg, type='info') {
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.className=`toast show ${type}`;
-  setTimeout(()=>t.className='toast',4500);
+  const t = document.getElementById('toast')
+  t.textContent = msg; t.className = `show ${type}`
+  setTimeout(() => t.className = '', 4000)
 }
-
-renderQueue();
-setInterval(async()=>{ if(isOnline) await syncQueue(); },30000);
 </script>
 </body>
 </html>
