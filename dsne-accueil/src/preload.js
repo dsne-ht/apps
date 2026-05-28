@@ -12,7 +12,11 @@ contextBridge.exposeInMainWorld('api', {
   enregistrerSortie: (data) => ipcRenderer.invoke('enregistrer-sortie', data),
   getVisitesActives: () => ipcRenderer.invoke('get-visites-actives'),
   getVisitesJour: () => ipcRenderer.invoke('get-visites-jour'),
+  getAllVisites: () => ipcRenderer.invoke('get-all-visites'),
   getStatsJour: () => ipcRenderer.invoke('get-stats-jour'),
+  enregistrerDocument: (data) => ipcRenderer.invoke('enregistrer-document', data),
+  getDocumentsJour: () => ipcRenderer.invoke('get-documents-jour'),
+  getAllDocuments: () => ipcRenderer.invoke('get-all-documents'),
   syncSheets: () => ipcRenderer.invoke('sync-sheets'),
   getSyncStatus: () => ipcRenderer.invoke('get-sync-status'),
 })
