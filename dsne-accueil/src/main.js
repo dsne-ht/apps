@@ -107,14 +107,14 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1100, height: 780, minWidth: 900, minHeight: 650,
     webPreferences: {
-      preload: path.join(__dirname, 'src', 'preload.js'),
+      preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false
     },
     title: 'DSNE — Enregistrement Visiteurs',
     show: false
   })
-  mainWindow.loadFile(path.join(__dirname, 'src', 'login.html'))
+  mainWindow.loadFile(path.join(__dirname, 'login.html'))
   mainWindow.once('ready-to-show', () => mainWindow.show())
 }
 
@@ -127,8 +127,8 @@ ipcMain.handle('login', (_, { code }) => {
   if (user) return { ok: true, user: { id: user.id, code: user.code, nom_complet: user.nom_complet, role: user.role } }
   return { ok: false, message: 'Code incorrect. Veuillez réessayer.' }
 })
-ipcMain.handle('logout', () => { mainWindow.loadFile(path.join(__dirname, 'src', 'login.html')); return { ok: true } })
-ipcMain.handle('navigate', (_, page) => { mainWindow.loadFile(path.join(__dirname, 'src', page)) })
+ipcMain.handle('logout', () => { mainWindow.loadFile(path.join(__dirname, 'login.html')); return { ok: true } })
+ipcMain.handle('navigate', (_, page) => { mainWindow.loadFile(path.join(__dirname, page)) })
 
 // ── UIDs
 ipcMain.handle('get-uids', () => db.prepare('SELECT * FROM uid_cartes WHERE actif = 1 ORDER BY service, uid').all())
