@@ -27,6 +27,7 @@ input[type="date"] { font-family: var(--font); }
 </style>
 </head>
 <body>
+<style>:root{--app-color:#0F6E56;}</style>
 
 <!-- TOPBAR -->
 <div class="topbar">
@@ -47,9 +48,149 @@ input[type="date"] { font-family: var(--font); }
 
 <!-- TABS -->
 <div class="tabs">
+  <div class="tab" onclick="switchTab('dsne', this)">DSNE</div>
   <div class="tab active" onclick="switchTab('formulaire', this)">Formulaire de demande</div>
   <div class="tab" onclick="switchTab('journal', this)">Journal des demandes</div>
 </div>
+
+<!-- ══ ONGLET DSNE ══ -->
+<div id="tab-dsne" class="content pb-sync" style="display:none">
+
+  <div style="background:var(--app-color,#888);border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-bottom:4px">Ministère de la Santé Publique et de la Population</div>
+      <div style="font-size:18px;font-weight:700;color:#fff;letter-spacing:0.02em">Direction Sanitaire du Nord-Est</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:2px">Fort-Liberté, Nord-Est — Haïti</div>
+    </div>
+    <div style="display:flex;gap:16px">
+      <div style="text-align:right"><div style="font-size:22px;font-weight:700;color:#fff">40</div><div style="font-size:10px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.06em">Institutions</div></div>
+      <div style="text-align:right"><div style="font-size:22px;font-weight:700;color:#fff">3</div><div style="font-size:10px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.06em">UAS</div></div>
+    </div>
+  </div>
+
+  <div class="dsne-section-h">Direction</div>
+  <div class="dsne-card-block">
+    <div class="dsne-person-grid">
+      <div class="dsne-person"><div class="dsne-avatar">JD</div><div><div class="dsne-pname">Dr. Jean Clervain Dorsainvil</div><div class="dsne-prole">Directeur Départemental</div></div></div>
+      <div class="dsne-person"><div class="dsne-avatar">DP</div><div><div class="dsne-pname">Décius Pierre</div><div class="dsne-prole">ADM Direction</div></div></div>
+      <div class="dsne-person"><div class="dsne-avatar">EP</div><div><div class="dsne-pname">Dr. Eddy Pierre</div><div class="dsne-prole">Chargé de Communication et de Planification</div></div></div>
+      <div class="dsne-person"><div class="dsne-avatar">JF</div><div><div class="dsne-pname">Judeline Fenelus</div><div class="dsne-prole">Responsable de la Gestion du Personnel</div></div></div>
+    </div>
+  </div>
+
+  <div class="dsne-section-h">Coordonnateurs UAS</div>
+  <div class="dsne-card-block">
+    <div class="dsne-uas-grid">
+      <div class="dsne-uas-card"><div class="dsne-uas-lbl">UAS Fort-Liberté</div><div class="dsne-uas-name">Dr Yvesson John Milien</div></div>
+      <div class="dsne-uas-card"><div class="dsne-uas-lbl">UAS Ouanaminthe</div><div class="dsne-uas-name">Dr Dieulin Toussaint</div></div>
+      <div class="dsne-uas-card"><div class="dsne-uas-lbl">UAS Trou-du-Nord</div><div class="dsne-uas-name">Dr Jims Saint-Hilaire</div></div>
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:8px;margin:1.25rem 0 0.75rem">
+    <input type="text" id="dsne-search" placeholder="Rechercher une institution, commune, médecin…" oninput="filtrerInst()" style="flex:1;padding:7px 10px;border:1px solid var(--g200);border-radius:7px;font-size:13px">
+    <select id="dsne-uas-f" onchange="filtrerInst()" style="padding:7px 10px;border:1px solid var(--g200);border-radius:7px;font-size:13px;background:#fff;color:var(--g800)">
+      <option value="">Toutes les UAS</option>
+      <option>Fort-Liberté</option><option>Ouanaminthe</option><option>Trou-du-Nord</option><option>Hors UAS</option>
+    </select>
+    <select id="dsne-type-f" onchange="filtrerInst()" style="padding:7px 10px;border:1px solid var(--g200);border-radius:7px;font-size:13px;background:#fff;color:var(--g800)">
+      <option value="">Tous types</option>
+      <option>Hôpital Départemental</option><option>Hôpital Communautaire de Référence</option>
+      <option>CMS / Hôpital</option><option>CMS</option><option>Centre Spécialisé</option><option>CCS</option><option>CS</option>
+    </select>
+  </div>
+
+  <div id="dsne-inst-list"></div>
+</div>
+
+<style>
+.dsne-section-h{background:var(--app-color,#888);color:#fff;padding:8px 14px;border-radius:8px 8px 0 0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:1rem}
+.dsne-card-block{background:var(--white,#fff);border:1px solid var(--g100,#ebebeb);border-top:none;border-radius:0 0 8px 8px;padding:1rem}
+.dsne-person-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dsne-person{display:flex;align-items:center;gap:10px;padding:8px;border-radius:6px;background:var(--g50,#f8f7f4)}
+.dsne-avatar{width:34px;height:34px;border-radius:50%;background:var(--app-color,#888);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.dsne-pname{font-size:13px;font-weight:600;color:var(--g800,#2c2c2a)}
+.dsne-prole{font-size:11px;color:var(--g400,#888780);margin-top:1px}
+.dsne-uas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.dsne-uas-card{background:var(--g50,#f8f7f4);border-radius:8px;padding:12px;text-align:center}
+.dsne-uas-lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--g400,#888780);font-weight:600;margin-bottom:5px}
+.dsne-uas-name{font-size:13px;font-weight:600;color:var(--g800,#2c2c2a)}
+.dsne-inst-card{background:var(--white,#fff);border:1px solid var(--g100,#ebebeb);border-left:3px solid var(--app-color,#888);border-radius:8px;padding:0.875rem 1rem;margin-bottom:6px}
+.dsne-inst-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px}
+.dsne-iname{font-size:13px;font-weight:600;color:var(--g800,#2c2c2a)}
+.dsne-idm{font-size:11px;color:var(--g400,#888780);margin-top:1px}
+.dsne-icommune{font-size:11px;color:var(--g400,#888780);white-space:nowrap}
+.dsne-imeta{display:flex;gap:5px;flex-wrap:wrap}
+</style>
+
+<script>
+var DSNE_INST=[
+  {nom:"Hôpital Départemental de Fort-Liberté (HFL)",type:"Hôpital Départemental",uas:"Fort-Liberté",commune:"Fort-Liberté",dm:"Dr Henry Claude Etienne"},
+  {nom:"CDAI Fort-Liberté",type:"Centre Spécialisé",uas:"Fort-Liberté",commune:"Fort-Liberté",dm:"Dr Brunel Augustin"},
+  {nom:"CCS Dérac",type:"CCS",uas:"Fort-Liberté",commune:"Fort-Liberté",dm:"Dr Rivelino Joseph"},
+  {nom:"CCS Meillac",type:"CCS",uas:"Fort-Liberté",commune:"Meillac",dm:"Dr Francisque Severe"},
+  {nom:"CCS Mérande",type:"CCS",uas:"Fort-Liberté",commune:"Ferrier",dm:"Dr Magalie Surling Dasny"},
+  {nom:"CS Ferrier",type:"CS",uas:"Fort-Liberté",commune:"Ferrier",dm:"Dr Luckens Pierre"},
+  {nom:"CS Acul Samedi",type:"CS",uas:"Fort-Liberté",commune:"Fort-Liberté",dm:"Dr Anegard Joseph"},
+  {nom:"CS Perches",type:"CS",uas:"Fort-Liberté",commune:"Perches",dm:"Dr Vincent Mecejour"},
+  {nom:"CS Vallières",type:"CS",uas:"Fort-Liberté",commune:"Vallières",dm:"Dr Frantz-Elucien Joseph"},
+  {nom:"CMS Ouanaminthe (CMSO)",type:"CMS / Hôpital",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Jhon Cador Joseph"},
+  {nom:"CS Capotille",type:"CS",uas:"Ouanaminthe",commune:"Capotille",dm:"Dr Adrien Felix"},
+  {nom:"CMS Mont-Organisé (CMSMO)",type:"CMS",uas:"Ouanaminthe",commune:"Mont-Organisé",dm:"Dr Margarette Titus"},
+  {nom:"CCS Lamine",type:"CCS",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Enese Desanges"},
+  {nom:"CS Acul des Pins",type:"CS",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Ricardo Joseph"},
+  {nom:"CS Gens de Nantes",type:"CS",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Cloridor Joachim"},
+  {nom:"CS Savane au Lait",type:"CS",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Mikenly Philogene"},
+  {nom:"CCS Savane Longue",type:"CCS",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Andy Paul"},
+  {nom:"CS Dilaire",type:"CS",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Roselande Jules"},
+  {nom:"CS Rose Bonite",type:"CS",uas:"Ouanaminthe",commune:"Capotille",dm:"Dr Nachemy Mea"},
+  {nom:"CS Bois Poux",type:"CS",uas:"Ouanaminthe",commune:"Capotille",dm:"À compléter"},
+  {nom:"CS Carice",type:"CS",uas:"Ouanaminthe",commune:"Carice",dm:"Dr Lyonel Maxime"},
+  {nom:"CS Corosse (Capotille)",type:"CS",uas:"Ouanaminthe",commune:"Capotille",dm:"À compléter"},
+  {nom:"HCR Trou-du-Nord",type:"Hôpital Communautaire de Référence",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"Dr Jude Achille Dorsainvil"},
+  {nom:"CS Terrier Rouge",type:"CS",uas:"Trou-du-Nord",commune:"Terrier Rouge",dm:"Dr Abnel Benjamin"},
+  {nom:"CS Pilette",type:"CS",uas:"Trou-du-Nord",commune:"Terrier Rouge",dm:"Dr Gelande-Shamir Laroche"},
+  {nom:"CS Jacquezyl",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"Dr Fredo Dorvil"},
+  {nom:"CS NDL Grand Bassin",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"À compléter"},
+  {nom:"CS Leroux Cachiman",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"Dr Jacques-Antoine Jean-Louis"},
+  {nom:"CS Roche Plate",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"À compléter"},
+  {nom:"CCS Grosse Roche (TDN)",type:"CCS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"Dr Sam Edwige Valcimond"},
+  {nom:"CS Caracol",type:"CS",uas:"Trou-du-Nord",commune:"Caracol",dm:"Dr Samuel Jean-Baptiste"},
+  {nom:"CS Cahesse",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"Dr Romel Mentor"},
+  {nom:"CS Sainte-Suzanne",type:"CS",uas:"Trou-du-Nord",commune:"Sainte-Suzanne",dm:"Dr Suzanne Joseph"},
+  {nom:"CS Danda",type:"CS",uas:"Trou-du-Nord",commune:"Sainte-Suzanne",dm:"Dr Edwine Augustin"},
+  {nom:"CS Dupity",type:"CS",uas:"Trou-du-Nord",commune:"Sainte-Suzanne",dm:"Dr Julianie Dalusma"},
+  {nom:"CS Phaéton",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"Dr Jean Baptiste Desir"},
+  {nom:"CS Corosse (Trou-du-Nord)",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"À compléter"},
+  {nom:"CS Mombin-Crochu",type:"CS (niveau avancé)",uas:"Hors UAS",commune:"Mombin-Crochu",dm:"Dr Miles Cherenfant"},
+  {nom:"CS Bois de Laurence",type:"CS",uas:"Hors UAS",commune:"Mombin-Crochu",dm:"Dr Renaud Gerve"},
+  {nom:"CCS Grosse Roche (Hors UAS)",type:"CCS",uas:"Hors UAS",commune:"Mombin-Crochu",dm:"Dr Sam Edwige Valcimond"}
+];
+
+function filtrerInst(){
+  var q=(document.getElementById('dsne-search').value||'').toLowerCase();
+  var uas=document.getElementById('dsne-uas-f').value||'';
+  var type=document.getElementById('dsne-type-f').value||'';
+  var liste=DSNE_INST.filter(function(i){
+    var mq=!q||i.nom.toLowerCase().includes(q)||i.commune.toLowerCase().includes(q)||(i.dm&&i.dm.toLowerCase().includes(q));
+    var mu=!uas||i.uas===uas;
+    var mt=!type||i.type===type;
+    return mq&&mu&&mt;
+  });
+  var list=document.getElementById('dsne-inst-list');
+  if(!liste.length){list.innerHTML='<div class="empty">Aucune institution correspondante.</div>';return;}
+  var byUas={};
+  liste.forEach(function(i){if(!byUas[i.uas])byUas[i.uas]=[];byUas[i.uas].push(i);});
+  var html='';
+  Object.keys(byUas).forEach(function(uas){
+    var insts=byUas[uas];
+    html+='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--g400);margin:1rem 0 0.5rem;padding-bottom:4px;border-bottom:1px solid var(--g100)">UAS '+uas+' — '+insts.length+' institution(s)</div>';
+    html+=insts.map(function(i){return'<div class="dsne-inst-card"><div class="dsne-inst-top"><div><div class="dsne-iname">'+i.nom+'</div><div class="dsne-idm">DM : '+i.dm+'</div></div><div class="dsne-icommune">'+i.commune+'</div></div><div class="dsne-imeta"><span class="badge badge-svc">'+i.type+'</span><span class="badge" style="background:var(--g100);color:var(--g600)">'+i.uas+'</span></div></div>';}).join('');
+  });
+  list.innerHTML=html;
+}
+</script>
+
 
 <!-- ══ TAB: FORMULAIRE ══ -->
 <div id="tab-formulaire" class="content pb-sync">
@@ -272,8 +413,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 })
 
 function switchTab(name, el) {
+  document.getElementById('tab-dsne').style.display = name === 'dsne' ? 'block' : 'none'
   document.getElementById('tab-formulaire').style.display = name === 'formulaire' ? 'block' : 'none'
   document.getElementById('tab-journal').style.display = name === 'journal' ? 'block' : 'none'
+  if (name === 'dsne') filtrerInst()
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
   el.classList.add('active')
   if (name === 'journal') loadJournal()
