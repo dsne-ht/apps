@@ -198,3 +198,8 @@ body { font-family: var(--font); background: var(--g50); color: var(--g800); fon
 
 /* ── PADDING BOTTOM for sync bar */
 .pb-sync { padding-bottom: 52px; }
+
+/* Updated topbar brand */
+.topbar-dsne { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: 0.05em; }
+.topbar-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.3); }
+.topbar-name { font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.85); letter-spacing: 0.02em; }
