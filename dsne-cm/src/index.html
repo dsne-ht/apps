@@ -49,6 +49,7 @@ input[type="date"] { font-family: var(--font); }
 <!-- TABS -->
 <div class="tabs">
   <div class="tab" onclick="switchTab('dsne', this)">DSNE</div>
+  <div class="tab" onclick="switchTab('dsne', this)">DSNE</div>
   <div class="tab active" onclick="switchTab('formulaire', this)">Formulaire de demande</div>
   <div class="tab" onclick="switchTab('journal', this)">Journal des demandes</div>
 </div>
@@ -191,6 +192,227 @@ function filtrerInst(){
 }
 </script>
 
+
+<!-- DSNE TAB -->
+<div id="tab-dsne" class="content pb-sync" style="display:none">
+
+<style>
+.dsne-top{display:grid;grid-template-columns:1fr 200px;gap:10px;margin-bottom:1.25rem}
+.dsne-info{background:var(--white,#fff);border:1px solid var(--g100);border-radius:10px;padding:1rem;display:flex;flex-direction:column;justify-content:space-between}
+.dsne-eyebrow{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--g400);margin-bottom:5px}
+.dsne-title{font-size:15px;font-weight:600;color:var(--g800);margin-bottom:2px}
+.dsne-sub{font-size:11px;color:var(--g400)}
+.dsne-divider{height:1px;background:var(--g100);margin:10px 0}
+.dsne-chips{display:flex;gap:5px;flex-wrap:wrap}
+.dsne-chip{padding:4px 10px;border-radius:16px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--g100);background:var(--g50);color:var(--g600);transition:all .15s}
+.dsne-chip.act{background:var(--app-light,#FFF4E6);border-color:var(--app-color,#C47200);color:var(--app-color,#C47200)}
+.dsne-chip .cn{font-size:14px;font-weight:700;display:block;color:var(--app-color,#C47200)}
+.dsne-map-box{border:1px solid var(--g100);border-radius:10px;overflow:hidden;height:190px}
+#dsne-leaflet-map{height:100%;width:100%}
+.dsne-two{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.25rem}
+.dsne-blk-lbl{font-size:10px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--g400);margin-bottom:6px}
+.dsne-prow{display:flex;align-items:center;justify-content:space-between;padding:.625rem .875rem;background:var(--white,#fff);border:1px solid var(--g100);border-radius:8px}
+.dsne-pname{font-size:12px;font-weight:600;color:var(--g800)}
+.dsne-prole{font-size:10px;color:var(--g400);margin-top:2px}
+.dsne-ptag{font-size:10px;padding:2px 9px;border-radius:10px;background:var(--app-light,#FFF4E6);color:var(--app-color,#C47200);font-weight:500}
+.dsne-uas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.25rem}
+.dsne-uas-card{padding:.75rem;background:var(--white,#fff);border:1px solid var(--g100);border-radius:8px;cursor:pointer;transition:all .15s}
+.dsne-uas-card:hover,.dsne-uas-card.act{border-color:var(--app-color,#C47200);background:var(--app-light,#FFF4E6)}
+.dsne-uas-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:4px}
+.dsne-uas-name{font-size:12px;font-weight:600;color:var(--g800)}
+.dsne-uas-ct{font-size:10px;color:var(--g400);margin-top:2px}
+.dsne-frow{display:flex;gap:6px;margin-bottom:.75rem}
+.dsne-frow input,.dsne-frow select{padding:6px 9px;border:1px solid var(--g200);border-radius:7px;font-size:12px;background:var(--white,#fff);color:var(--g800)}
+.dsne-frow input{flex:1}
+.dsne-grp{margin-bottom:.875rem}
+.dsne-ghd{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--g400);padding-bottom:5px;border-bottom:1px solid var(--g100);margin-bottom:5px}
+.dsne-inst{display:flex;align-items:center;justify-content:space-between;padding:.5rem .75rem;background:var(--white,#fff);border:1px solid var(--g100);border-left:3px solid var(--app-color,#C47200);border-radius:8px;margin-bottom:4px;cursor:pointer;transition:background .15s}
+.dsne-inst:hover,.dsne-inst.hl{background:var(--app-light,#FFF4E6)}
+.dsne-iname{font-size:12px;font-weight:600;color:var(--g800)}
+.dsne-idm{font-size:10px;color:var(--g400);margin-top:1px}
+.dsne-ibadge{font-size:10px;padding:2px 8px;border-radius:8px;font-weight:500;white-space:nowrap;flex-shrink:0;margin-left:8px}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+
+<div class="dsne-top">
+  <div class="dsne-info">
+    <div>
+      <div class="dsne-eyebrow">Ministère de la Santé Publique et de la Population</div>
+      <div class="dsne-title">Direction Sanitaire du Nord-Est</div>
+      <div class="dsne-sub">Fort-Liberté, Nord-Est — Haïti</div>
+    </div>
+    <div>
+      <div class="dsne-divider"></div>
+      <div class="dsne-chips">
+        <div class="dsne-chip act" id="dsne-c-all" onclick="dsneFUAS('')"><span class="cn">40</span>Toutes</div>
+        <div class="dsne-chip" id="dsne-c-fl" onclick="dsneFUAS('Fort-Liberté')"><span class="cn">9</span>Fort-Liberté</div>
+        <div class="dsne-chip" id="dsne-c-ou" onclick="dsneFUAS('Ouanaminthe')"><span class="cn">13</span>Ouanaminthe</div>
+        <div class="dsne-chip" id="dsne-c-tdn" onclick="dsneFUAS('Trou-du-Nord')"><span class="cn">15</span>Trou-du-Nord</div>
+      </div>
+    </div>
+  </div>
+  <div class="dsne-map-box"><div id="dsne-leaflet-map"></div></div>
+</div>
+
+<div class="dsne-two">
+  <div>
+    <div class="dsne-blk-lbl">Direction</div>
+    <div class="dsne-prow">
+      <div><div class="dsne-pname">Dr. Jean Clervain Dorsainvil</div><div class="dsne-prole">Directeur Départemental</div></div>
+      <span class="dsne-ptag">Direction</span>
+    </div>
+  </div>
+  <div>
+    <div class="dsne-blk-lbl">Administration</div>
+    <div class="dsne-prow">
+      <div><div class="dsne-pname">Décius Pierre</div><div class="dsne-prole">Administrateur Départemental</div></div>
+      <span class="dsne-ptag">Administration</span>
+    </div>
+  </div>
+</div>
+
+<div class="dsne-blk-lbl" style="margin-bottom:6px">Coordonnateurs UAS</div>
+<div class="dsne-uas-grid">
+  <div class="dsne-uas-card" id="dsne-u-fl" onclick="dsneFUAS('Fort-Liberté')">
+    <div class="dsne-uas-lbl" style="color:#C47200">Fort-Liberté</div>
+    <div class="dsne-uas-name">Dr Yvesson John Milien</div>
+    <div class="dsne-uas-ct">9 institutions</div>
+  </div>
+  <div class="dsne-uas-card" id="dsne-u-ou" onclick="dsneFUAS('Ouanaminthe')">
+    <div class="dsne-uas-lbl" style="color:#0F6E56">Ouanaminthe</div>
+    <div class="dsne-uas-name">Dr Dieulin Toussaint</div>
+    <div class="dsne-uas-ct">13 institutions</div>
+  </div>
+  <div class="dsne-uas-card" id="dsne-u-tdn" onclick="dsneFUAS('Trou-du-Nord')">
+    <div class="dsne-uas-lbl" style="color:#185FA5">Trou-du-Nord</div>
+    <div class="dsne-uas-name">Dr Jims Saint-Hilaire</div>
+    <div class="dsne-uas-ct">15 institutions</div>
+  </div>
+</div>
+
+<div class="dsne-blk-lbl" style="margin-bottom:6px">Institutions sanitaires</div>
+<div class="dsne-frow">
+  <input id="dsne-srch" placeholder="Rechercher institution, commune, médecin…" oninput="dsneRender()">
+  <select id="dsne-ftype" onchange="dsneRender()">
+    <option value="">Tous types</option>
+    <option>Hôpital Départemental</option>
+    <option>Hôpital Communautaire de Référence</option>
+    <option>CMS / Hôpital</option><option>CMS</option>
+    <option>Centre Spécialisé</option><option>CCS</option><option>CS</option>
+  </select>
+</div>
+<div id="dsne-ilist"></div>
+
+<script>
+var DSNE_C={'Fort-Liberté':'#C47200','Ouanaminthe':'#0F6E56','Trou-du-Nord':'#185FA5','Hors UAS':'#888780'};
+var DSNE_D=[
+  {n:"Hôpital Départemental de Fort-Liberté (HFL)",t:"Hôpital Départemental",u:"Fort-Liberté",c:"Fort-Liberté",dm:"Dr Henry Claude Etienne",la:19.668,lo:-71.836},
+  {n:"CDAI Fort-Liberté",t:"Centre Spécialisé",u:"Fort-Liberté",c:"Fort-Liberté",dm:"Dr Brunel Augustin",la:19.669,lo:-71.837},
+  {n:"CCS Dérac",t:"CCS",u:"Fort-Liberté",c:"Fort-Liberté",dm:"Dr Rivelino Joseph",la:19.651,lo:-71.879},
+  {n:"CCS Meillac",t:"CCS",u:"Fort-Liberté",c:"Meillac",dm:"Dr Francisque Severe",la:19.580,lo:-71.921},
+  {n:"CCS Mérande",t:"CCS",u:"Fort-Liberté",c:"Ferrier",dm:"Dr Magalie Surling Dasny",la:19.585,lo:-71.685},
+  {n:"CS Ferrier",t:"CS",u:"Fort-Liberté",c:"Ferrier",dm:"Dr Luckens Pierre",la:19.597,lo:-71.663},
+  {n:"CS Acul Samedi",t:"CS",u:"Fort-Liberté",c:"Fort-Liberté",dm:"Dr Anegard Joseph",la:19.691,lo:-71.862},
+  {n:"CS Perches",t:"CS",u:"Fort-Liberté",c:"Perches",dm:"Dr Vincent Mecejour",la:19.579,lo:-71.768},
+  {n:"CS Vallières",t:"CS",u:"Fort-Liberté",c:"Vallières",dm:"Dr Frantz-Elucien Joseph",la:19.488,lo:-71.882},
+  {n:"CMS Ouanaminthe (CMSO)",t:"CMS / Hôpital",u:"Ouanaminthe",c:"Ouanaminthe",dm:"Dr Jhon Cador Joseph",la:19.553,lo:-71.732},
+  {n:"CS Capotille",t:"CS",u:"Ouanaminthe",c:"Capotille",dm:"Dr Adrien Felix",la:19.617,lo:-71.596},
+  {n:"CMS Mont-Organisé (CMSMO)",t:"CMS",u:"Ouanaminthe",c:"Mont-Organisé",dm:"Dr Margarette Titus",la:19.420,lo:-71.786},
+  {n:"CCS Lamine",t:"CCS",u:"Ouanaminthe",c:"Ouanaminthe",dm:"Dr Enese Desanges",la:19.563,lo:-71.750},
+  {n:"CS Acul des Pins",t:"CS",u:"Ouanaminthe",c:"Ouanaminthe",dm:"Dr Ricardo Joseph",la:19.548,lo:-71.745},
+  {n:"CS Gens de Nantes",t:"CS",u:"Ouanaminthe",c:"Ouanaminthe",dm:"Dr Cloridor Joachim",la:19.570,lo:-71.720},
+  {n:"CS Savane au Lait",t:"CS",u:"Ouanaminthe",c:"Ouanaminthe",dm:"Dr Mikenly Philogene",la:19.540,lo:-71.760},
+  {n:"CCS Savane Longue",t:"CCS",u:"Ouanaminthe",c:"Ouanaminthe",dm:"Dr Andy Paul",la:19.535,lo:-71.748},
+  {n:"CS Dilaire",t:"CS",u:"Ouanaminthe",c:"Ouanaminthe",dm:"Dr Roselande Jules",la:19.558,lo:-71.738},
+  {n:"CS Rose Bonite",t:"CS",u:"Ouanaminthe",c:"Capotille",dm:"Dr Nachemy Mea",la:19.608,lo:-71.602},
+  {n:"CS Bois Poux",t:"CS",u:"Ouanaminthe",c:"Capotille",dm:"À compléter",la:19.621,lo:-71.589},
+  {n:"CS Carice",t:"CS",u:"Ouanaminthe",c:"Carice",dm:"Dr Lyonel Maxime",la:19.370,lo:-71.851},
+  {n:"CS Corosse (Capotille)",t:"CS",u:"Ouanaminthe",c:"Capotille",dm:"À compléter",la:19.630,lo:-71.580},
+  {n:"HCR Trou-du-Nord",t:"Hôpital Communautaire de Référence",u:"Trou-du-Nord",c:"Trou-du-Nord",dm:"Dr Jude Achille Dorsainvil",la:19.629,lo:-72.015},
+  {n:"CS Terrier Rouge",t:"CS",u:"Trou-du-Nord",c:"Terrier Rouge",dm:"Dr Abnel Benjamin",la:19.638,lo:-72.025},
+  {n:"CS Pilette",t:"CS",u:"Trou-du-Nord",c:"Terrier Rouge",dm:"Dr Gelande-Shamir Laroche",la:19.635,lo:-72.030},
+  {n:"CS Jacquezyl",t:"CS",u:"Trou-du-Nord",c:"Trou-du-Nord",dm:"Dr Fredo Dorvil",la:19.618,lo:-71.998},
+  {n:"CS NDL Grand Bassin",t:"CS",u:"Trou-du-Nord",c:"Trou-du-Nord",dm:"À compléter",la:19.610,lo:-72.010},
+  {n:"CS Leroux Cachiman",t:"CS",u:"Trou-du-Nord",c:"Trou-du-Nord",dm:"Dr Jacques-Antoine Jean-Louis",la:19.605,lo:-72.002},
+  {n:"CS Roche Plate",t:"CS",u:"Trou-du-Nord",c:"Trou-du-Nord",dm:"À compléter",la:19.623,lo:-71.993},
+  {n:"CCS Grosse Roche (TDN)",t:"CCS",u:"Trou-du-Nord",c:"Trou-du-Nord",dm:"Dr Sam Edwige Valcimond",la:19.615,lo:-71.988},
+  {n:"CS Caracol",t:"CS",u:"Trou-du-Nord",c:"Caracol",dm:"Dr Samuel Jean-Baptiste",la:19.695,lo:-71.986},
+  {n:"CS Cahesse",t:"CS",u:"Trou-du-Nord",c:"Trou-du-Nord",dm:"Dr Romel Mentor",la:19.601,lo:-72.021},
+  {n:"CS Sainte-Suzanne",t:"CS",u:"Trou-du-Nord",c:"Sainte-Suzanne",dm:"Dr Suzanne Joseph",la:19.651,lo:-72.091},
+  {n:"CS Danda",t:"CS",u:"Trou-du-Nord",c:"Sainte-Suzanne",dm:"Dr Edwine Augustin",la:19.645,lo:-72.085},
+  {n:"CS Dupity",t:"CS",u:"Trou-du-Nord",c:"Sainte-Suzanne",dm:"Dr Julianie Dalusma",la:19.658,lo:-72.098},
+  {n:"CS Phaéton",t:"CS",u:"Trou-du-Nord",c:"Trou-du-Nord",dm:"Dr Jean Baptiste Desir",la:19.612,lo:-72.018},
+  {n:"CS Corosse (Trou-du-Nord)",t:"CS",u:"Trou-du-Nord",c:"Trou-du-Nord",dm:"À compléter",la:19.619,lo:-72.008},
+  {n:"CS Mombin-Crochu",t:"CS (niveau avancé)",u:"Hors UAS",c:"Mombin-Crochu",dm:"Dr Miles Cherenfant",la:19.426,lo:-71.980},
+  {n:"CS Bois de Laurence",t:"CS",u:"Hors UAS",c:"Mombin-Crochu",dm:"Dr Renaud Gerve",la:19.418,lo:-71.972},
+  {n:"CCS Grosse Roche (Hors UAS)",t:"CCS",u:"Hors UAS",c:"Mombin-Crochu",dm:"Dr Sam Edwige Valcimond",la:19.430,lo:-71.965}
+];
+
+var dsneMap=null,dsneMK=[],dsneAUAS='';
+
+function dsneInitMap(){
+  if(dsneMap)return;
+  dsneMap=L.map('dsne-leaflet-map',{zoomControl:true,attributionControl:false}).setView([19.58,-71.83],9);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:14}).addTo(dsneMap);
+  DSNE_D.forEach(function(d,i){
+    var col=DSNE_C[d.u]||'#888';
+    var ic=L.divIcon({html:'<div style="width:9px;height:9px;border-radius:50%;background:'+col+';border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.3)"></div>',className:'',iconSize:[9,9],iconAnchor:[4,4]});
+    var m=L.marker([d.la,d.lo],{icon:ic}).addTo(dsneMap);
+    m.bindPopup('<b style="font-size:11px">'+d.n+'</b><br><span style="font-size:10px;color:#666">'+d.dm+'</span>');
+    m.on('click',function(){dsneHL(i);});
+    dsneMK.push(m);
+  });
+}
+
+function dsneHL(i){
+  document.querySelectorAll('.dsne-inst').forEach(function(e){e.classList.remove('hl');});
+  var el=document.getElementById('dsne-i'+i);
+  if(el){el.classList.add('hl');el.scrollIntoView({behavior:'smooth',block:'nearest'});}
+}
+
+function dsneFUAS(u){
+  dsneAUAS=u;
+  document.querySelectorAll('.dsne-chip').forEach(function(e){e.classList.remove('act');});
+  document.querySelectorAll('.dsne-uas-card').forEach(function(e){e.classList.remove('act');});
+  if(!u){document.getElementById('dsne-c-all').classList.add('act');}
+  else{
+    var cm={'Fort-Liberté':'dsne-c-fl','Ouanaminthe':'dsne-c-ou','Trou-du-Nord':'dsne-c-tdn'};
+    var um={'Fort-Liberté':'dsne-u-fl','Ouanaminthe':'dsne-u-ou','Trou-du-Nord':'dsne-u-tdn'};
+    if(cm[u])document.getElementById(cm[u]).classList.add('act');
+    if(um[u])document.getElementById(um[u]).classList.add('act');
+    if(dsneMap){var b=DSNE_D.filter(function(d){return d.u===u;}).map(function(d){return[d.la,d.lo];});if(b.length)dsneMap.fitBounds(b,{padding:[20,20]});}
+  }
+  dsneRender();
+}
+
+function dsneRender(){
+  var q=(document.getElementById('dsne-srch').value||'').toLowerCase();
+  var ft=document.getElementById('dsne-ftype').value;
+  var l=DSNE_D.filter(function(d){return(!q||d.n.toLowerCase().includes(q)||d.c.toLowerCase().includes(q)||d.dm.toLowerCase().includes(q))&&(!dsneAUAS||d.u===dsneAUAS)&&(!ft||d.t===ft);});
+  var g={};l.forEach(function(d){if(!g[d.u])g[d.u]=[];g[d.u].push(d);});
+  var h='';
+  Object.keys(g).forEach(function(u){
+    h+='<div class="dsne-grp"><div class="dsne-ghd">UAS '+u+' — '+g[u].length+' institution(s)</div>';
+    h+=g[u].map(function(d){var i=DSNE_D.indexOf(d);var col=DSNE_C[d.u]||'#888';return'<div class="dsne-inst" id="dsne-i'+i+'" style="border-left-color:'+col+'" onclick="dsneClick('+i+')"><div><div class="dsne-iname">'+d.n+'</div><div class="dsne-idm">'+d.dm+' · '+d.c+'</div></div><span class="dsne-ibadge" style="background:'+col+'18;color:'+col+'">'+d.t+'</span></div>';}).join('');
+    h+='</div>';
+  });
+  document.getElementById('dsne-ilist').innerHTML=h||'<div style="text-align:center;padding:2rem;color:var(--g400,#888);font-size:12px">Aucun résultat.</div>';
+}
+
+function dsneClick(i){
+  var d=DSNE_D[i];
+  if(dsneMap&&d.la){dsneMap.setView([d.la,d.lo],13);if(dsneMK[i])dsneMK[i].openPopup();}
+  dsneHL(i);
+}
+
+function dsneActivate(){
+  dsneRender();
+  setTimeout(function(){dsneInitMap();if(dsneMap)dsneMap.invalidateSize();},150);
+}
+</script>
+</div>
 
 <!-- ══ TAB: FORMULAIRE ══ -->
 <div id="tab-formulaire" class="content pb-sync">
@@ -416,10 +638,11 @@ function switchTab(name, el) {
   document.getElementById('tab-dsne').style.display = name === 'dsne' ? 'block' : 'none'
   document.getElementById('tab-formulaire').style.display = name === 'formulaire' ? 'block' : 'none'
   document.getElementById('tab-journal').style.display = name === 'journal' ? 'block' : 'none'
-  if (name === 'dsne') filtrerInst()
+  if (name === 'dsne') dsneActivate()
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
   el.classList.add('active')
   if (name === 'journal') loadJournal()
+  if (name === 'dsne') dsneActivate()
 }
 
 async function doLogout() {
