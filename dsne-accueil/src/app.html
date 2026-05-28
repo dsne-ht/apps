@@ -2,8 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DSNE — Accueil</title>
+<title>DSNE — Enregistrement Visiteurs</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -11,10 +10,9 @@
 <!-- TOPBAR -->
 <div class="topbar">
   <div class="topbar-brand">
-    <div>
-      <h1>DSNE — Accueil</h1>
-      <span>PROC-004 · Fort-Liberté</span>
-    </div>
+    <span class="topbar-dsne">DSNE</span>
+    <span class="topbar-sep"></span>
+    <span class="topbar-name">Enregistrement Visiteurs</span>
   </div>
   <div class="topbar-right">
     <div class="topbar-sync">
@@ -30,17 +28,18 @@
 <div class="tabs">
   <div class="tab active" onclick="switchTab('entree', this)">Enregistrement d'entrée</div>
   <div class="tab" onclick="switchTab('sortie', this)">Enregistrement de sortie</div>
-  <div class="tab" onclick="switchTab('journal', this)">Journal du jour</div>
+  <div class="tab" onclick="switchTab('visites', this)">Registre des visites</div>
+  <div class="tab" onclick="switchTab('documents', this)">Registre des documents</div>
   <div class="tab" onclick="switchTab('uids', this)">Gestion des UIDs</div>
 </div>
 
-<!-- ══════════════════════ TAB: ENTREE ══════════════════════ -->
+<!-- ══ TAB: ENTRÉE ══ -->
 <div id="tab-entree" class="content pb-sync">
 
   <div id="alertEntree" class="alert" style="display:none"></div>
 
+  <div class="section-header">Section 1 — Carte visiteur</div>
   <div class="card">
-    <div class="card-title">Section 1 — Carte visiteur</div>
     <div class="field">
       <label>UID de la carte visiteur</label>
       <select id="e_uid">
@@ -50,16 +49,16 @@
     </div>
   </div>
 
+  <div class="section-header">Section 2 — Identité du visiteur</div>
   <div class="card">
-    <div class="card-title">Section 2 — Identité du visiteur</div>
     <div class="form-grid" style="margin-bottom:12px">
       <div class="field">
-        <label>Nom complet</label>
+        <label>Nom complet <span class="required">*</span></label>
         <input type="text" id="e_nom" placeholder="Prénom Nom">
         <span class="field-desc">Tel qu'il apparaît sur la pièce d'identité.</span>
       </div>
       <div class="field">
-        <label>Type de pièce d'identité</label>
+        <label>Type de pièce d'identité <span class="required">*</span></label>
         <select id="e_type_piece">
           <option value="">-- Sélectionner --</option>
           <option>Carte d'identité nationale (CIN)</option>
@@ -72,27 +71,27 @@
     </div>
     <div class="form-grid" style="margin-bottom:12px">
       <div class="field">
-        <label>Numéro de la pièce</label>
+        <label>Numéro de la pièce <span class="required">*</span></label>
         <input type="text" id="e_num_piece" placeholder="Ex. : CIN-448821">
         <span class="field-desc">Tel qu'il figure sur le document.</span>
       </div>
       <div class="field">
-        <label>Numéro de téléphone</label>
+        <label>Numéro de téléphone <span class="required">*</span></label>
         <input type="tel" id="e_tel" placeholder="+509 3700 0000">
       </div>
     </div>
     <div class="field">
-      <label>Organisation / Provenance</label>
+      <label>Organisation / Provenance <span class="required">*</span></label>
       <input type="text" id="e_org" placeholder="Nom de l'institution ou N/A si sans emploi">
       <span class="field-desc">Inscrire N/A si le visiteur est sans emploi ou se présente à titre personnel.</span>
     </div>
   </div>
 
+  <div class="section-header">Section 3 — Motif de visite et service destinataire</div>
   <div class="card">
-    <div class="card-title">Section 3 — Motif de visite et service destinataire</div>
     <div class="form-grid" style="margin-bottom:12px">
       <div class="field">
-        <label>Service destinataire</label>
+        <label>Service destinataire <span class="required">*</span></label>
         <select id="e_service">
           <option value="">-- Sélectionner --</option>
           <option>DIR — Direction</option>
@@ -110,13 +109,13 @@
         </select>
       </div>
       <div class="field">
-        <label>Personne à visiter</label>
+        <label>Personne à visiter <span class="required">*</span></label>
         <input type="text" id="e_personne" placeholder="Nom complet de l'agent">
       </div>
     </div>
-    <div class="form-grid" style="margin-bottom:12px">
+    <div class="form-grid">
       <div class="field">
-        <label>Motif de la visite</label>
+        <label>Motif de la visite <span class="required">*</span></label>
         <select id="e_motif" onchange="toggleMotifAutre()">
           <option value="">-- Sélectionner --</option>
           <option>Réunion ou rencontre</option>
@@ -135,10 +134,10 @@
     </div>
   </div>
 
+  <div class="section-header">Section 4 — Autorisation d'accès</div>
   <div class="card">
-    <div class="card-title">Section 4 — Autorisation d'accès</div>
-    <p style="font-size:13px;color:#5F5E5A;margin-bottom:1rem">
-      Contacter le service destinataire avant de remplir cette section. Ne pas faire monter le visiteur avant confirmation.
+    <p style="font-size:13px;color:var(--g600);margin-bottom:1rem;line-height:1.6">
+      Contacter le service destinataire avant de remplir cette section. Ne pas faire monter le visiteur avant confirmation de l'autorisation.
     </p>
     <div class="auth-group">
       <div class="auth-btn auth-oui" id="btnOui" onclick="selectAuth('Oui — la visite est autorisée')">
@@ -150,26 +149,17 @@
     </div>
     <div id="champAutorisateur" style="display:none;margin-bottom:12px">
       <div class="field">
-        <label>Nom de la personne ayant autorisé</label>
+        <label>Nom de la personne ayant autorisé <span class="required">*</span></label>
         <input type="text" id="e_autorisateur" placeholder="Nom de l'agent ayant confirmé">
         <span class="field-desc">Requis pour traçabilité.</span>
       </div>
     </div>
     <div id="champRefus" style="display:none">
       <div class="field">
-        <label>Motif du refus</label>
+        <label>Motif du refus <span class="required">*</span></label>
         <input type="text" id="e_motif_refus" placeholder="Motif communiqué par le service">
         <span class="field-desc">Rappel : remettre immédiatement la pièce d'identité au visiteur.</span>
       </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">Section 5 — Agent d'accueil</div>
-    <div class="field">
-      <label>Nom de l'agent d'accueil</label>
-      <input type="text" id="e_agent" placeholder="Votre nom complet">
-      <span class="field-desc">Vous êtes responsable de l'exactitude des informations saisies.</span>
     </div>
   </div>
 
@@ -178,36 +168,32 @@
   </button>
 </div>
 
-<!-- ══════════════════════ TAB: SORTIE ══════════════════════ -->
+<!-- ══ TAB: SORTIE ══ -->
 <div id="tab-sortie" class="content pb-sync" style="display:none">
 
   <div id="alertSortie" class="alert" style="display:none"></div>
 
+  <div class="section-header">Section 1 — Identification du visiteur</div>
   <div class="card">
-    <div class="card-title">Section 1 — Identification du visiteur</div>
     <div class="field">
-      <label>Visiteur actuellement dans les locaux</label>
+      <label>Visiteur actuellement dans les locaux <span class="required">*</span></label>
       <select id="s_visite">
         <option value="">-- Sélectionner le visiteur --</option>
       </select>
-      <span class="field-desc">Format : Nom — Service — Heure d'arrivée — ID de visite. Si un visiteur n'apparaît pas, vérifier que son entrée a bien été soumise.</span>
+      <span class="field-desc">Format : Nom complet — Service — Heure d'arrivée — ID de visite. Si un visiteur n'apparaît pas, vérifier que son entrée a bien été soumise.</span>
     </div>
   </div>
 
+  <div class="section-header">Section 2 — Confirmation de sortie</div>
   <div class="card">
-    <div class="card-title">Section 2 — Confirmation de sortie</div>
     <div class="field" style="margin-bottom:12px">
-      <label>La carte visiteur a-t-elle été récupérée ?</label>
+      <label>La carte visiteur a-t-elle été récupérée ? <span class="required">*</span></label>
       <select id="s_carte">
         <option value="">-- Sélectionner --</option>
         <option>Oui — carte récupérée</option>
         <option>Non — carte non récupérée (signaler au responsable)</option>
       </select>
       <span class="field-desc">La carte doit impérativement être récupérée avant que le visiteur ne quitte les locaux.</span>
-    </div>
-    <div class="field">
-      <label>Nom de l'agent d'accueil</label>
-      <input type="text" id="s_agent" placeholder="Votre nom complet">
     </div>
   </div>
 
@@ -216,15 +202,126 @@
   </button>
 </div>
 
-<!-- ══════════════════════ TAB: JOURNAL ══════════════════════ -->
-<div id="tab-journal" class="content pb-sync" style="display:none">
+<!-- ══ TAB: REGISTRE DES VISITES ══ -->
+<div id="tab-visites" class="content pb-sync" style="display:none">
+
   <div class="stats-row" id="statsRow"></div>
+
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.75rem">
+    <input type="text" id="searchVisites" placeholder="Rechercher nom, service, ID…"
+      oninput="filtrerVisites()"
+      style="flex:1;padding:7px 10px;border:1px solid var(--g200);border-radius:7px;font-size:13px">
+    <select id="filterStatut" onchange="filtrerVisites()"
+      style="padding:7px 10px;border:1px solid var(--g200);border-radius:7px;font-size:13px;background:#fff">
+      <option value="">Tous statuts</option>
+      <option value="Entre">Entré</option>
+      <option value="Sorti">Sorti</option>
+      <option value="Refuse">Refusé</option>
+    </select>
+    <select id="filterPeriode" onchange="filtrerVisites()"
+      style="padding:7px 10px;border:1px solid var(--g200);border-radius:7px;font-size:13px;background:#fff">
+      <option value="jour">Aujourd'hui</option>
+      <option value="tout">Tout l'historique</option>
+    </select>
+  </div>
+
   <div class="visit-list" id="journalList"></div>
 </div>
 
-<!-- ══════════════════════ TAB: UIDs ══════════════════════ -->
+<!-- ══ TAB: REGISTRE DES DOCUMENTS ══ -->
+<div id="tab-documents" class="content pb-sync" style="display:none">
+
+  <div id="alertDoc" class="alert" style="display:none"></div>
+
+  <div class="section-header">Enregistrement d'un document reçu</div>
+  <div class="card" style="margin-bottom:1.25rem">
+    <p style="font-size:13px;color:var(--g600);margin-bottom:1rem;line-height:1.6">
+      Utiliser ce formulaire pour enregistrer tout document remis à la réception par un visiteur ou un coursier. Si le document provient d'un visiteur actuellement dans les locaux, sélectionner sa visite dans le champ correspondant. Sinon, inscrire directement le nom de la personne.
+    </p>
+
+    <div class="form-grid" style="margin-bottom:12px">
+      <div class="field">
+        <label>Document remis par <span class="required">*</span></label>
+        <input type="text" id="d_remis_par" placeholder="Nom de la personne ayant remis le document">
+        <span class="field-desc">Inscrire le nom complet de la personne qui remet le document.</span>
+      </div>
+      <div class="field">
+        <label>Visite liée (optionnel)</label>
+        <select id="d_visite_liee">
+          <option value="">-- Aucune visite liée --</option>
+        </select>
+        <span class="field-desc">Sélectionner si le document provient d'un visiteur actuellement enregistré.</span>
+      </div>
+    </div>
+
+    <div class="form-grid" style="margin-bottom:12px">
+      <div class="field">
+        <label>Type de document <span class="required">*</span></label>
+        <select id="d_type">
+          <option value="">-- Sélectionner --</option>
+          <option>Lettre officielle</option>
+          <option>Rapport</option>
+          <option>Demande</option>
+          <option>Formulaire administratif</option>
+          <option>Facture ou reçu</option>
+          <option>Dossier médical</option>
+          <option>Contrat ou accord</option>
+          <option>Autre document</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Service destinataire <span class="required">*</span></label>
+        <select id="d_service">
+          <option value="">-- Sélectionner --</option>
+          <option>DIR — Direction</option>
+          <option>ADM — Administration</option>
+          <option>COMP — Comptabilité</option>
+          <option>RH — Ressources Humaines</option>
+          <option>EPID — Épidémiologie</option>
+          <option>VIH — Programme VIH/SIDA</option>
+          <option>TB — Programme Tuberculose</option>
+          <option>SM — Santé Maternelle</option>
+          <option>LOG — Logistique</option>
+          <option>SI — Système d'Information</option>
+          <option>HP — Hygiène Publique</option>
+          <option>STAT — Statistiques</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field" style="margin-bottom:12px">
+      <label>Description du document <span class="required">*</span></label>
+      <input type="text" id="d_description" placeholder="Objet ou intitulé du document">
+      <span class="field-desc">Décrire brièvement le contenu ou l'objet du document reçu.</span>
+    </div>
+
+    <div class="field">
+      <label>Notes complémentaires</label>
+      <textarea id="d_notes" placeholder="Toute information additionnelle pertinente…" style="min-height:60px"></textarea>
+    </div>
+
+    <button class="btn btn-primary btn-full" id="btnDoc" onclick="enregistrerDocument()" style="margin-top:0.75rem">
+      Enregistrer le document
+    </button>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.75rem">
+    <input type="text" id="searchDocs" placeholder="Rechercher document, service, remis par…"
+      oninput="filtrerDocuments()"
+      style="flex:1;padding:7px 10px;border:1px solid var(--g200);border-radius:7px;font-size:13px">
+    <select id="filterDocPeriode" onchange="filtrerDocuments()"
+      style="padding:7px 10px;border:1px solid var(--g200);border-radius:7px;font-size:13px;background:#fff">
+      <option value="jour">Aujourd'hui</option>
+      <option value="tout">Tout l'historique</option>
+    </select>
+  </div>
+
+  <div class="visit-list" id="docList"></div>
+</div>
+
+<!-- ══ TAB: UIDs ══ -->
 <div id="tab-uids" class="content pb-sync" style="display:none">
-  <div class="card">
+  <div class="card-standalone">
     <div class="uid-header">
       <div class="card-title" style="margin:0;border:none;padding:0">Cartes UID enregistrées</div>
       <button class="btn btn-primary btn-sm" onclick="showAddUID()">+ Ajouter</button>
@@ -233,7 +330,7 @@
   </div>
 </div>
 
-<!-- ══════════════════════ MODAL AJOUT UID ══════════════════════ -->
+<!-- MODAL UID -->
 <div id="modalUID" class="modal-overlay" style="display:none">
   <div class="modal">
     <h3>Ajouter une carte UID</h3>
@@ -273,31 +370,31 @@
 <script>
 let currentUser = null
 let selectedAuth = null
+let allVisites = []
+let allDocuments = []
 
-// ── INIT
 window.addEventListener('DOMContentLoaded', async () => {
   const userData = sessionStorage.getItem('user')
   if (!userData) { window.api.navigate('login.html'); return }
   currentUser = JSON.parse(userData)
-  document.getElementById('topbarUser').textContent = currentUser.nom_complet
+  document.getElementById('topbarUser').textContent = 'Salut ' + currentUser.nom_complet.split(' ')[0] + ' !'
   await loadUIDs()
   await updateSyncStatus()
   setInterval(updateSyncStatus, 30000)
 })
 
-// ── TABS
 function switchTab(name, el) {
-  ['entree','sortie','journal','uids'].forEach(t => {
+  ['entree','sortie','visites','documents','uids'].forEach(t => {
     document.getElementById('tab-'+t).style.display = t===name ? 'block' : 'none'
   })
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
   el.classList.add('active')
   if (name==='sortie') loadVisitesActives()
-  if (name==='journal') loadJournal()
+  if (name==='visites') loadRegistreVisites()
+  if (name==='documents') { loadRegistreDocuments(); loadVisitesPourDoc() }
   if (name==='uids') loadAllUIDs()
 }
 
-// ── LOGOUT
 async function doLogout() {
   sessionStorage.removeItem('user')
   await window.api.logout()
@@ -326,8 +423,7 @@ async function loadAllUIDs() {
         <span style="font-weight:600;font-size:13px">${u.uid}</span>
         <span style="font-size:11px;color:var(--g400);margin-left:8px">${u.service} · ${u.description}</span>
       </div>
-      <button class="btn btn-sm ${u.actif ? 'btn-secondary' : 'btn-primary'}"
-        onclick="toggleUID(${u.id}, ${u.actif ? 0 : 1})">
+      <button class="btn btn-sm ${u.actif ? 'btn-secondary' : 'btn-primary'}" onclick="toggleUID(${u.id}, ${u.actif ? 0 : 1})">
         ${u.actif ? 'Désactiver' : 'Activer'}
       </button>
     </div>
@@ -343,22 +439,16 @@ async function saveUID() {
   const description = document.getElementById('m_desc').value.trim()
   if (!uid || !description) { showAlert('alertModal', 'error', 'Tous les champs sont requis.'); return }
   const result = await window.api.addUid({ uid, service, description })
-  if (result.ok) {
-    closeModal()
-    await loadUIDs()
-    await loadAllUIDs()
-  } else {
-    showAlert('alertModal', 'error', result.message)
-  }
+  if (result.ok) { closeModal(); await loadUIDs(); await loadAllUIDs() }
+  else showAlert('alertModal', 'error', result.message)
 }
 
 async function toggleUID(id, actif) {
   await window.api.toggleUid({ id, actif })
-  await loadUIDs()
-  await loadAllUIDs()
+  await loadUIDs(); await loadAllUIDs()
 }
 
-// ── AUTH SELECTION
+// ── AUTH
 function selectAuth(val) {
   selectedAuth = val
   document.getElementById('btnOui').classList.remove('selected')
@@ -375,8 +465,8 @@ function selectAuth(val) {
 }
 
 function toggleMotifAutre() {
-  const motif = document.getElementById('e_motif').value
-  document.getElementById('motifAutreField').style.display = motif === 'Autre' ? 'block' : 'none'
+  document.getElementById('motifAutreField').style.display =
+    document.getElementById('e_motif').value === 'Autre' ? 'block' : 'none'
 }
 
 // ── ENTRÉE
@@ -395,22 +485,18 @@ async function soumettrEntree() {
     visite_autorisee: selectedAuth || '',
     nom_autorisateur: document.getElementById('e_autorisateur').value.trim() || 'N/A',
     motif_refus: document.getElementById('e_motif_refus').value.trim() || 'N/A',
-    agent_accueil: document.getElementById('e_agent').value.trim()
+    agent_accueil: currentUser.nom_complet
   }
 
   const required = ['uid_carte','nom_complet','type_piece','numero_piece','telephone',
-    'organisation','service_destinataire','personne_a_visiter','motif_visite','agent_accueil']
+    'organisation','service_destinataire','personne_a_visiter','motif_visite']
   for (const f of required) {
     if (!fields[f]) { showAlert('alertEntree', 'error', 'Tous les champs sont obligatoires.'); return }
   }
-  if (!selectedAuth) { showAlert('alertEntree', 'error', 'Sélectionner l\'autorisation (Oui ou Non).'); return }
-  if (selectedAuth.startsWith('Oui') && !fields.nom_autorisateur.trim()) {
-    showAlert('alertEntree', 'error', 'Inscrire le nom de la personne ayant autorisé.'); return
-  }
+  if (!selectedAuth) { showAlert('alertEntree', 'error', "Sélectionner l'autorisation (Oui ou Non)."); return }
 
   const btn = document.getElementById('btnEntree')
   btn.disabled = true; btn.textContent = 'Enregistrement...'
-
   const result = await window.api.enregistrerEntree(fields)
   if (result.ok) {
     showAlert('alertEntree', 'success', `Entrée enregistrée — ${result.id_visite} · Statut : ${result.statut === 'Entre' ? 'Entré' : 'Refusé'}`)
@@ -419,12 +505,12 @@ async function soumettrEntree() {
   } else {
     showAlert('alertEntree', 'error', result.message)
   }
-  btn.disabled = false; btn.textContent = 'Enregistrer l\'entrée'
+  btn.disabled = false; btn.textContent = "Enregistrer l'entrée"
 }
 
 function resetEntreeForm() {
   ['e_uid','e_type_piece','e_service','e_motif'].forEach(id => document.getElementById(id).value = '')
-  ['e_nom','e_num_piece','e_tel','e_org','e_personne','e_motif_autre','e_autorisateur','e_motif_refus','e_agent'].forEach(id => document.getElementById(id).value = '')
+  ['e_nom','e_num_piece','e_tel','e_org','e_personne','e_motif_autre','e_autorisateur','e_motif_refus'].forEach(id => document.getElementById(id).value = '')
   selectedAuth = null
   document.getElementById('btnOui').classList.remove('selected')
   document.getElementById('btnNon').classList.remove('selected')
@@ -439,17 +525,14 @@ async function loadVisitesActives() {
   const sel = document.getElementById('s_visite')
   sel.innerHTML = '<option value="">-- Sélectionner le visiteur --</option>'
   if (!visites.length) {
-    const opt = document.createElement('option')
-    opt.textContent = 'Aucun visiteur actif pour le moment'
-    opt.disabled = true
-    sel.appendChild(opt)
+    sel.innerHTML += '<option disabled>Aucun visiteur actif pour le moment</option>'
     return
   }
   visites.forEach(v => {
     const opt = document.createElement('option')
     const heure = new Date(v.horodateur_entree).toLocaleTimeString('fr-HT', {hour:'2-digit',minute:'2-digit'})
     opt.value = v.id_visite
-    opt.textContent = v.nom_complet + ' — ' + v.service_destinataire + ' — ' + heure + ' — ' + v.id_visite
+    opt.textContent = v.nom_complet + ' — ' + v.service_destinataire.split(' — ')[0] + ' — ' + heure + ' — ' + v.id_visite
     sel.appendChild(opt)
   })
 }
@@ -457,21 +540,16 @@ async function loadVisitesActives() {
 async function soumettreSortie() {
   const id_visite = document.getElementById('s_visite').value
   const carte_recuperee = document.getElementById('s_carte').value
-  const agent_sortie = document.getElementById('s_agent').value.trim()
-
-  if (!id_visite || !carte_recuperee || !agent_sortie) {
+  if (!id_visite || !carte_recuperee) {
     showAlert('alertSortie', 'error', 'Tous les champs sont obligatoires.'); return
   }
-
   const btn = document.getElementById('btnSortie')
   btn.disabled = true; btn.textContent = 'Enregistrement...'
-
-  const result = await window.api.enregistrerSortie({ id_visite, carte_recuperee, agent_sortie })
+  const result = await window.api.enregistrerSortie({ id_visite, carte_recuperee, agent_sortie: currentUser.nom_complet })
   if (result.ok) {
     showAlert('alertSortie', 'success', 'Sortie enregistrée avec succès.')
     document.getElementById('s_visite').value = ''
     document.getElementById('s_carte').value = ''
-    document.getElementById('s_agent').value = ''
     await loadVisitesActives()
     await updateSyncStatus()
   } else {
@@ -480,26 +558,41 @@ async function soumettreSortie() {
   btn.disabled = false; btn.textContent = 'Enregistrer la sortie'
 }
 
-// ── JOURNAL
-async function loadJournal() {
-  const [stats, visites] = await Promise.all([window.api.getStatsJour(), window.api.getVisitesJour()])
+// ── REGISTRE VISITES
+async function loadRegistreVisites() {
+  const periode = document.getElementById('filterPeriode')?.value || 'jour'
+  allVisites = periode === 'jour'
+    ? await window.api.getVisitesJour()
+    : await window.api.getAllVisites()
 
+  const stats = await window.api.getStatsJour()
   document.getElementById('statsRow').innerHTML = `
-    <div class="stat-card"><div class="stat-n">${stats.total}</div><div class="stat-l">Total aujourd'hui</div></div>
+    <div class="stat-card"><div class="stat-n">${stats.total}</div><div class="stat-l">Aujourd'hui</div></div>
     <div class="stat-card"><div class="stat-n green">${stats.entres}</div><div class="stat-l">Dans les locaux</div></div>
     <div class="stat-card"><div class="stat-n gray">${stats.sortis}</div><div class="stat-l">Sortis</div></div>
     <div class="stat-card"><div class="stat-n red">${stats.refuses}</div><div class="stat-l">Refusés</div></div>
   `
+  filtrerVisites()
+}
 
+function filtrerVisites() {
+  const q = (document.getElementById('searchVisites')?.value || '').toLowerCase()
+  const fs = document.getElementById('filterStatut')?.value || ''
+  let liste = allVisites.filter(v => {
+    const match = !q || v.nom_complet.toLowerCase().includes(q) ||
+      v.service_destinataire.toLowerCase().includes(q) ||
+      v.id_visite.toLowerCase().includes(q)
+    const sMatch = !fs || v.statut === fs
+    return match && sMatch
+  })
   const list = document.getElementById('journalList')
-  if (!visites.length) { list.innerHTML = '<div class="empty">Aucune visite enregistrée aujourd\'hui.</div>'; return }
-
-  list.innerHTML = visites.map(v => {
+  if (!liste.length) { list.innerHTML = '<div class="empty">Aucune visite correspondante.</div>'; return }
+  list.innerHTML = liste.map(v => {
     const heure = new Date(v.horodateur_entree).toLocaleTimeString('fr-HT', {hour:'2-digit',minute:'2-digit'})
+    const date = new Date(v.horodateur_entree).toLocaleDateString('fr-HT', {day:'2-digit',month:'2-digit'})
     const statutClass = v.statut === 'Entre' ? '' : v.statut === 'Sorti' ? 'sorti' : 'refuse'
     const statutLabel = v.statut === 'Entre' ? 'Entré' : v.statut === 'Sorti' ? 'Sorti' : 'Refusé'
     const badgeClass = v.statut === 'Entre' ? 'badge-entre' : v.statut === 'Sorti' ? 'badge-sorti' : 'badge-refuse'
-    const syncBadge = v.synced ? '' : '<span class="badge" style="background:var(--o50);color:var(--o800)">Non sync.</span>'
     return `
       <div class="visit-card ${statutClass}">
         <div class="vc-top">
@@ -507,16 +600,99 @@ async function loadJournal() {
             <div class="vc-name">${v.nom_complet}</div>
             <div class="vc-id">${v.uid_carte || ''} · ${v.id_visite}</div>
           </div>
-          <div class="vc-time">${heure}</div>
+          <div class="vc-time">${date} · ${heure}</div>
         </div>
         <div class="vc-meta">
           <span class="badge badge-svc">${v.service_destinataire.split(' — ')[0]}</span>
           <span class="badge ${badgeClass}">${statutLabel}</span>
           <span class="badge" style="background:var(--g100);color:var(--g600)">${v.motif_visite}</span>
-          ${syncBadge}
+          ${v.agent_accueil ? `<span class="badge" style="background:var(--g100);color:var(--g600)">${v.agent_accueil}</span>` : ''}
+          ${!v.synced ? '<span class="badge" style="background:var(--o50);color:var(--o800)">Non sync.</span>' : ''}
         </div>
-      </div>
-    `
+      </div>`
+  }).join('')
+}
+
+// ── REGISTRE DOCUMENTS
+async function loadVisitesPourDoc() {
+  const visites = await window.api.getVisitesActives()
+  const sel = document.getElementById('d_visite_liee')
+  sel.innerHTML = '<option value="">-- Aucune visite liée --</option>'
+  visites.forEach(v => {
+    const opt = document.createElement('option')
+    const heure = new Date(v.horodateur_entree).toLocaleTimeString('fr-HT', {hour:'2-digit',minute:'2-digit'})
+    opt.value = v.id_visite
+    opt.textContent = v.nom_complet + ' — ' + v.service_destinataire.split(' — ')[0] + ' — ' + heure
+    sel.appendChild(opt)
+  })
+}
+
+async function enregistrerDocument() {
+  const data = {
+    remis_par: document.getElementById('d_remis_par').value.trim(),
+    id_visite_lie: document.getElementById('d_visite_liee').value,
+    type_document: document.getElementById('d_type').value,
+    description: document.getElementById('d_description').value.trim(),
+    service_destinataire: document.getElementById('d_service').value,
+    notes: document.getElementById('d_notes').value.trim(),
+    agent_accueil: currentUser.nom_complet
+  }
+  if (!data.remis_par || !data.type_document || !data.description || !data.service_destinataire) {
+    showAlert('alertDoc', 'error', 'Tous les champs obligatoires doivent être remplis.'); return
+  }
+  const btn = document.getElementById('btnDoc')
+  btn.disabled = true; btn.textContent = 'Enregistrement...'
+  const result = await window.api.enregistrerDocument(data)
+  if (result.ok) {
+    showAlert('alertDoc', 'success', `Document enregistré — ${result.id_document}`)
+    ;['d_remis_par','d_description','d_notes'].forEach(id => document.getElementById(id).value = '')
+    ;['d_visite_liee','d_type','d_service'].forEach(id => document.getElementById(id).value = '')
+    await loadRegistreDocuments()
+    await updateSyncStatus()
+  } else {
+    showAlert('alertDoc', 'error', result.message)
+  }
+  btn.disabled = false; btn.textContent = 'Enregistrer le document'
+}
+
+async function loadRegistreDocuments() {
+  const periode = document.getElementById('filterDocPeriode')?.value || 'jour'
+  allDocuments = periode === 'jour'
+    ? await window.api.getDocumentsJour()
+    : await window.api.getAllDocuments()
+  filtrerDocuments()
+}
+
+function filtrerDocuments() {
+  const q = (document.getElementById('searchDocs')?.value || '').toLowerCase()
+  let liste = allDocuments.filter(d =>
+    !q || d.remis_par.toLowerCase().includes(q) ||
+    d.description.toLowerCase().includes(q) ||
+    d.service_destinataire.toLowerCase().includes(q) ||
+    d.id_document.toLowerCase().includes(q)
+  )
+  const list = document.getElementById('docList')
+  if (!liste.length) { list.innerHTML = '<div class="empty">Aucun document enregistré.</div>'; return }
+  list.innerHTML = liste.map(d => {
+    const heure = new Date(d.horodateur).toLocaleTimeString('fr-HT', {hour:'2-digit',minute:'2-digit'})
+    const date = new Date(d.horodateur).toLocaleDateString('fr-HT', {day:'2-digit',month:'2-digit'})
+    return `
+      <div class="visit-card">
+        <div class="vc-top">
+          <div>
+            <div class="vc-name">${d.description}</div>
+            <div class="vc-id">${d.id_document} · Remis par : ${d.remis_par}</div>
+          </div>
+          <div class="vc-time">${date} · ${heure}</div>
+        </div>
+        <div class="vc-meta">
+          <span class="badge badge-svc">${d.service_destinataire.split(' — ')[0]}</span>
+          <span class="badge" style="background:var(--g100);color:var(--g600)">${d.type_document}</span>
+          ${d.id_visite_lie ? `<span class="badge" style="background:var(--p50,var(--o50));color:var(--o800)">Visite liée</span>` : ''}
+          ${!d.synced ? '<span class="badge" style="background:var(--o50);color:var(--o800)">Non sync.</span>' : ''}
+        </div>
+        ${d.notes ? `<div style="font-size:11px;color:var(--g600);margin-top:5px;font-style:italic">${d.notes}</div>` : ''}
+      </div>`
   }).join('')
 }
 
@@ -528,13 +704,11 @@ async function updateSyncStatus() {
   const barDot = document.getElementById('syncBarDot')
   const barLabel = document.getElementById('syncBarLabel')
   if (status.pending > 0) {
-    dot.className = 'sync-dot pending'
-    barDot.className = 'sync-dot pending'
-    label.textContent = status.pending + ' en attente de sync'
+    dot.className = 'sync-dot pending'; barDot.className = 'sync-dot pending'
+    label.textContent = status.pending + ' en attente'
     barLabel.textContent = status.pending + ' enregistrement(s) non synchronisé(s)'
   } else {
-    dot.className = 'sync-dot'
-    barDot.className = 'sync-dot'
+    dot.className = 'sync-dot'; barDot.className = 'sync-dot'
     label.textContent = 'Synchronisé'
     barLabel.textContent = 'Toutes les données sont synchronisées'
   }
@@ -543,17 +717,17 @@ async function updateSyncStatus() {
 async function doSync() {
   const result = await window.api.syncSheets()
   if (result.ok) {
-    if (result.synced > 0) alert(result.synced + ' enregistrement(s) synchronisé(s) avec Google Sheets.')
-    else alert('Aucun enregistrement en attente.')
+    const msg = `${result.synced_visites} visite(s) et ${result.synced_documents} document(s) synchronisé(s).`
+    showAlert('alertEntree', 'success', result.synced_visites + result.synced_documents > 0 ? msg : 'Tout est déjà synchronisé.')
   } else {
     alert('Erreur de synchronisation : ' + result.message)
   }
   await updateSyncStatus()
 }
 
-// ── UTILS
 function showAlert(id, type, msg) {
   const el = document.getElementById(id)
+  if (!el) return
   el.className = 'alert alert-' + (type === 'success' ? 'success' : 'error')
   el.textContent = msg
   el.style.display = 'block'
