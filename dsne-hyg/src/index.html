@@ -28,74 +28,26 @@
 <!-- TABS -->
 <div class="tabs">
   <div class="tab" onclick="switchTab('dsne', this)">DSNE</div>
-  <div class="tab" onclick="switchTab('dsne', this)">DSNE</div>
   <div class="tab active" onclick="switchTab('formulaire', this)">Formulaire de certificat</div>
   <div class="tab" onclick="switchTab('journal', this)">Journal des certificats</div>
 </div>
 
 <!-- ══ ONGLET DSNE ══ -->
-<div id="tab-dsne" class="content pb-sync" style="display:none">
 
-  <div style="background:var(--app-color,#888);border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between">
-    <div>
-      <div style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-bottom:4px">Ministère de la Santé Publique et de la Population</div>
-      <div style="font-size:18px;font-weight:700;color:#fff;letter-spacing:0.02em">Direction Sanitaire du Nord-Est</div>
-      <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:2px">Fort-Liberté, Nord-Est — Haïti</div>
-    </div>
-    <div style="display:flex;gap:16px">
-      <div style="text-align:right"><div style="font-size:22px;font-weight:700;color:#fff">40</div><div style="font-size:10px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.06em">Institutions</div></div>
-      <div style="text-align:right"><div style="font-size:22px;font-weight:700;color:#fff">3</div><div style="font-size:10px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.06em">UAS</div></div>
-    </div>
-  </div>
-
-  <div class="dsne-section-h">Direction</div>
-  <div class="dsne-card-block">
-    <div class="dsne-person-grid">
-      <div class="dsne-person"><div class="dsne-avatar">JD</div><div><div class="dsne-pname">Dr. Jean Clervain Dorsainvil</div><div class="dsne-prole">Directeur Départemental</div></div></div>
-      <div class="dsne-person"><div class="dsne-avatar">DP</div><div><div class="dsne-pname">Décius Pierre</div><div class="dsne-prole">ADM Direction</div></div></div>
-      <div class="dsne-person"><div class="dsne-avatar">EP</div><div><div class="dsne-pname">Dr. Eddy Pierre</div><div class="dsne-prole">Chargé de Communication et de Planification</div></div></div>
-      <div class="dsne-person"><div class="dsne-avatar">JF</div><div><div class="dsne-pname">Judeline Fenelus</div><div class="dsne-prole">Responsable de la Gestion du Personnel</div></div></div>
-    </div>
-  </div>
-
-  <div class="dsne-section-h">Coordonnateurs UAS</div>
-  <div class="dsne-card-block">
-    <div class="dsne-uas-grid">
-      <div class="dsne-uas-card"><div class="dsne-uas-lbl">UAS Fort-Liberté</div><div class="dsne-uas-name">Dr Yvesson John Milien</div></div>
-      <div class="dsne-uas-card"><div class="dsne-uas-lbl">UAS Ouanaminthe</div><div class="dsne-uas-name">Dr Dieulin Toussaint</div></div>
-      <div class="dsne-uas-card"><div class="dsne-uas-lbl">UAS Trou-du-Nord</div><div class="dsne-uas-name">Dr Jims Saint-Hilaire</div></div>
-    </div>
-  </div>
-
-  <div style="display:flex;align-items:center;gap:8px;margin:1.25rem 0 0.75rem">
-    <input type="text" id="dsne-search" placeholder="Rechercher une institution, commune, médecin…" oninput="filtrerInst()" style="flex:1;padding:7px 10px;border:1px solid var(--g200);border-radius:7px;font-size:13px">
-    <select id="dsne-uas-f" onchange="filtrerInst()" style="padding:7px 10px;border:1px solid var(--g200);border-radius:7px;font-size:13px;background:#fff;color:var(--g800)">
-      <option value="">Toutes les UAS</option>
-      <option>Fort-Liberté</option><option>Ouanaminthe</option><option>Trou-du-Nord</option><option>Hors UAS</option>
-    </select>
-    <select id="dsne-type-f" onchange="filtrerInst()" style="padding:7px 10px;border:1px solid var(--g200);border-radius:7px;font-size:13px;background:#fff;color:var(--g800)">
-      <option value="">Tous types</option>
-      <option>Hôpital Départemental</option><option>Hôpital Communautaire de Référence</option>
-      <option>CMS / Hôpital</option><option>CMS</option><option>Centre Spécialisé</option><option>CCS</option><option>CS</option>
-    </select>
-  </div>
-
-  <div id="dsne-inst-list"></div>
-</div>
 
 <style>
-.dsne-section-h{background:var(--app-color,#888);color:#fff;padding:8px 14px;border-radius:8px 8px 0 0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:1rem}
-.dsne-card-block{background:var(--white,#fff);border:1px solid var(--g100,#ebebeb);border-top:none;border-radius:0 0 8px 8px;padding:1rem}
+.dsne-section-h{background:var(--app-color,#888);color:#fff;padding:8px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:1rem}
+.dsne-card-block{background:var(--white,#fff);border:1px solid var(--g100,#ebebeb);border-top:none;padding:1rem}
 .dsne-person-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.dsne-person{display:flex;align-items:center;gap:10px;padding:8px;border-radius:6px;background:var(--g50,#f8f7f4)}
-.dsne-avatar{width:34px;height:34px;border-radius:50%;background:var(--app-color,#888);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.dsne-person{display:flex;align-items:center;gap:10px;padding:8px;background:var(--g50,#f8f7f4)}
+.dsne-avatar{width:34px;height:34px;background:var(--app-color,#888);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
 .dsne-pname{font-size:13px;font-weight:600;color:var(--g800,#2c2c2a)}
 .dsne-prole{font-size:11px;color:var(--g400,#888780);margin-top:1px}
 .dsne-uas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.dsne-uas-card{background:var(--g50,#f8f7f4);border-radius:8px;padding:12px;text-align:center}
+.dsne-uas-card{background:var(--g50,#f8f7f4);padding:12px;text-align:center}
 .dsne-uas-lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--g400,#888780);font-weight:600;margin-bottom:5px}
 .dsne-uas-name{font-size:13px;font-weight:600;color:var(--g800,#2c2c2a)}
-.dsne-inst-card{background:var(--white,#fff);border:1px solid var(--g100,#ebebeb);border-left:3px solid var(--app-color,#888);border-radius:8px;padding:0.875rem 1rem;margin-bottom:6px}
+.dsne-inst-card{background:var(--white,#fff);border:1px solid var(--g100,#ebebeb);border-left:3px solid var(--app-color,#888);padding:0.875rem 1rem;margin-bottom:6px}
 .dsne-inst-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px}
 .dsne-iname{font-size:13px;font-weight:600;color:var(--g800,#2c2c2a)}
 .dsne-idm{font-size:11px;color:var(--g400,#888780);margin-top:1px}
@@ -172,109 +124,117 @@ function filtrerInst(){
 </script>
 
 
+
+
+
 <!-- DSNE TAB -->
 <div id="tab-dsne" class="content pb-sync" style="display:none">
 
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
 <style>
-.dsne-top{display:grid;grid-template-columns:1fr 200px;gap:10px;margin-bottom:1.25rem}
-.dsne-info{background:var(--white,#fff);border:1px solid var(--g100);border-radius:10px;padding:1rem;display:flex;flex-direction:column;justify-content:space-between}
-.dsne-eyebrow{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--g400);margin-bottom:5px}
-.dsne-title{font-size:15px;font-weight:600;color:var(--g800);margin-bottom:2px}
-.dsne-sub{font-size:11px;color:var(--g400)}
-.dsne-divider{height:1px;background:var(--g100);margin:10px 0}
-.dsne-chips{display:flex;gap:5px;flex-wrap:wrap}
-.dsne-chip{padding:4px 10px;border-radius:16px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--g100);background:var(--g50);color:var(--g600);transition:all .15s}
-.dsne-chip.act{background:var(--app-light,#FFF4E6);border-color:var(--app-color,#C47200);color:var(--app-color,#C47200)}
-.dsne-chip .cn{font-size:14px;font-weight:700;display:block;color:var(--app-color,#C47200)}
-.dsne-map-box{border:1px solid var(--g100);border-radius:10px;overflow:hidden;height:190px}
-#dsne-leaflet-map{height:100%;width:100%}
-.dsne-two{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.25rem}
-.dsne-blk-lbl{font-size:10px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--g400);margin-bottom:6px}
-.dsne-prow{display:flex;align-items:center;justify-content:space-between;padding:.625rem .875rem;background:var(--white,#fff);border:1px solid var(--g100);border-radius:8px}
-.dsne-pname{font-size:12px;font-weight:600;color:var(--g800)}
-.dsne-prole{font-size:10px;color:var(--g400);margin-top:2px}
-.dsne-ptag{font-size:10px;padding:2px 9px;border-radius:10px;background:var(--app-light,#FFF4E6);color:var(--app-color,#C47200);font-weight:500}
-.dsne-uas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.25rem}
-.dsne-uas-card{padding:.75rem;background:var(--white,#fff);border:1px solid var(--g100);border-radius:8px;cursor:pointer;transition:all .15s}
-.dsne-uas-card:hover,.dsne-uas-card.act{border-color:var(--app-color,#C47200);background:var(--app-light,#FFF4E6)}
-.dsne-uas-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:4px}
-.dsne-uas-name{font-size:12px;font-weight:600;color:var(--g800)}
-.dsne-uas-ct{font-size:10px;color:var(--g400);margin-top:2px}
-.dsne-frow{display:flex;gap:6px;margin-bottom:.75rem}
-.dsne-frow input,.dsne-frow select{padding:6px 9px;border:1px solid var(--g200);border-radius:7px;font-size:12px;background:var(--white,#fff);color:var(--g800)}
-.dsne-frow input{flex:1}
-.dsne-grp{margin-bottom:.875rem}
-.dsne-ghd{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--g400);padding-bottom:5px;border-bottom:1px solid var(--g100);margin-bottom:5px}
-.dsne-inst{display:flex;align-items:center;justify-content:space-between;padding:.5rem .75rem;background:var(--white,#fff);border:1px solid var(--g100);border-left:3px solid var(--app-color,#C47200);border-radius:8px;margin-bottom:4px;cursor:pointer;transition:background .15s}
-.dsne-inst:hover,.dsne-inst.hl{background:var(--app-light,#FFF4E6)}
-.dsne-iname{font-size:12px;font-weight:600;color:var(--g800)}
-.dsne-idm{font-size:10px;color:var(--g400);margin-top:1px}
-.dsne-ibadge{font-size:10px;padding:2px 8px;border-radius:8px;font-weight:500;white-space:nowrap;flex-shrink:0;margin-left:8px}
+.dt-top{display:grid;grid-template-columns:1fr 200px;gap:12px;margin-bottom:1.5rem}
+.dt-hero{background:#0f1f3d;padding:1.25rem 1.5rem;display:flex;flex-direction:column;justify-content:space-between}
+.dt-eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#b8972a;font-weight:600;margin-bottom:6px}
+.dt-title{font-family:"Playfair Display",serif;font-size:18px;font-weight:600;color:#fff;line-height:1.2;margin-bottom:3px}
+.dt-sub{font-size:11px;color:rgba(255,255,255,.45)}
+.dt-rule{height:1px;background:rgba(255,255,255,.1);margin:12px 0}
+.dt-chips{display:flex;gap:5px;flex-wrap:wrap}
+.dt-chip{padding:4px 10px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:rgba(255,255,255,.6);transition:all .15s}
+.dt-chip.act{background:rgba(184,151,42,.15);border-color:#b8972a;color:#b8972a}
+.dt-chip .cn{font-size:14px;font-weight:600;display:block;color:#b8972a}
+.dt-map-box{overflow:hidden;border:1px solid rgba(255,255,255,.1)}
+#dt-map{height:100%;width:100%;min-height:190px}
+
+.dt-two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem}
+.dt-blk-lbl{font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#b8972a;margin-bottom:8px}
+.dt-prow{display:flex;align-items:flex-start;justify-content:space-between;padding:.75rem 1rem;background:#fff;border:1px solid #dde2ec}
+.dt-pname{font-family:"Playfair Display",serif;font-size:13px;font-weight:600;color:#0f1f3d}
+.dt-prole{font-size:11px;color:#8a97ad;margin-top:2px}
+.dt-ptag{font-size:10px;padding:2px 8px;background:#f0f4ff;color:#0f1f3d;border:1px solid #dde2ec;font-weight:500;white-space:nowrap;margin-left:8px;flex-shrink:0}
+
+.dt-uas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem}
+.dt-uas-card{padding:.875rem 1rem;background:#fff;border:1px solid #dde2ec;cursor:pointer;transition:all .15s;border-top:3px solid #dde2ec}
+.dt-uas-card:hover,.dt-uas-card.act{border-top-color:#b8972a;background:#fafbff}
+.dt-uas-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:#8a97ad;margin-bottom:4px}
+.dt-uas-name{font-family:"Playfair Display",serif;font-size:13px;font-weight:400;color:#0f1f3d}
+.dt-uas-ct{font-size:10px;color:#8a97ad;margin-top:3px}
+
+.dt-frow{display:flex;gap:6px;margin-bottom:.875rem}
+.dt-frow input,.dt-frow select{padding:6px 10px;border:1px solid #dde2ec;font-size:12px;background:#fff;color:#1a2235}
+.dt-frow input{flex:1}
+
+.dt-grp{margin-bottom:1rem}
+.dt-ghd{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#8a97ad;padding-bottom:6px;border-bottom:1px solid #dde2ec;margin-bottom:6px}
+.dt-inst{display:flex;align-items:center;justify-content:space-between;padding:.625rem 1rem;background:#fff;border:1px solid #dde2ec;border-left:3px solid #b8972a;margin-bottom:4px;cursor:pointer;transition:background .15s}
+.dt-inst:hover,.dt-inst.hl{background:#fafbff}
+.dt-iname{font-size:12px;font-weight:500;color:#0f1f3d}
+.dt-idm{font-size:10px;color:#8a97ad;margin-top:2px}
+.dt-ibadge{font-size:10px;padding:2px 8px;font-weight:500;white-space:nowrap;flex-shrink:0;margin-left:8px;border:1px solid #dde2ec;color:#4a5568;background:#f7f8fa}
 </style>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
-
-<div class="dsne-top">
-  <div class="dsne-info">
+<div class="dt-top">
+  <div class="dt-hero">
     <div>
-      <div class="dsne-eyebrow">Ministère de la Santé Publique et de la Population</div>
-      <div class="dsne-title">Direction Sanitaire du Nord-Est</div>
-      <div class="dsne-sub">Fort-Liberté, Nord-Est — Haïti</div>
+      <div class="dt-eyebrow">Ministère de la Santé Publique et de la Population</div>
+      <div class="dt-title">Direction Sanitaire du Nord-Est</div>
+      <div class="dt-sub">Fort-Liberté, Nord-Est — Haïti</div>
     </div>
     <div>
-      <div class="dsne-divider"></div>
-      <div class="dsne-chips">
-        <div class="dsne-chip act" id="dsne-c-all" onclick="dsneFUAS('')"><span class="cn">40</span>Toutes</div>
-        <div class="dsne-chip" id="dsne-c-fl" onclick="dsneFUAS('Fort-Liberté')"><span class="cn">9</span>Fort-Liberté</div>
-        <div class="dsne-chip" id="dsne-c-ou" onclick="dsneFUAS('Ouanaminthe')"><span class="cn">13</span>Ouanaminthe</div>
-        <div class="dsne-chip" id="dsne-c-tdn" onclick="dsneFUAS('Trou-du-Nord')"><span class="cn">15</span>Trou-du-Nord</div>
+      <div class="dt-rule"></div>
+      <div class="dt-chips">
+        <div class="dt-chip act" id="dt-c-all" onclick="dtFUAS('')"><span class="cn">40</span>Toutes</div>
+        <div class="dt-chip" id="dt-c-fl" onclick="dtFUAS('Fort-Liberté')"><span class="cn">9</span>Fort-Liberté</div>
+        <div class="dt-chip" id="dt-c-ou" onclick="dtFUAS('Ouanaminthe')"><span class="cn">13</span>Ouanaminthe</div>
+        <div class="dt-chip" id="dt-c-tdn" onclick="dtFUAS('Trou-du-Nord')"><span class="cn">15</span>Trou-du-Nord</div>
       </div>
     </div>
   </div>
-  <div class="dsne-map-box"><div id="dsne-leaflet-map"></div></div>
+  <div class="dt-map-box"><div id="dt-map"></div></div>
 </div>
 
-<div class="dsne-two">
+<div class="dt-two">
   <div>
-    <div class="dsne-blk-lbl">Direction</div>
-    <div class="dsne-prow">
-      <div><div class="dsne-pname">Dr. Jean Clervain Dorsainvil</div><div class="dsne-prole">Directeur Départemental</div></div>
-      <span class="dsne-ptag">Direction</span>
+    <div class="dt-blk-lbl">Direction</div>
+    <div class="dt-prow">
+      <div><div class="dt-pname">Dr. Jean Clervain Dorsainvil</div><div class="dt-prole">Directeur Départemental</div></div>
+      <span class="dt-ptag">Direction</span>
     </div>
   </div>
   <div>
-    <div class="dsne-blk-lbl">Administration</div>
-    <div class="dsne-prow">
-      <div><div class="dsne-pname">Décius Pierre</div><div class="dsne-prole">Administrateur Départemental</div></div>
-      <span class="dsne-ptag">Administration</span>
+    <div class="dt-blk-lbl">Administration</div>
+    <div class="dt-prow">
+      <div><div class="dt-pname">Décius Pierre</div><div class="dt-prole">Administrateur Départemental</div></div>
+      <span class="dt-ptag">Administration</span>
     </div>
   </div>
 </div>
 
-<div class="dsne-blk-lbl" style="margin-bottom:6px">Coordonnateurs UAS</div>
-<div class="dsne-uas-grid">
-  <div class="dsne-uas-card" id="dsne-u-fl" onclick="dsneFUAS('Fort-Liberté')">
-    <div class="dsne-uas-lbl" style="color:#C47200">Fort-Liberté</div>
-    <div class="dsne-uas-name">Dr Yvesson John Milien</div>
-    <div class="dsne-uas-ct">9 institutions</div>
+<div class="dt-blk-lbl" style="margin-bottom:8px">Coordonnateurs UAS</div>
+<div class="dt-uas-grid">
+  <div class="dt-uas-card" id="dt-u-fl" onclick="dtFUAS('Fort-Liberté')">
+    <div class="dt-uas-lbl">Fort-Liberté</div>
+    <div class="dt-uas-name">Dr Yvesson John Milien</div>
+    <div class="dt-uas-ct">9 institutions</div>
   </div>
-  <div class="dsne-uas-card" id="dsne-u-ou" onclick="dsneFUAS('Ouanaminthe')">
-    <div class="dsne-uas-lbl" style="color:#0F6E56">Ouanaminthe</div>
-    <div class="dsne-uas-name">Dr Dieulin Toussaint</div>
-    <div class="dsne-uas-ct">13 institutions</div>
+  <div class="dt-uas-card" id="dt-u-ou" onclick="dtFUAS('Ouanaminthe')">
+    <div class="dt-uas-lbl">Ouanaminthe</div>
+    <div class="dt-uas-name">Dr Dieulin Toussaint</div>
+    <div class="dt-uas-ct">13 institutions</div>
   </div>
-  <div class="dsne-uas-card" id="dsne-u-tdn" onclick="dsneFUAS('Trou-du-Nord')">
-    <div class="dsne-uas-lbl" style="color:#185FA5">Trou-du-Nord</div>
-    <div class="dsne-uas-name">Dr Jims Saint-Hilaire</div>
-    <div class="dsne-uas-ct">15 institutions</div>
+  <div class="dt-uas-card" id="dt-u-tdn" onclick="dtFUAS('Trou-du-Nord')">
+    <div class="dt-uas-lbl">Trou-du-Nord</div>
+    <div class="dt-uas-name">Dr Jims Saint-Hilaire</div>
+    <div class="dt-uas-ct">15 institutions</div>
   </div>
 </div>
 
-<div class="dsne-blk-lbl" style="margin-bottom:6px">Institutions sanitaires</div>
-<div class="dsne-frow">
-  <input id="dsne-srch" placeholder="Rechercher institution, commune, médecin…" oninput="dsneRender()">
-  <select id="dsne-ftype" onchange="dsneRender()">
+<div class="dt-blk-lbl" style="margin-bottom:8px">Institutions sanitaires</div>
+<div class="dt-frow">
+  <input id="dt-srch" placeholder="Rechercher institution, commune, médecin…" oninput="dtRender()">
+  <select id="dt-ftype" onchange="dtRender()">
     <option value="">Tous types</option>
     <option>Hôpital Départemental</option>
     <option>Hôpital Communautaire de Référence</option>
@@ -282,11 +242,11 @@ function filtrerInst(){
     <option>Centre Spécialisé</option><option>CCS</option><option>CS</option>
   </select>
 </div>
-<div id="dsne-ilist"></div>
+<div id="dt-ilist"></div>
 
 <script>
-var DSNE_C={'Fort-Liberté':'#C47200','Ouanaminthe':'#0F6E56','Trou-du-Nord':'#185FA5','Hors UAS':'#888780'};
-var DSNE_D=[
+var DT_C={"Fort-Liberté":"#0f1f3d","Ouanaminthe":"#0F6E56","Trou-du-Nord":"#185FA5","Hors UAS":"#8a97ad"};
+var DT_D=[
   {n:"Hôpital Départemental de Fort-Liberté (HFL)",t:"Hôpital Départemental",u:"Fort-Liberté",c:"Fort-Liberté",dm:"Dr Henry Claude Etienne",la:19.668,lo:-71.836},
   {n:"CDAI Fort-Liberté",t:"Centre Spécialisé",u:"Fort-Liberté",c:"Fort-Liberté",dm:"Dr Brunel Augustin",la:19.669,lo:-71.837},
   {n:"CCS Dérac",t:"CCS",u:"Fort-Liberté",c:"Fort-Liberté",dm:"Dr Rivelino Joseph",la:19.651,lo:-71.879},
@@ -328,67 +288,60 @@ var DSNE_D=[
   {n:"CS Bois de Laurence",t:"CS",u:"Hors UAS",c:"Mombin-Crochu",dm:"Dr Renaud Gerve",la:19.418,lo:-71.972},
   {n:"CCS Grosse Roche (Hors UAS)",t:"CCS",u:"Hors UAS",c:"Mombin-Crochu",dm:"Dr Sam Edwige Valcimond",la:19.430,lo:-71.965}
 ];
-
-var dsneMap=null,dsneMK=[],dsneAUAS='';
-
-function dsneInitMap(){
-  if(dsneMap)return;
-  dsneMap=L.map('dsne-leaflet-map',{zoomControl:true,attributionControl:false}).setView([19.58,-71.83],9);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:14}).addTo(dsneMap);
-  DSNE_D.forEach(function(d,i){
-    var col=DSNE_C[d.u]||'#888';
-    var ic=L.divIcon({html:'<div style="width:9px;height:9px;border-radius:50%;background:'+col+';border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.3)"></div>',className:'',iconSize:[9,9],iconAnchor:[4,4]});
-    var m=L.marker([d.la,d.lo],{icon:ic}).addTo(dsneMap);
-    m.bindPopup('<b style="font-size:11px">'+d.n+'</b><br><span style="font-size:10px;color:#666">'+d.dm+'</span>');
-    m.on('click',function(){dsneHL(i);});
-    dsneMK.push(m);
+var dtMap=null,dtMK=[],dtAUAS="";
+function dtInitMap(){
+  if(dtMap)return;
+  dtMap=L.map("dt-map",{zoomControl:true,attributionControl:false}).setView([19.58,-71.83],9);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:14}).addTo(dtMap);
+  DT_D.forEach(function(d,i){
+    var col=DT_C[d.u]||"#888";
+    var ic=L.divIcon({html:"<div style=\"width:9px;height:9px;background:"+col+";border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.3)\"></div>",className:"",iconSize:[9,9],iconAnchor:[4,4]});
+    var m=L.marker([d.la,d.lo],{icon:ic}).addTo(dtMap);
+    m.bindPopup("<b style=\"font-size:11px\">"+d.n+"</b><br><span style=\"font-size:10px;color:#666\">"+d.dm+"</span>");
+    m.on("click",function(){dtHL(i);});
+    dtMK.push(m);
   });
 }
-
-function dsneHL(i){
-  document.querySelectorAll('.dsne-inst').forEach(function(e){e.classList.remove('hl');});
-  var el=document.getElementById('dsne-i'+i);
-  if(el){el.classList.add('hl');el.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function dtHL(i){
+  document.querySelectorAll(".dt-inst").forEach(function(e){e.classList.remove("hl");});
+  var el=document.getElementById("dt-i"+i);
+  if(el){el.classList.add("hl");el.scrollIntoView({behavior:"smooth",block:"nearest"});}
 }
-
-function dsneFUAS(u){
-  dsneAUAS=u;
-  document.querySelectorAll('.dsne-chip').forEach(function(e){e.classList.remove('act');});
-  document.querySelectorAll('.dsne-uas-card').forEach(function(e){e.classList.remove('act');});
-  if(!u){document.getElementById('dsne-c-all').classList.add('act');}
+function dtFUAS(u){
+  dtAUAS=u;
+  document.querySelectorAll(".dt-chip").forEach(function(e){e.classList.remove("act");});
+  document.querySelectorAll(".dt-uas-card").forEach(function(e){e.classList.remove("act");});
+  if(!u){document.getElementById("dt-c-all").classList.add("act");}
   else{
-    var cm={'Fort-Liberté':'dsne-c-fl','Ouanaminthe':'dsne-c-ou','Trou-du-Nord':'dsne-c-tdn'};
-    var um={'Fort-Liberté':'dsne-u-fl','Ouanaminthe':'dsne-u-ou','Trou-du-Nord':'dsne-u-tdn'};
-    if(cm[u])document.getElementById(cm[u]).classList.add('act');
-    if(um[u])document.getElementById(um[u]).classList.add('act');
-    if(dsneMap){var b=DSNE_D.filter(function(d){return d.u===u;}).map(function(d){return[d.la,d.lo];});if(b.length)dsneMap.fitBounds(b,{padding:[20,20]});}
+    var cm={"Fort-Liberté":"dt-c-fl","Ouanaminthe":"dt-c-ou","Trou-du-Nord":"dt-c-tdn"};
+    var um={"Fort-Liberté":"dt-u-fl","Ouanaminthe":"dt-u-ou","Trou-du-Nord":"dt-u-tdn"};
+    if(cm[u])document.getElementById(cm[u]).classList.add("act");
+    if(um[u])document.getElementById(um[u]).classList.add("act");
+    if(dtMap){var b=DT_D.filter(function(d){return d.u===u;}).map(function(d){return[d.la,d.lo];});if(b.length)dtMap.fitBounds(b,{padding:[20,20]});}
   }
-  dsneRender();
+  dtRender();
 }
-
-function dsneRender(){
-  var q=(document.getElementById('dsne-srch').value||'').toLowerCase();
-  var ft=document.getElementById('dsne-ftype').value;
-  var l=DSNE_D.filter(function(d){return(!q||d.n.toLowerCase().includes(q)||d.c.toLowerCase().includes(q)||d.dm.toLowerCase().includes(q))&&(!dsneAUAS||d.u===dsneAUAS)&&(!ft||d.t===ft);});
+function dtRender(){
+  var q=(document.getElementById("dt-srch").value||"").toLowerCase();
+  var ft=document.getElementById("dt-ftype").value;
+  var l=DT_D.filter(function(d){return(!q||d.n.toLowerCase().includes(q)||d.c.toLowerCase().includes(q)||d.dm.toLowerCase().includes(q))&&(!dtAUAS||d.u===dtAUAS)&&(!ft||d.t===ft);});
   var g={};l.forEach(function(d){if(!g[d.u])g[d.u]=[];g[d.u].push(d);});
-  var h='';
+  var h="";
   Object.keys(g).forEach(function(u){
-    h+='<div class="dsne-grp"><div class="dsne-ghd">UAS '+u+' — '+g[u].length+' institution(s)</div>';
-    h+=g[u].map(function(d){var i=DSNE_D.indexOf(d);var col=DSNE_C[d.u]||'#888';return'<div class="dsne-inst" id="dsne-i'+i+'" style="border-left-color:'+col+'" onclick="dsneClick('+i+')"><div><div class="dsne-iname">'+d.n+'</div><div class="dsne-idm">'+d.dm+' · '+d.c+'</div></div><span class="dsne-ibadge" style="background:'+col+'18;color:'+col+'">'+d.t+'</span></div>';}).join('');
-    h+='</div>';
+    h+="<div class=\"dt-grp\"><div class=\"dt-ghd\">UAS "+u+" — "+g[u].length+" institution(s)</div>";
+    h+=g[u].map(function(d){var i=DT_D.indexOf(d);return"<div class=\"dt-inst\" id=\"dt-i"+i+"\" onclick=\"dtClick("+i+")\"><div><div class=\"dt-iname\">"+d.n+"</div><div class=\"dt-idm\">"+d.dm+" · "+d.c+"</div></div><span class=\"dt-ibadge\">"+d.t+"</span></div>";}).join("");
+    h+="</div>";
   });
-  document.getElementById('dsne-ilist').innerHTML=h||'<div style="text-align:center;padding:2rem;color:var(--g400,#888);font-size:12px">Aucun résultat.</div>';
+  document.getElementById("dt-ilist").innerHTML=h||"<div style=\"text-align:center;padding:2rem;color:#8a97ad;font-size:12px\">Aucun résultat.</div>";
 }
-
-function dsneClick(i){
-  var d=DSNE_D[i];
-  if(dsneMap&&d.la){dsneMap.setView([d.la,d.lo],13);if(dsneMK[i])dsneMK[i].openPopup();}
-  dsneHL(i);
+function dtClick(i){
+  var d=DT_D[i];
+  if(dtMap&&d.la){dtMap.setView([d.la,d.lo],13);if(dtMK[i])dtMK[i].openPopup();}
+  dtHL(i);
 }
-
 function dsneActivate(){
-  dsneRender();
-  setTimeout(function(){dsneInitMap();if(dsneMap)dsneMap.invalidateSize();},150);
+  dtRender();
+  setTimeout(function(){dtInitMap();if(dtMap)dtMap.invalidateSize();},150);
 }
 </script>
 </div>
