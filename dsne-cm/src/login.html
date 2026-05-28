@@ -33,8 +33,14 @@ async function doLogin() {
   if (!username || !password) { alertEl.textContent = 'Veuillez remplir tous les champs.'; alertEl.style.display = 'block'; return }
   btn.disabled = true; btn.textContent = 'Connexion...'
   const result = await window.dsne.login({ username, password })
-  if (result.ok) { sessionStorage.setItem('user', JSON.stringify(result.user)); window.location.href = 'index.html' }
-  else { alertEl.textContent = result.message; alertEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Se connecter' }
+  if (result.ok) {
+    sessionStorage.setItem('user', JSON.stringify(result.user))
+    window.dsne.navigate('index.html')
+  } else {
+    if (result.pending) window.dsne.navigate('pending.html')
+    else { alertEl.textContent = result.message; alertEl.style.display = 'block' }
+    btn.disabled = false; btn.textContent = 'Se connecter'
+  }
 }
 document.addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin() })
 </script>
