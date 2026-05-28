@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>DSNE — En attente</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-dsne">DSNE</div>
+      <div class="login-appname">Enregistrement Hygiène Publique</div>
+    </div>
+    <div style="text-align:center;margin-bottom:1.5rem">
+      <div style="font-size:36px;margin-bottom:0.75rem">⏳</div>
+      <p style="font-size:14px;font-weight:600;color:var(--g800);margin-bottom:6px">Compte en attente d'approbation</p>
+      <p style="font-size:12px;color:var(--g400);line-height:1.6">
+        Votre demande a été transmise à la Direction Sanitaire du Nord-Est. Vous serez notifié dès que votre compte sera approuvé.
+      </p>
+    </div>
+    <div id="alertApproved" class="alert alert-success" style="display:none">
+      Compte approuvé ! Redirection en cours…
+    </div>
+    <button class="btn btn-primary btn-full" onclick="checkApproval()">Vérifier l'approbation</button>
+    <p style="font-size:11px;color:var(--g400);text-align:center;margin-top:0.75rem">
+      La vérification nécessite une connexion internet.
+    </p>
+  </div>
+</div>
+<script>
+async function checkApproval() {
+  const result = await window.dsne.syncApproval()
+  if (result.approved) {
+    document.getElementById('alertApproved').style.display = 'block'
+    setTimeout(() => window.dsne.navigate('login.html'), 1500)
+  } else {
+    alert('Votre compte n\'est pas encore approuvé. Veuillez réessayer plus tard.')
+  }
+}
+// Auto-check on load
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(checkApproval, 2000)
+})
+</script>
+</body>
+</html>
