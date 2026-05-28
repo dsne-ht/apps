@@ -2,66 +2,46 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DSNE — Accueil</title>
+<title>DSNE — Enregistrement Visiteurs</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div class="login-wrap">
   <div class="login-card">
     <div class="login-logo">
-      <h2>DSNE — Accueil</h2>
-      <p>Direction Sanitaire du Nord-Est<br>PROC-004 · Gestion des visiteurs</p>
+      <div class="login-dsne">DSNE</div>
+      <div class="login-appname">Enregistrement Visiteurs</div>
     </div>
-
     <div id="alert" class="alert alert-error" style="display:none"></div>
-
-    <div class="field" style="margin-bottom:12px">
-      <label>Nom d'utilisateur</label>
-      <input type="text" id="username" placeholder="Votre identifiant" autocomplete="username">
-    </div>
     <div class="field" style="margin-bottom:1.5rem">
-      <label>Mot de passe</label>
-      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+      <label>Code d'accès</label>
+      <input type="password" id="code" placeholder="• • • • • •" maxlength="6"
+        autocomplete="off" inputmode="numeric"
+        style="font-size:22px;letter-spacing:0.3em;text-align:center">
+      <span class="field-desc" style="text-align:center">Saisir votre code personnel à 6 chiffres.</span>
     </div>
-
-    <button class="btn btn-primary btn-full" id="loginBtn" onclick="doLogin()">
-      Se connecter
-    </button>
+    <button class="btn btn-primary btn-full" id="loginBtn" onclick="doLogin()">Accéder</button>
   </div>
 </div>
-
 <script>
 async function doLogin() {
-  const username = document.getElementById('username').value.trim()
-  const password = document.getElementById('password').value.trim()
-  const alert = document.getElementById('alert')
+  const code = document.getElementById('code').value.trim()
+  const alertEl = document.getElementById('alert')
   const btn = document.getElementById('loginBtn')
-
-  if (!username || !password) {
-    alert.textContent = 'Veuillez remplir tous les champs.'
-    alert.style.display = 'block'
-    return
-  }
-
-  btn.disabled = true
-  btn.textContent = 'Connexion...'
-
-  const result = await window.api.login({ username, password })
+  if (!code) { alertEl.textContent = 'Veuillez saisir votre code.'; alertEl.style.display = 'block'; return }
+  btn.disabled = true; btn.textContent = 'Vérification...'
+  const result = await window.api.login({ code })
   if (result.ok) {
     sessionStorage.setItem('user', JSON.stringify(result.user))
     window.api.navigate('app.html')
   } else {
-    alert.textContent = result.message
-    alert.style.display = 'block'
-    btn.disabled = false
-    btn.textContent = 'Se connecter'
+    alertEl.textContent = result.message
+    alertEl.style.display = 'block'
+    document.getElementById('code').value = ''
+    btn.disabled = false; btn.textContent = 'Accéder'
   }
 }
-
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') doLogin()
-})
+document.addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin() })
 </script>
 </body>
 </html>
