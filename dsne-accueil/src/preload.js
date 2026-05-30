@@ -19,4 +19,6 @@ contextBridge.exposeInMainWorld('api', {
   getAllDocuments: () => ipcRenderer.invoke('get-all-documents'),
   syncSheets: () => ipcRenderer.invoke('sync-sheets'),
   getSyncStatus: () => ipcRenderer.invoke('get-sync-status'),
+  logAction: (data) => ipcRenderer.invoke('log-action', data),
+  getAuditLog: () => ipcRenderer.invoke('get-audit-log'),
 })
