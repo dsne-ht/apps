@@ -24,6 +24,13 @@ function initDB() {
       statut TEXT DEFAULT 'en_attente',
       created_at TEXT DEFAULT (datetime('now'))
     );
+    CREATE TABLE IF NOT EXISTS audit_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user TEXT NOT NULL,
+      action TEXT NOT NULL,
+      details TEXT,
+      timestamp TEXT DEFAULT (datetime('now'))
+    );
     CREATE TABLE IF NOT EXISTS queue (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       data TEXT NOT NULL,
@@ -55,6 +62,9 @@ function createWindow(page) {
   win.loadFile(path.join(__dirname, 'src', page));
   win.setMenuBarVisibility(false);
   win.once('ready-to-show', () => win.show());
+  win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    callback({ responseHeaders: { ...details.responseHeaders, 'Content-Security-Policy': ["default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:"] } })
+  })
 }
 
 app.whenReady().then(() => { initDB(); createWindow(getStartPage()); });
@@ -86,6 +96,14 @@ ipcMain.handle('sync-approval', async () => {
 
 ipcMain.handle('logout', () => { win.loadFile(path.join(__dirname, 'src', 'login.html')); return { ok: true }; });
 ipcMain.handle('navigate', (_, page) => { win.loadFile(path.join(__dirname, 'src', page)); });
+
+ipcMain.handle('log-action', (_, { user, action, details }) => {
+  db.prepare('INSERT INTO audit_log (user, action, details) VALUES (?,?,?)').run(user, action, details || '')
+  return { ok: true }
+})
+ipcMain.handle('get-audit-log', () => {
+  return db.prepare('SELECT * FROM audit_log ORDER BY timestamp DESC LIMIT 500').all()
+})
 
 ipcMain.handle('queue-save',        (_, data) => { const r = db.prepare('INSERT INTO queue (data) VALUES (?)').run(JSON.stringify(data)); return { id: r.lastInsertRowid }; });
 ipcMain.handle('queue-pending',     ()        => db.prepare("SELECT * FROM queue WHERE status='pending' ORDER BY id DESC").all());
