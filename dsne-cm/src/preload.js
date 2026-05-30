@@ -10,4 +10,6 @@ contextBridge.exposeInMainWorld('dsne', {
   queueAll:        ()     => ipcRenderer.invoke('queue-all'),
   queueMarkSynced: (id)   => ipcRenderer.invoke('queue-mark-synced', id),
   queueCount:      ()     => ipcRenderer.invoke('queue-count'),
+  logAction:       (data) => ipcRenderer.invoke('log-action', data),
+  getAuditLog:     ()     => ipcRenderer.invoke('get-audit-log'),
 });
