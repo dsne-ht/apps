@@ -29,6 +29,7 @@
 <div class="tabs">
   <div class="tab" onclick="switchTab('dsne', this)">DSNE</div>
   <div class="tab active" onclick="switchTab('formulaire', this)">Formulaire de certificat</div>
+  <div class="tab" onclick="switchTab('audit', this)">Journal d'audit</div>
   <div class="tab" onclick="switchTab('journal', this)">Journal des certificats</div>
 </div>
 
@@ -352,7 +353,7 @@ function dsneActivate(){
   <div id="alertForm" class="alert alert-error" style="display:none"></div>
 
   <div class="form-intro">
-    <h2>CERTIFICAT D'HYGIÈNE PUBLIQUE ET DE SÉCURITÉ SANITAIRE — DSNE</h2>
+    <h2>DEMANDE DE CERTIFICAT D'HYGIÈNE PUBLIQUE — DSNE</h2>
     <p>Ce formulaire permet d'enregistrer une demande de certificat d'hygiène publique et de sécurité sanitaire auprès de la Direction Sanitaire du Nord-Est (DSNE). Il est destiné aux établissements du département du Nord-Est souhaitant obtenir ou renouveler leur certification.</p>
     <div class="warning">Tous les champs marqués d'un astérisque (*) sont obligatoires. Toute demande incomplète ne pourra pas être traitée.</div>
   </div>
@@ -487,6 +488,17 @@ function dsneActivate(){
   <div class="log-list" id="logList"></div>
 </div>
 
+
+<!-- TAB AUDIT -->
+<div id="tab-audit" class="content pb-sync" style="display:none">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.75rem">
+    <input type="text" id="auditSearch" placeholder="Rechercher action, utilisateur…"
+      oninput="filtrerAudit()"
+      style="flex:1;padding:7px 10px;border:1px solid var(--g200);font-size:13px">
+  </div>
+  <div id="auditList"></div>
+</div>
+
 <!-- SYNC BAR -->
 <div class="sync-bar">
   <div class="sync-info">
@@ -516,6 +528,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 function switchTab(name, el) {
   document.getElementById('tab-dsne').style.display = name === 'dsne' ? 'block' : 'none'
+  document.getElementById('tab-audit').style.display = name === 'audit' ? 'block' : 'none'
   document.getElementById('tab-formulaire').style.display = name === 'formulaire' ? 'block' : 'none'
   document.getElementById('tab-journal').style.display = name === 'journal' ? 'block' : 'none'
   if (name === 'dsne') dsneActivate()
@@ -523,6 +536,7 @@ function switchTab(name, el) {
   el.classList.add('active')
   if (name === 'journal') loadJournal()
   if (name === 'dsne') dsneActivate()
+  if (name === 'audit') loadAudit()
 }
 
 async function doLogout() {
@@ -702,6 +716,25 @@ function resetForm() {
   ;['f_jour','f_mois','f_annee'].forEach(id => document.getElementById(id).value = '')
   document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false)
   removeFile()
+}
+
+
+var allAudit = []
+async function loadAudit() {
+  allAudit = await window.dsne.getAuditLog()
+  filtrerAudit()
+}
+function filtrerAudit() {
+  const q = (document.getElementById('auditSearch').value || '').toLowerCase()
+  const liste = allAudit.filter(a => !q || a.user.toLowerCase().includes(q) || a.action.toLowerCase().includes(q))
+  const list = document.getElementById('auditList')
+  if (!liste.length) { list.innerHTML = '<div class="empty">Aucune action enregistree.</div>'; return }
+  list.innerHTML = liste.map(function(a) {
+    const ts = new Date(a.timestamp)
+    const date = ts.toLocaleDateString('fr-HT', {day:'2-digit',month:'2-digit',year:'numeric'})
+    const heure = ts.toLocaleTimeString('fr-HT', {hour:'2-digit',minute:'2-digit'})
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#fff;border:1px solid var(--g100);border-left:3px solid var(--c600);margin-bottom:4px"><div><div style="font-size:13px;font-weight:600;color:var(--g800)">' + a.action + '</div><div style="font-size:11px;color:var(--g400);margin-top:1px">' + a.user + (a.details ? ' · ' + a.details : '') + '</div></div><div style="font-size:11px;color:var(--g400);text-align:right;white-space:nowrap;margin-left:12px">' + date + '<br>' + heure + '</div></div>'
+  }).join('')
 }
 
 function toast(msg, type='info') {
