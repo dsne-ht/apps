@@ -729,7 +729,8 @@ function switchTab(name, el) {
   if (name==='visites') loadRegistreVisites()
   if (name==='documents') { loadRegistreDocuments(); loadVisitesPourDoc() }
   if (name==='uids') loadAllUIDs()
-  if (name==='dsne') filtrerInst()
+  if (name==='dsne') dsneActivate()
+  if (name==='audit') loadAudit()
 }
 
 async function doLogout() {
