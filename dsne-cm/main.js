@@ -6,7 +6,7 @@ const fs = require('fs');
 
 let db;
 let win;
-const NOTIF_URL = 'NOTIF_SCRIPT_URL_ICI';
+const NOTIF_URL = 'https://script.google.com/macros/s/AKfycbwLRtjqWR-lKeTfrCL_qR9nLjmHMgFofEqksX9pWpE6u-e1NZxd1F1-xxiRNHWmQjB0pA/exec';
 const APP_NAME = 'Clinique Mobile';
 
 const userDataPath = app.getPath('userData');
@@ -118,7 +118,7 @@ ipcMain.handle('queue-count',       ()        => db.prepare("SELECT COUNT(*) as 
 
 async function syncDemandeCompte(data) {
   try {
-    if (!NOTIF_URL || NOTIF_URL === 'NOTIF_SCRIPT_URL_ICI') {
+    if (!NOTIF_URL || NOTIF_URL === 'https://script.google.com/macros/s/AKfycbwLRtjqWR-lKeTfrCL_qR9nLjmHMgFofEqksX9pWpE6u-e1NZxd1F1-xxiRNHWmQjB0pA/exec') {
       console.log('NOTIF_URL non configuré — notification ignorée');
       return;
     }
