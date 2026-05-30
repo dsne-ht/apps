@@ -527,11 +527,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 })
 
 function switchTab(name, el) {
-  document.getElementById('tab-dsne').style.display = name === 'dsne' ? 'block' : 'none'
-  document.getElementById('tab-audit').style.display = name === 'audit' ? 'block' : 'none'
-  document.getElementById('tab-formulaire').style.display = name === 'formulaire' ? 'block' : 'none'
-  document.getElementById('tab-journal').style.display = name === 'journal' ? 'block' : 'none'
-  if (name === 'dsne') dsneActivate()
+  ['dsne','formulaire','journal','audit'].forEach(t => {
+    const el2 = document.getElementById('tab-'+t)
+    if (el2) el2.style.display = t===name ? 'block' : 'none'
+  })
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
   el.classList.add('active')
   if (name === 'journal') loadJournal()
