@@ -33,6 +33,7 @@
   <div class="tab" onclick="switchTab('visites', this)">Registre des visites</div>
   <div class="tab" onclick="switchTab('documents', this)">Registre des documents</div>
   <div class="tab" onclick="switchTab('uids', this)">Gestion des UIDs</div>
+  <div class="tab" onclick="switchTab('audit', this)">Journal d'audit</div>
 </div>
 
 <!-- ══ ONGLET DSNE ══ -->
@@ -674,6 +675,25 @@ function dsneActivate(){
   </div>
 </div>
 
+
+<!-- ══ TAB: AUDIT ══ -->
+<div id="tab-audit" class="content pb-sync" style="display:none">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.75rem">
+    <input type="text" id="auditSearch" placeholder="Rechercher action, utilisateur…"
+      oninput="filtrerAudit()"
+      style="flex:1;padding:7px 10px;border:1px solid var(--g200);font-size:13px;background:#fff">
+    <select id="auditFilter" onchange="filtrerAudit()"
+      style="padding:7px 10px;border:1px solid var(--g200);font-size:13px;background:#fff;color:var(--g800)">
+      <option value="">Toutes les actions</option>
+      <option value="entree">Entrées</option>
+      <option value="sortie">Sorties</option>
+      <option value="document">Documents</option>
+      <option value="login">Connexions</option>
+    </select>
+  </div>
+  <div id="auditList"></div>
+</div>
+
 <!-- SYNC BAR -->
 <div class="sync-bar">
   <div class="sync-info">
@@ -700,7 +720,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 })
 
 function switchTab(name, el) {
-  ['dsne','entree','sortie','visites','documents','uids'].forEach(t => {
+  ['dsne','entree','sortie','visites','documents','uids','audit'].forEach(t => {
     document.getElementById('tab-'+t).style.display = t===name ? 'block' : 'none'
   })
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
@@ -816,6 +836,7 @@ async function soumettrEntree() {
   btn.disabled = true; btn.textContent = 'Enregistrement...'
   const result = await window.api.enregistrerEntree(fields)
   if (result.ok) {
+    window.api.logAction({ user: currentUser.nom_complet, action: 'entree', details: result.id_visite + ' — ' + fields.nom_complet })
     showAlert('alertEntree', 'success', `Entrée enregistrée — ${result.id_visite} · Statut : ${result.statut === 'Entre' ? 'Entré' : 'Refusé'}`)
     resetEntreeForm()
     await updateSyncStatus()
@@ -864,6 +885,7 @@ async function soumettreSortie() {
   btn.disabled = true; btn.textContent = 'Enregistrement...'
   const result = await window.api.enregistrerSortie({ id_visite, carte_recuperee, agent_sortie: currentUser.nom_complet })
   if (result.ok) {
+    window.api.logAction({ user: currentUser.nom_complet, action: 'sortie', details: id_visite })
     showAlert('alertSortie', 'success', 'Sortie enregistrée avec succès.')
     document.getElementById('s_visite').value = ''
     document.getElementById('s_carte').value = ''
@@ -961,6 +983,7 @@ async function enregistrerDocument() {
   btn.disabled = true; btn.textContent = 'Enregistrement...'
   const result = await window.api.enregistrerDocument(data)
   if (result.ok) {
+    window.api.logAction({ user: currentUser.nom_complet, action: 'document', details: result.id_document + ' — ' + data.description })
     showAlert('alertDoc', 'success', `Document enregistré — ${result.id_document}`)
     ;['d_remis_par','d_description','d_notes'].forEach(id => document.getElementById(id).value = '')
     ;['d_visite_liee','d_type','d_service'].forEach(id => document.getElementById(id).value = '')
@@ -1050,6 +1073,37 @@ function showAlert(id, type, msg) {
   el.style.display = 'block'
   setTimeout(() => el.style.display = 'none', 5000)
 }
+
+var allAudit = []
+
+async function loadAudit() {
+  allAudit = await window.api.getAuditLog()
+  filtrerAudit()
+}
+
+function filtrerAudit() {
+  const q = (document.getElementById('auditSearch')?.value || '').toLowerCase()
+  const f = document.getElementById('auditFilter')?.value || ''
+  const liste = allAudit.filter(a =>
+    (!q || a.user.toLowerCase().includes(q) || a.action.toLowerCase().includes(q) || (a.details||'').toLowerCase().includes(q)) &&
+    (!f || a.action.toLowerCase().includes(f))
+  )
+  const list = document.getElementById('auditList')
+  if (!liste.length) { list.innerHTML = '<div class="empty">Aucune action enregistrée.</div>'; return }
+  list.innerHTML = liste.map(a => {
+    const ts = new Date(a.timestamp)
+    const date = ts.toLocaleDateString('fr-HT', {day:'2-digit',month:'2-digit',year:'numeric'})
+    const heure = ts.toLocaleTimeString('fr-HT', {hour:'2-digit',minute:'2-digit'})
+    return \`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#fff;border:1px solid var(--g100);border-left:3px solid var(--o400);margin-bottom:4px">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--g800)">\${a.action}</div>
+        <div style="font-size:11px;color:var(--g400);margin-top:1px">\${a.user}\${a.details ? ' · ' + a.details : ''}</div>
+      </div>
+      <div style="font-size:11px;color:var(--g400);text-align:right;white-space:nowrap;margin-left:12px">\${date}<br>\${heure}</div>
+    </div>\`
+  }).join('')
+}
+
 </script>
 </body>
 </html>
