@@ -59,73 +59,7 @@
 .dsne-imeta{display:flex;gap:5px;flex-wrap:wrap}
 </style>
 
-<script>
-var DSNE_INST=[
-  {nom:"Hôpital Départemental de Fort-Liberté (HFL)",type:"Hôpital Départemental",uas:"Fort-Liberté",commune:"Fort-Liberté",dm:"Dr Henry Claude Etienne"},
-  {nom:"CDAI Fort-Liberté",type:"Centre Spécialisé",uas:"Fort-Liberté",commune:"Fort-Liberté",dm:"Dr Brunel Augustin"},
-  {nom:"CCS Dérac",type:"CCS",uas:"Fort-Liberté",commune:"Fort-Liberté",dm:"Dr Rivelino Joseph"},
-  {nom:"CCS Meillac",type:"CCS",uas:"Fort-Liberté",commune:"Meillac",dm:"Dr Francisque Severe"},
-  {nom:"CCS Mérande",type:"CCS",uas:"Fort-Liberté",commune:"Ferrier",dm:"Dr Magalie Surling Dasny"},
-  {nom:"CS Ferrier",type:"CS",uas:"Fort-Liberté",commune:"Ferrier",dm:"Dr Luckens Pierre"},
-  {nom:"CS Acul Samedi",type:"CS",uas:"Fort-Liberté",commune:"Fort-Liberté",dm:"Dr Anegard Joseph"},
-  {nom:"CS Perches",type:"CS",uas:"Fort-Liberté",commune:"Perches",dm:"Dr Vincent Mecejour"},
-  {nom:"CS Vallières",type:"CS",uas:"Fort-Liberté",commune:"Vallières",dm:"Dr Frantz-Elucien Joseph"},
-  {nom:"CMS Ouanaminthe (CMSO)",type:"CMS / Hôpital",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Jhon Cador Joseph"},
-  {nom:"CS Capotille",type:"CS",uas:"Ouanaminthe",commune:"Capotille",dm:"Dr Adrien Felix"},
-  {nom:"CMS Mont-Organisé (CMSMO)",type:"CMS",uas:"Ouanaminthe",commune:"Mont-Organisé",dm:"Dr Margarette Titus"},
-  {nom:"CCS Lamine",type:"CCS",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Enese Desanges"},
-  {nom:"CS Acul des Pins",type:"CS",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Ricardo Joseph"},
-  {nom:"CS Gens de Nantes",type:"CS",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Cloridor Joachim"},
-  {nom:"CS Savane au Lait",type:"CS",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Mikenly Philogene"},
-  {nom:"CCS Savane Longue",type:"CCS",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Andy Paul"},
-  {nom:"CS Dilaire",type:"CS",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Roselande Jules"},
-  {nom:"CS Rose Bonite",type:"CS",uas:"Ouanaminthe",commune:"Capotille",dm:"Dr Nachemy Mea"},
-  {nom:"CS Bois Poux",type:"CS",uas:"Ouanaminthe",commune:"Capotille",dm:"À compléter"},
-  {nom:"CS Carice",type:"CS",uas:"Ouanaminthe",commune:"Carice",dm:"Dr Lyonel Maxime"},
-  {nom:"CS Corosse (Capotille)",type:"CS",uas:"Ouanaminthe",commune:"Capotille",dm:"À compléter"},
-  {nom:"HCR Trou-du-Nord",type:"Hôpital Communautaire de Référence",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"Dr Jude Achille Dorsainvil"},
-  {nom:"CS Terrier Rouge",type:"CS",uas:"Trou-du-Nord",commune:"Terrier Rouge",dm:"Dr Abnel Benjamin"},
-  {nom:"CS Pilette",type:"CS",uas:"Trou-du-Nord",commune:"Terrier Rouge",dm:"Dr Gelande-Shamir Laroche"},
-  {nom:"CS Jacquezyl",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"Dr Fredo Dorvil"},
-  {nom:"CS NDL Grand Bassin",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"À compléter"},
-  {nom:"CS Leroux Cachiman",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"Dr Jacques-Antoine Jean-Louis"},
-  {nom:"CS Roche Plate",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"À compléter"},
-  {nom:"CCS Grosse Roche (TDN)",type:"CCS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"Dr Sam Edwige Valcimond"},
-  {nom:"CS Caracol",type:"CS",uas:"Trou-du-Nord",commune:"Caracol",dm:"Dr Samuel Jean-Baptiste"},
-  {nom:"CS Cahesse",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"Dr Romel Mentor"},
-  {nom:"CS Sainte-Suzanne",type:"CS",uas:"Trou-du-Nord",commune:"Sainte-Suzanne",dm:"Dr Suzanne Joseph"},
-  {nom:"CS Danda",type:"CS",uas:"Trou-du-Nord",commune:"Sainte-Suzanne",dm:"Dr Edwine Augustin"},
-  {nom:"CS Dupity",type:"CS",uas:"Trou-du-Nord",commune:"Sainte-Suzanne",dm:"Dr Julianie Dalusma"},
-  {nom:"CS Phaéton",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"Dr Jean Baptiste Desir"},
-  {nom:"CS Corosse (Trou-du-Nord)",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"À compléter"},
-  {nom:"CS Mombin-Crochu",type:"CS (niveau avancé)",uas:"Hors UAS",commune:"Mombin-Crochu",dm:"Dr Miles Cherenfant"},
-  {nom:"CS Bois de Laurence",type:"CS",uas:"Hors UAS",commune:"Mombin-Crochu",dm:"Dr Renaud Gerve"},
-  {nom:"CCS Grosse Roche (Hors UAS)",type:"CCS",uas:"Hors UAS",commune:"Mombin-Crochu",dm:"Dr Sam Edwige Valcimond"}
-];
 
-function filtrerInst(){
-  var q=(document.getElementById('dsne-search').value||'').toLowerCase();
-  var uas=document.getElementById('dsne-uas-f').value||'';
-  var type=document.getElementById('dsne-type-f').value||'';
-  var liste=DSNE_INST.filter(function(i){
-    var mq=!q||i.nom.toLowerCase().includes(q)||i.commune.toLowerCase().includes(q)||(i.dm&&i.dm.toLowerCase().includes(q));
-    var mu=!uas||i.uas===uas;
-    var mt=!type||i.type===type;
-    return mq&&mu&&mt;
-  });
-  var list=document.getElementById('dsne-inst-list');
-  if(!liste.length){list.innerHTML='<div class="empty">Aucune institution correspondante.</div>';return;}
-  var byUas={};
-  liste.forEach(function(i){if(!byUas[i.uas])byUas[i.uas]=[];byUas[i.uas].push(i);});
-  var html='';
-  Object.keys(byUas).forEach(function(uas){
-    var insts=byUas[uas];
-    html+='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--g400);margin:1rem 0 0.5rem;padding-bottom:4px;border-bottom:1px solid var(--g100)">UAS '+uas+' — '+insts.length+' institution(s)</div>';
-    html+=insts.map(function(i){return'<div class="dsne-inst-card"><div class="dsne-inst-top"><div><div class="dsne-iname">'+i.nom+'</div><div class="dsne-idm">DM : '+i.dm+'</div></div><div class="dsne-icommune">'+i.commune+'</div></div><div class="dsne-imeta"><span class="badge badge-svc">'+i.type+'</span><span class="badge" style="background:var(--g100);color:var(--g600)">'+i.uas+'</span></div></div>';}).join('');
-  });
-  list.innerHTML=html;
-}
-</script>
 
 
 
@@ -1095,13 +1029,13 @@ function filtrerAudit() {
     const ts = new Date(a.timestamp)
     const date = ts.toLocaleDateString('fr-HT', {day:'2-digit',month:'2-digit',year:'numeric'})
     const heure = ts.toLocaleTimeString('fr-HT', {hour:'2-digit',minute:'2-digit'})
-    return \`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#fff;border:1px solid var(--g100);border-left:3px solid var(--o400);margin-bottom:4px">
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#fff;border:1px solid var(--g100);border-left:3px solid var(--o400);margin-bottom:4px">
       <div>
         <div style="font-size:13px;font-weight:600;color:var(--g800)">\${a.action}</div>
         <div style="font-size:11px;color:var(--g400);margin-top:1px">\${a.user}\${a.details ? ' · ' + a.details : ''}</div>
       </div>
       <div style="font-size:11px;color:var(--g400);text-align:right;white-space:nowrap;margin-left:12px">\${date}<br>\${heure}</div>
-    </div>\`
+    </div>`
   }).join('')
 }
 
