@@ -31,6 +31,8 @@ function initDB() {
       details TEXT,
       timestamp TEXT DEFAULT (datetime('now'))
     );
+    INSERT OR IGNORE INTO users (username, password, nom_complet, statut, role)
+    VALUES ('admin', 'dsne2026', 'Administrateur', 'approuve', 'admin');
     CREATE TABLE IF NOT EXISTS queue (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       data TEXT NOT NULL,
