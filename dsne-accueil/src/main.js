@@ -74,6 +74,13 @@ function initDB() {
       synced INTEGER DEFAULT 0
     );
 
+    CREATE TABLE IF NOT EXISTS audit_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user TEXT NOT NULL,
+      action TEXT NOT NULL,
+      details TEXT,
+      timestamp TEXT DEFAULT (datetime('now'))
+    );
     CREATE TABLE IF NOT EXISTS rapports_log (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       type TEXT NOT NULL,
@@ -84,6 +91,7 @@ function initDB() {
 
     -- Réceptionnistes préchargées
     INSERT OR IGNORE INTO users (code, nom_complet, email, role) VALUES
+      ('000000', 'Administrateur', 'sec.direction.dsne@gmail.com', 'admin'),
       ('145056', 'Geralda Michel', 'reception.dsne@gmail.com', 'reception'),
       ('582005', 'Renande Destiné', 'reception.dsne@gmail.com', 'reception'),
       ('789043', 'Vasna Pierre', 'reception.dsne@gmail.com', 'reception'),
@@ -116,6 +124,9 @@ function createWindow() {
   })
   mainWindow.loadFile(path.join(__dirname, 'login.html'))
   mainWindow.once('ready-to-show', () => mainWindow.show())
+  mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    callback({ responseHeaders: { ...details.responseHeaders, 'Content-Security-Policy': ["default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:"] } })
+  })
 }
 
 app.whenReady().then(() => { initDB(); createWindow() })
@@ -228,6 +239,15 @@ ipcMain.handle('get-documents-jour', () => {
 ipcMain.handle('get-all-documents', () =>
   db.prepare("SELECT * FROM documents ORDER BY horodateur DESC").all()
 )
+
+// ── AUDIT LOG
+ipcMain.handle('log-action', (_, { user, action, details }) => {
+  db.prepare('INSERT INTO audit_log (user, action, details) VALUES (?,?,?)').run(user, action, details || '')
+  return { ok: true }
+})
+ipcMain.handle('get-audit-log', () => {
+  return db.prepare('SELECT * FROM audit_log ORDER BY timestamp DESC LIMIT 500').all()
+})
 
 // ── SYNC
 ipcMain.handle('sync-sheets', async () => {
