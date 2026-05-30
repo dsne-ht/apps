@@ -24,6 +24,11 @@
       <label>Nom d'utilisateur</label>
       <input type="text" id="username" placeholder="Identifiant de connexion">
     </div>
+    <div class="field" style="margin-bottom:12px">
+      <label>Adresse e-mail</label>
+      <input type="email" id="email" placeholder="votre@email.com">
+      <span style="font-size:11px;color:var(--g400)">Vous recevrez une confirmation par e-mail.</span>
+    </div>
     <div class="field" style="margin-bottom:1.25rem">
       <label>Mot de passe</label>
       <input type="password" id="password" placeholder="••••••••">
@@ -40,13 +45,14 @@ async function doRegister() {
   const nom_complet = document.getElementById('nom_complet').value.trim()
   const username = document.getElementById('username').value.trim()
   const password = document.getElementById('password').value.trim()
+  const email = document.getElementById('email').value.trim()
   const alertEl = document.getElementById('alert')
   const btn = document.getElementById('regBtn')
   if (!nom_complet || !username || !password) {
     alertEl.textContent = 'Tous les champs sont requis.'; alertEl.style.display = 'block'; return
   }
   btn.disabled = true; btn.textContent = 'Envoi en cours...'
-  const result = await window.dsne.register({ username, password, nom_complet })
+  const result = await window.dsne.register({ username, password, nom_complet, email })
   if (result.ok) {
     window.dsne.navigate('pending.html')
   } else {
