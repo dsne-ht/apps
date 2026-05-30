@@ -1,10 +1,13 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
+const https = require('https');
 const path = require('path');
 const Database = require('better-sqlite3');
 const fs = require('fs');
 
 let db;
 let win;
+const NOTIF_URL = 'NOTIF_SCRIPT_URL_ICI';
+const APP_NAME = 'Clinique Mobile';
 
 const userDataPath = app.getPath('userData');
 const dbPath = path.join(userDataPath, 'dsne_cm.db');
@@ -80,10 +83,10 @@ ipcMain.handle('login', (_, { username, password }) => {
   return { ok: false, message: 'Identifiants incorrects.' };
 });
 
-ipcMain.handle('register', async (_, { username, password, nom_complet }) => {
+ipcMain.handle('register', async (_, { username, password, nom_complet, email }) => {
   try {
     db.prepare("INSERT INTO users (username,password,nom_complet,statut) VALUES (?,?,?,'en_attente')").run(username, password, nom_complet);
-    await syncDemandeCompte({ username, nom_complet, app_name: 'Clinique Mobile', created_at: new Date().toISOString() });
+    await syncDemandeCompte({ username, nom_complet, app_name: APP_NAME, email: email || '', created_at: new Date().toISOString() });
     return { ok: true };
   } catch(e) {
     if (e.message.includes('UNIQUE')) return { ok: false, message: "Ce nom d'utilisateur existe déjà." };
@@ -114,6 +117,31 @@ ipcMain.handle('queue-mark-synced', (_, id)   => { db.prepare("UPDATE queue SET 
 ipcMain.handle('queue-count',       ()        => db.prepare("SELECT COUNT(*) as n FROM queue WHERE status='pending'").get().n);
 
 async function syncDemandeCompte(data) {
-  // Sync vers Google Sheets — implémenté lors de la configuration OAuth
-  console.log('Demande de compte enregistrée localement:', data.nom_complet);
+  try {
+    if (!NOTIF_URL || NOTIF_URL === 'NOTIF_SCRIPT_URL_ICI') {
+      console.log('NOTIF_URL non configuré — notification ignorée');
+      return;
+    }
+    const payload = JSON.stringify(data);
+    const url = new URL(NOTIF_URL);
+    const options = {
+      hostname: url.hostname,
+      path: url.pathname + url.search,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) }
+    };
+    await new Promise((resolve, reject) => {
+      const req = https.request(options, (res) => {
+        let body = '';
+        res.on('data', (chunk) => body += chunk);
+        res.on('end', () => resolve(body));
+      });
+      req.on('error', reject);
+      req.write(payload);
+      req.end();
+    });
+    console.log('Notification envoyée pour:', data.nom_complet);
+  } catch(e) {
+    console.error('Notification échouée:', e.message);
+  }
 }
