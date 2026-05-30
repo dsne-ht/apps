@@ -1,7 +1,7 @@
 {
   "name": "dsne-accueil",
-  "version": "1.0.0",
-  "description": "DSNE — Module Accueil et Gestion des Visiteurs (PROC-004)",
+  "version": "1.9.0",
+  "description": "DSNE — Enregistrement des Visiteurs (PROC-004)",
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
@@ -15,9 +15,7 @@
     },
     "win": {
       "target": "nsis",
-      "arch": [
-        "x64"
-      ]
+      "icon": "assets/vs.png"
     },
     "nsis": {
       "oneClick": true,
