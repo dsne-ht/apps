@@ -1273,105 +1273,160 @@ const RP_MONTHS_REMOTE = ['Dec','Jan','Fev','Mar','Avr','Mai','Juin','Juil','Aou
 /* ── TEMPLATES ── */
 const TEMPLATES = [
   {
-    id:'engagement', label:"Lettre d'engagement", type:'Ressources humaines',
-    objet:"Lettre d'engagement",
-    fields:[
-      {id:'f_nom',   label:'Nom complet',    placeholder:'Prénom Nom'},
-      {id:'f_poste', label:'Poste occupé',   placeholder:'ex. Technicien de laboratoire'},
-      {id:'f_debut', label:'Date de prise de service', type:'date', placeholder:''},
-      {id:'f_super', label:'Superviseur direct', placeholder:'Titre et nom'},
-      {id:'f_taches',label:'Description des tâches', type:'textarea', placeholder:'Décrire les responsabilités principales…'},
+    id: 'engagement',
+    label: "Lettre d'engagement",
+    type: 'Ressources humaines',
+    objet: "Lettre d'engagement",
+    fields: [
+      {id:'f_civilite',  label:'Civilité',              placeholder:'Madame / Monsieur'},
+      {id:'f_nom',       label:'Nom complet',            placeholder:'Prénom NOM'},
+      {id:'f_nif',       label:'NIF',                    placeholder:'NIF : …………………'},
+      {id:'f_cin',       label:'CIN',                    placeholder:'CIN : …………………'},
+      {id:'f_poste',     label:'Poste / Rôle',           placeholder:'ex. Opérateur de saisie'},
+      {id:'f_programme', label:'Programme / Contexte',   placeholder:'ex. Programme de rattrapage de la Vaccination'},
+      {id:'f_duree',     label:'Durée',                  placeholder:'ex. 5 jours'},
+      {id:'f_date_debut',label:'Date de début',          type:'date'},
+      {id:'f_date_fin',  label:'Date de fin',            type:'date'},
+      {id:'f_frais',     label:'Frais journalier (en lettres)', placeholder:'ex. DEUX MILLE GOURDES (2 000 Gdes)'},
     ],
-    body: (f) => `Nous avons l'honneur de vous informer de votre engagement en qualité de ${f.f_poste||'[POSTE]'} au sein de la Direction Sanitaire du Nord-Est (DSNE), à compter du ${f.f_debut||'[DATE]'}.
-
-Votre travail consistera à ${f.f_taches||'[DESCRIPTION DES TÂCHES]'}. Vous serez placé(e) sous l'autorité directe de ${f.f_super||'[SUPERVISEUR]'}.
-
-Nous comptons sur votre professionnalisme et votre dévouement pour contribuer à la réalisation des missions de santé publique qui nous sont confiées.
-
-Dans l'attente de votre prise de service, veuillez agréer, ${f.f_nom||'[Destinataire]'}, l'expression de notre considération distinguée.`,
+    body: function(f) {
+      var dd = f.f_date_debut ? new Date(f.f_date_debut+' ').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}) : '…';
+      var df = f.f_date_fin   ? new Date(f.f_date_fin+' ').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}) : '…';
+      return 'La Direction du Département Sanitaire du Nord-Est vous présente ses compliments et vous informe qu\'elle vous engage, comme personnel journalier, en tant que ' + (f.f_poste||'[POSTE]') + ' dans le cadre du ' + (f.f_programme||'[PROGRAMME]') + ', pour une durée de ' + (f.f_duree||'[DURÉE]') + ', allant du ' + dd + ' au ' + df + '.\n\nDurant cette période, vous recevrez un frais journalier de ' + (f.f_frais||'[FRAIS JOURNALIER]') + '.\n\nVous êtes astreint(e), durant toute la durée de vos services, à respecter les règlements et consignes édictés par les autorités sanitaires du Département Sanitaire du Nord-Est.\n\nLa Direction Sanitaire du Nord-Est espère que vous justifierez pleinement la confiance placée en vous et vous présente, ' + (f.f_civilite||'Madame/Monsieur') + ', l\'assurance de sa parfaite considération.';
+    },
   },
   {
-    id:'cessation', label:'Cessation de service', type:'Ressources humaines',
-    objet:'Cessation de service',
-    fields:[
-      {id:'f_nom',  label:'Nom complet',   placeholder:'Prénom Nom'},
-      {id:'f_poste',label:'Poste occupé',  placeholder:'ex. Infirmier'},
-      {id:'f_fin',  label:'Date de cessation', type:'date', placeholder:''},
-      {id:'f_motif',label:'Motif (optionnel)', type:'textarea', placeholder:'ex. Fin de contrat, mutation…'},
+    id: 'cessation',
+    label: 'Cessation de service',
+    type: 'Ressources humaines',
+    objet: 'Cessation de service',
+    fields: [
+      {id:'f_civilite',  label:'Civilité',           placeholder:'Monsieur / Madame'},
+      {id:'f_nom',       label:'Nom complet',         placeholder:'Prénom NOM'},
+      {id:'f_titre',     label:'Titre / Fonction',    placeholder:'ex. Médecin de service'},
+      {id:'f_institution',label:'Institution',        placeholder:'ex. Centre Médico-Social de Ouanaminthe (CMSO)'},
+      {id:'f_motif',     label:'Motif (optionnel)',   type:'textarea', placeholder:'ex. suite à des comportements jugés constitutifs de fautes professionnelles…'},
+      {id:'f_cc',        label:'CC (un par ligne)',   type:'textarea', placeholder:'Ressources Humaines DSNE\nBureau du Ministre MSPP'},
     ],
-    body: (f) => `Nous vous informons par la présente que les services de ${f.f_nom||'[NOM]'}, en qualité de ${f.f_poste||'[POSTE]'}, au sein de la Direction Sanitaire du Nord-Est (DSNE) prendront fin à la date du ${f.f_fin||'[DATE]'}.${f.f_motif?'\n\n'+f.f_motif:''}
-
-Nous lui adressons nos remerciements pour sa contribution et lui souhaitons bonne continuation dans ses activités professionnelles.
-
-Veuillez agréer, ${f.f_nom||'[Destinataire]'}, l'expression de notre considération distinguée.`,
+    body: function(f) {
+      var motifText = f.f_motif
+        ? '\n\n' + f.f_motif
+        : '\n\nCette décision fait suite à des comportements et agissements de votre part jugés constitutifs de faits graves et de fautes professionnelles, portant atteinte au bon fonctionnement du service public de santé et à l\'ordre au sein de l\'établissement.';
+      return 'Par la présente, la Direction Sanitaire du Nord-Est vous notifie de votre cessation de service en qualité de ' + (f.f_titre||'[TITRE]') + ' affecté(e) à ' + (f.f_institution||'[INSTITUTION]') + ', avec effet immédiat à compter de la réception de la présente.' + motifText + '\n\nLa Direction Sanitaire du Nord-Est demeure disponible pour toute clarification relative à la présente procédure et espère que vous voudrez bien vous y conformer avec le professionnalisme qui sied à votre rang.\n\nDans l\'attente de votre entière collaboration, veuillez agréer, ' + (f.f_civilite||'Monsieur/Madame') + ', l\'expression de nos salutations distinguées.';
+    },
   },
   {
-    id:'convocation', label:'Convocation / réunion', type:'Administration',
-    objet:'Convocation à réunion',
-    fields:[
-      {id:'f_date',  label:'Date de la réunion', type:'date', placeholder:''},
-      {id:'f_heure', label:'Heure',   placeholder:'ex. 09h00'},
-      {id:'f_salle', label:'Salle / lieu', placeholder:'ex. Salle de conférence DSNE'},
-      {id:'f_pts',   label:'Points à l\'ordre du jour', type:'textarea', placeholder:'1. Présentation du rapport mensuel\n2. Discussion budgétaire\n3. Divers'},
+    id: 'attestation',
+    label: 'Attestation',
+    type: 'Ressources humaines',
+    objet: 'Attestation',
+    fields: [
+      {id:'f_civilite',  label:'Civilité',             placeholder:'Monsieur / Madame'},
+      {id:'f_nom',       label:'Nom complet',           placeholder:'Prénom NOM'},
+      {id:'f_titre',     label:'Titre',                 placeholder:'ex. médecin, infirmière'},
+      {id:'f_poste',     label:'Poste occupé',          placeholder:'ex. Coordonnateur du contrôle sanitaire'},
+      {id:'f_institution',label:'Institution / Lieu',   placeholder:'ex. Centre de santé de Savane Longue'},
+      {id:'f_date_debut',label:'Date de début',         type:'date'},
+      {id:'f_date_fin',  label:'Date de fin',           type:'date'},
+      {id:'f_salaire',   label:'Salaire mensuel (optionnel)', placeholder:'ex. 1 200 USD soit 1 668 CAD'},
+      {id:'f_complement',label:'Information complémentaire (optionnel)', type:'textarea', placeholder:'ex. impliqué dans la surveillance épidémiologique…'},
     ],
-    body: (f) => `Vous êtes convoqué(e) à une réunion qui se tiendra le ${f.f_date||'[DATE]'} à ${f.f_heure||'[HEURE]'} à la Direction Sanitaire du Nord-Est, ${f.f_salle||'salle [SALLE]'}.
-
-Ordre du jour :
-${f.f_pts||'1. [POINT 1]\n2. [POINT 2]\n3. Questions diverses'}
-
-Votre présence est obligatoire. Veuillez confirmer votre participation auprès du Secrétariat de Direction.
-
-Veuillez agréer l'expression de notre considération distinguée.`,
+    body: function(f) {
+      var dd = f.f_date_debut ? new Date(f.f_date_debut+' ').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}) : '[DATE DÉBUT]';
+      var df = f.f_date_fin   ? new Date(f.f_date_fin+' ').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}) : '[DATE FIN]';
+      var complement = f.f_complement ? '\n\n' + f.f_complement : '';
+      var salaire = f.f_salaire ? '\n\nIl/Elle perçoit un salaire mensuel de ' + f.f_salaire + '.' : '';
+      return 'Je soussigné, Dr Jean Clervain Dorsainvil, Directeur Départemental de la Direction Sanitaire du Nord-Est (DSNE), certifie que ' + (f.f_civilite||'Monsieur/Madame') + ' ' + (f.f_nom||'[NOM]') + ', ' + (f.f_titre||'[TITRE]') + ', ' + (f.f_poste ? 'occupe le poste de ' + f.f_poste : 'travaille au sein du Ministère de la Santé Publique et de la Population (MSPP)') + ' à ' + (f.f_institution||'[INSTITUTION]') + ' du ' + dd + ' au ' + df + '.' + complement + salaire + '\n\nLa présente attestation lui est délivrée pour servir et valoir ce que de droit.';
+    },
   },
   {
-    id:'recommandation', label:'Lettre de recommandation', type:'Partenaires',
-    objet:'Lettre de recommandation',
-    fields:[
-      {id:'f_nom',   label:'Nom du bénéficiaire', placeholder:'Prénom Nom'},
-      {id:'f_titre', label:'Titre / fonction',    placeholder:'ex. Médecin de famille'},
-      {id:'f_objet', label:'Objet de la recommandation', type:'textarea', placeholder:'ex. une opportunité de formation en santé publique'},
-      {id:'f_qualites', label:'Qualités observées', type:'textarea', placeholder:'ex. professionnalisme exemplaire, rigueur clinique…'},
+    id: 'transfert',
+    label: 'Transfert',
+    type: 'Ressources humaines',
+    objet: 'Transfert',
+    fields: [
+      {id:'f_civilite',      label:'Civilité',              placeholder:'Monsieur / Madame'},
+      {id:'f_nom',           label:'Nom complet',            placeholder:'Prénom NOM'},
+      {id:'f_poste_actuel',  label:'Poste actuel',           placeholder:'ex. Comptable à la DSNE'},
+      {id:'f_nouveau_poste', label:'Nouveau poste',          placeholder:'ex. Comptable'},
+      {id:'f_nouvelle_inst', label:'Nouvelle institution',   placeholder:'ex. Centre de Santé de Savane au Lait'},
+      {id:'f_cc',            label:'CC (un par ligne)',      type:'textarea', placeholder:'ex. CCS de Savane au Lait\nRessources Humaines DSNE'},
     ],
-    body: (f) => `La Direction Sanitaire du Nord-Est (DSNE) recommande vivement ${f.f_nom||'[NOM]'}, ${f.f_titre||'[TITRE]'}, pour ${f.f_objet||'[OBJET]'}.
-
-Au cours de sa collaboration avec la DSNE, ${f.f_nom||'[NOM]'} a démontré ${f.f_qualites||'un professionnalisme exemplaire, une grande capacité de travail et un dévouement constant aux objectifs de santé publique du département'}.
-
-Nous appuyons sa candidature sans réserve et restons disponibles pour tout renseignement complémentaire.
-
-Veuillez agréer l'expression de notre haute considération.`,
+    body: function(f) {
+      return 'La Direction du Département Sanitaire du Nord-Est prend plaisir à vous informer que vous êtes transféré(e) de votre poste actuel de ' + (f.f_poste_actuel||'[POSTE ACTUEL]') + ' à celui de ' + (f.f_nouveau_poste||'[NOUVEAU POSTE]') + ' au ' + (f.f_nouvelle_inst||'[NOUVELLE INSTITUTION]') + '.\n\nCe transfert prend effet dès réception de la présente. Veuillez prendre les dispositions nécessaires pour être à votre poste dans le plus bref délai.\n\nLa Direction Sanitaire du Nord-Est espère que vous justifierez pleinement la confiance placée en vous et vous présente, ' + (f.f_civilite||'Monsieur/Madame') + ', l\'assurance de sa parfaite considération.';
+    },
   },
   {
-    id:'autorisation', label:'Autorisation clinique mobile', type:'Partenaires / CM',
-    objet:'Autorisation de clinique mobile',
-    fields:[
+    id: 'affectation',
+    label: 'Affectation',
+    type: 'Ressources humaines',
+    objet: 'Affectation',
+    fields: [
+      {id:'f_civilite',   label:'Civilité',           placeholder:'Madame / Monsieur'},
+      {id:'f_nom',        label:'Nom complet',         placeholder:'Prénom NOM'},
+      {id:'f_role',       label:'Rôle / Titre affecté',placeholder:'ex. stagiaire en Administration'},
+      {id:'f_institution',label:'Institution',         placeholder:'ex. Direction Sanitaire du Nord-Est'},
+    ],
+    body: function(f) {
+      return 'La Direction du Département Sanitaire du Nord-Est vous présente ses compliments et prend plaisir à vous informer que vous êtes affecté(e) comme ' + (f.f_role||'[RÔLE]') + ' à ' + (f.f_institution||'la Direction Sanitaire du Nord-Est') + '.\n\nVous voudrez bien prendre les dispositions nécessaires pour être à votre poste dans le plus bref délai.\n\nLa Direction Sanitaire du Nord-Est espère que vous justifierez pleinement la confiance placée en vous et vous présente, ' + (f.f_civilite||'Madame/Monsieur') + ', l\'assurance de sa parfaite considération.';
+    },
+  },
+  {
+    id: 'non_objection',
+    label: 'Non-objection',
+    type: 'Administration',
+    objet: 'Non-objection',
+    fields: [
+      {id:'f_dest_titre',  label:'Titre du destinataire',  placeholder:'ex. Dr Wolve Irvens CHARLES'},
+      {id:'f_dest_poste',  label:'Poste du destinataire',  placeholder:'ex. Directeur Départemental du Centre'},
+      {id:'f_civilite',    label:'Civilité bénéficiaire',  placeholder:'Madame / Monsieur'},
+      {id:'f_nom',         label:'Nom du bénéficiaire',    placeholder:'Prénom NOM'},
+      {id:'f_titre',       label:'Titre / Poste',          placeholder:'ex. Médecin affecté au Nord-Est'},
+      {id:'f_dept_dest',   label:'Département de destination', placeholder:'ex. le Département du Centre'},
+      {id:'f_condition',   label:'Condition (optionnel)',  type:'textarea', placeholder:'ex. si les Responsables de la DFPSS acceptent de valider ce transfert'},
+    ],
+    body: function(f) {
+      var condition = f.f_condition ? ', ' + f.f_condition : ', si toutefois les Responsables de la DFPSS acceptent de valider ce transfert';
+      return 'La Direction du Département Sanitaire du Nord Est vous présente ses compliments et profite de l\'occasion pour vous informer que ' + (f.f_civilite||'Madame/Monsieur') + ' ' + (f.f_nom||'[NOM]') + ', ' + (f.f_titre||'[TITRE]') + ', réclame un transfert vers ' + (f.f_dept_dest||'[DÉPARTEMENT]') + '.\n\nCette Direction vous notifie qu\'elle n\'a aucune objection à cette demande et vous prie de bien vouloir l\'accueillir dans votre département' + condition + '.\n\nAssurée du bien-fondé de cette démarche, la Direction du Département Sanitaire du Nord Est vous prie d\'agréer, ' + (f.f_dest_titre ? 'Monsieur le Directeur' : 'Monsieur/Madame') + ', l\'expression de ses salutations distinguées.';
+    },
+  },
+  {
+    id: 'ajustement_salarial',
+    label: 'Demande d\'ajustement salarial',
+    type: 'Administration',
+    objet: 'Demande d\'ajustement salarial',
+    fields: [
+      {id:'f_ministre',     label:'Ministre (nom)',          placeholder:'ex. Docteur Sinal BERTRAND'},
+      {id:'f_nom_signataire',label:'Nom du signataire',      placeholder:'Prénom NOM'},
+      {id:'f_poste',        label:'Poste du signataire',     placeholder:'ex. Responsable au CDAI du Nord-Est'},
+      {id:'f_date_nomination',label:'Date de nomination',    type:'date'},
+      {id:'f_salaire_actuel',label:'Salaire actuel',         placeholder:'ex. 40 000 gourdes'},
+      {id:'f_salaire_initial',label:'Salaire initial',       placeholder:'ex. 26 000 gourdes'},
+      {id:'f_motif',        label:'Contexte / motif',        type:'textarea', placeholder:'ex. Le nouveau barème MSPP prévoit un montant supérieur pour ce poste…'},
+    ],
+    body: function(f) {
+      var dn = f.f_date_nomination ? new Date(f.f_date_nomination+' ').toLocaleDateString('fr-FR',{month:'long',year:'numeric'}) : '[DATE]';
+      return 'J\'ai l\'honneur de venir par la présente solliciter de votre haute bienveillance l\'ajustement de mon salaire au regard de ma situation actuelle au sein du Ministère de la Santé Publique et de la Population.\n\nEn effet, j\'ai été nommé(e) en ' + dn + ' avec un salaire de ' + (f.f_salaire_initial||'[SALAIRE INITIAL]') + '. À ce jour, je perçois un salaire de ' + (f.f_salaire_actuel||'[SALAIRE ACTUEL]') + '. ' + (f.f_motif||'Cette situation crée un déséquilibre manifeste au regard du nouveau barème en vigueur au MSPP.') + '\n\nEn conséquence, je vous prie de bien vouloir procéder à la régularisation de mon salaire, en tenant compte de la date de la dernière revalorisation salariale effectuée par le MSPP.\n\nEspérant que ma requête retiendra votre attention et recevra une suite favorable, je vous prie de recevoir, ' + (f.f_ministre ? 'Monsieur le Ministre' : 'Monsieur/Madame') + ', mes remerciements anticipés.\n\nVeuillez agréer, ' + (f.f_ministre ? 'Monsieur le Ministre' : 'Monsieur/Madame') + ', l\'expression de ma très haute considération.';
+    },
+  },
+  {
+    id: 'autorisation_cm',
+    label: 'Autorisation clinique mobile',
+    type: 'Partenaires',
+    objet: 'Autorisation de clinique mobile',
+    fields: [
       {id:'f_org',     label:'Organisation demandeuse', placeholder:'ex. CMMB, CRS…'},
       {id:'f_commune', label:'Commune ciblée',          placeholder:'ex. Ouanaminthe'},
-      {id:'f_date',    label:'Date de l\'activité',     type:'date', placeholder:''},
+      {id:'f_date',    label:'Date de l\'activité',     type:'date'},
       {id:'f_cond',    label:'Conditions particulières (optionnel)', type:'textarea', placeholder:''},
     ],
-    body: (f) => `La Direction Sanitaire du Nord-Est (DSNE) autorise l'organisation ${f.f_org||'[ORGANISATION]'} à organiser une clinique mobile dans la commune de ${f.f_commune||'[COMMUNE]'}, le ${f.f_date||'[DATE]'}.
-
-Cette autorisation est accordée sous réserve du respect des protocoles sanitaires en vigueur, de la présence d'un personnel qualifié et licencié, et de la soumission d'un rapport post-activité à la DSNE dans les 15 jours suivant l'intervention.${f.f_cond?'\n\n'+f.f_cond:''}
-
-Toute modification du plan d'activité devra être communiquée à la DSNE avant la tenue de l'événement.
-
-Veuillez agréer l'expression de notre considération distinguée.`,
-  },
-  {
-    id:'note-satisfaction', label:'Note de satisfaction', type:'Personnel',
-    objet:'Note de satisfaction',
-    fields:[
-      {id:'f_nom',   label:'Nom du bénéficiaire', placeholder:'Prénom Nom'},
-      {id:'f_titre', label:'Titre / fonction',    placeholder:'ex. Infirmière chef'},
-      {id:'f_motif', label:'Motif de la satisfaction', type:'textarea', placeholder:'ex. son engagement exceptionnel lors de la supervision du mois de mars…'},
-    ],
-    body: (f) => `La Direction Sanitaire du Nord-Est (DSNE) tient à exprimer sa satisfaction à l'égard de ${f.f_nom||'[NOM]'}, ${f.f_titre||'[TITRE]'}, pour ${f.f_motif||'[MOTIF]'}.
-
-Cette contribution remarquable témoigne de l'engagement et du professionnalisme de ${f.f_nom||'[NOM]'} au service de la santé publique dans le département du Nord-Est.
-
-Nous lui adressons nos sincères félicitations.`,
+    body: function(f) {
+      var da = f.f_date ? new Date(f.f_date+' ').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}) : '[DATE]';
+      return 'La Direction Sanitaire du Nord-Est (DSNE) autorise l\'organisation ' + (f.f_org||'[ORGANISATION]') + ' à organiser une clinique mobile dans la commune de ' + (f.f_commune||'[COMMUNE]') + ', le ' + da + '.\n\nCette autorisation est accordée sous réserve du respect des protocoles sanitaires en vigueur, de la présence d\'un personnel qualifié et licencié, et de la soumission d\'un rapport post-activité à la DSNE dans les 15 jours suivant l\'intervention.' + (f.f_cond ? '\n\n' + f.f_cond : '') + '\n\nToute modification du plan d\'activité devra être communiquée à la DSNE avant la tenue de l\'événement.\n\nVeuillez agréer l\'expression de notre considération distinguée.';
+    },
   },
 ];
+
 
 /* ── VISITES DATA (sample, can be overridden by import) ── */
 let VISITES_DATA = [
@@ -1807,22 +1862,47 @@ function renderLetter() {
   const body  = getBodyText();
   const fmtD  = date ? new Date(date+' ').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}) : '[Date]';
 
+  // Get CC from template fields if present
+  const ccEl  = document.getElementById('f_cc');
+  const cc    = ccEl ? ccEl.value.trim() : '';
+
+  // Detect letter type — Transfert/Affectation use De/À format, others use À l'attention de
+  const useDeA = ['transfert','affectation','non_objection'].includes(activeTemplate.id);
+
+  const headerAddressee = useDeA
+    ? `<div style="margin-bottom:16px">
+        <div><strong>De</strong> : Dr Jean Clervain DORSAINVIL</div>
+        <div style="margin-left:24px;font-size:11pt">Directeur Départemental Nord-Est</div>
+        <br>
+        <div><strong>À</strong> : ${esc(dest)}</div>
+       </div>`
+    : `<div style="margin-bottom:16px">
+        <div><strong>À :</strong> ${esc(dest)}</div>
+       </div>`;
+
+  const ccHtml = cc
+    ? `<div style="margin-top:32px;font-size:10pt">
+        <strong>CC :</strong><br>
+        ${cc.split('\n').map(l => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + esc(l)).join('<br>')}
+       </div>`
+    : '';
+
   document.getElementById('letter-preview').innerHTML = `
     <div class="lp-header">
+      <div class="lp-mspp">République d'Haïti</div>
       <div class="lp-mspp">Ministère de la Santé Publique et de la Population</div>
-      <div class="lp-dir">Direction Sanitaire du Nord-Est</div>
+      <div class="lp-dir">Direction Sanitaire Nord-Est</div>
     </div>
-    ${ref?`<div class="lp-ref">Réf. : ${esc(ref)}</div>`:''}
-    <div class="lp-date">Fort-Liberté, le ${fmtD}</div>
-    <div style="margin-bottom:16px">À l'attention de :<br><strong>${esc(dest)}</strong></div>
-    <div class="lp-objet">Objet : ${esc(objet)}</div>
-    <div class="lp-body">${esc(body).replace(/\n/g,'<br>')}</div>
-    <div class="lp-closing">Salutations distinguées,</div>
-    <div class="lp-sig">
-      <strong>Dr. Jean Clervain Dorsainvil</strong><br>
-      Directeur Départemental<br>
-      Direction Sanitaire du Nord-Est
+    ${ref ? `<div class="lp-ref" style="display:flex;justify-content:space-between"><span>Réf. : ${esc(ref)}</span><span>Fort-Liberté, le ${fmtD}</span></div>` : `<div class="lp-date">Fort-Liberté, le ${fmtD}</div>`}
+    ${headerAddressee}
+    <div class="lp-objet">Objet : <u>${esc(objet)}</u></div>
+    <div class="lp-body">${esc(body).replace(/\n/g,'<br><br>')}</div>
+    <div class="lp-closing">
+      <br><br>
+      <strong>Docteur Jean Clervain DORSAINVIL</strong><br>
+      Directeur Départemental Nord-Est
     </div>
+    ${ccHtml}
   `;
 }
 
