@@ -1694,16 +1694,15 @@ function initRapportage() {
   html += '</tr></thead><tbody>';
 
   data.forEach(inst => {
-    html += `<td class="inst-name">${esc(inst.inst)}</td>`;
+    html += `<tr><td class="inst-name">${esc(inst.inst)}</td>`;
     RP_MONTHS.forEach(m => {
-      const mo = inst.months[m];
+      const mo = inst.months && inst.months[m] ? inst.months[m] : {FIN:'',RH:'',EPI:''};
       ['FIN','RH','EPI'].forEach(p => {
-        const {cls,label} = cellVal(mo[p]);
+        const {cls,label} = cellVal(mo[p] || '');
         html += `<td class="${cls}" title="${m} ${p}: ${mo[p]||'—'}">${label}</td>`;
       });
     });
     html += '</tr>';
-    html = html.replace('<td class="inst-name">', '<tr><td class="inst-name">');
   });
   html += '</tbody>';
   document.getElementById('rp-heatmap').innerHTML = html;
