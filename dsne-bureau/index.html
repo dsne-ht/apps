@@ -1,0 +1,2442 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bureau de Direction | DSNE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<style>
+/* ═══════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════ */
+:root {
+  --ink:       #0c1a2e;
+  --ink-2:     #2a3a50;
+  --ink-3:     #5a6a80;
+  --ink-4:     #8a9ab0;
+  --gold:      #b8972a;
+  --gold-lt:   #d4b24a;
+  --teal:      #005C4E;
+  --teal-lt:   #e6f2f0;
+  --cream:     #f8f6f1;
+  --cream-dk:  #ede9e0;
+  --white:     #ffffff;
+  --red:       #c0392b;
+  --red-lt:    #fdf0ef;
+  --green:     #2d7a4f;
+  --green-lt:  #e6f4ec;
+  --amber:     #b45309;
+  --amber-lt:  #fff7e6;
+  --border:    rgba(12,26,46,.1);
+  --shadow:    0 2px 12px rgba(12,26,46,.08);
+  --shadow-lg: 0 8px 32px rgba(12,26,46,.12);
+  --nav-w:     220px;
+  --nav-bg:    #0c1a2e;
+  --r:         6px;
+}
+
+/* ═══════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--cream);
+  display: flex;
+}
+
+/* ═══════════════════════════════════════════
+   SIDEBAR NAV
+═══════════════════════════════════════════ */
+.sidebar {
+  width: var(--nav-w);
+  min-width: var(--nav-w);
+  background: var(--nav-bg);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.sidebar-brand {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+.sidebar-brand .eyebrow {
+  font-size: 9px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.sidebar-brand .title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.25;
+}
+.sidebar-brand .sub {
+  font-size: 10px;
+  color: rgba(255,255,255,.35);
+  margin-top: 3px;
+}
+
+.nav-section {
+  padding: 16px 12px 4px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.25);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 20px;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255,255,255,.55);
+  cursor: pointer;
+  transition: all .15s;
+  border-left: 2px solid transparent;
+  user-select: none;
+}
+.nav-item:hover { color: rgba(255,255,255,.85); background: rgba(255,255,255,.04); }
+.nav-item.active {
+  color: #fff;
+  background: rgba(184,151,42,.12);
+  border-left-color: var(--gold);
+  font-weight: 500;
+}
+.nav-item .icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+.nav-item .badge {
+  margin-left: auto;
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  background: var(--gold);
+  color: #000;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255,255,255,.07);
+  font-size: 10px;
+  color: rgba(255,255,255,.2);
+}
+.sidebar-footer strong { color: rgba(255,255,255,.4); display: block; margin-bottom: 2px; }
+
+/* ═══════════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════════ */
+.main {
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel { display: none; flex-direction: column; flex: 1; }
+.panel.active { display: flex; }
+
+/* ═══════════════════════════════════════════
+   PAGE HEADER
+═══════════════════════════════════════════ */
+.page-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 32px 16px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.page-header h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1;
+}
+.page-header .meta {
+  font-size: 11px;
+  color: var(--ink-4);
+  margin-top: 4px;
+}
+.page-header .actions { display: flex; gap: 8px; align-items: center; }
+
+.btn {
+  padding: 7px 16px;
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  border-radius: var(--r);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all .15s;
+}
+.btn-primary { background: var(--teal); color: #fff; border-color: var(--teal); }
+.btn-primary:hover { background: #004a3e; }
+.btn-ghost { background: transparent; color: var(--ink-3); border-color: var(--border); }
+.btn-ghost:hover { background: var(--cream); color: var(--ink); }
+
+/* ═══════════════════════════════════════════
+   PAGE BODY
+═══════════════════════════════════════════ */
+.page-body {
+  flex: 1;
+  padding: 28px 32px;
+  overflow-y: auto;
+}
+
+/* ═══════════════════════════════════════════
+   KPI CARDS
+═══════════════════════════════════════════ */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.kpi-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 18px;
+  border-top: 3px solid var(--gold);
+  box-shadow: var(--shadow);
+}
+.kpi-card.teal { border-top-color: var(--teal); }
+.kpi-card.red  { border-top-color: var(--red); }
+.kpi-card.green{ border-top-color: var(--green); }
+.kpi-card.amber{ border-top-color: var(--amber); }
+.kpi-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+  margin-bottom: 8px;
+}
+.kpi-value {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+}
+.kpi-sub {
+  font-size: 11px;
+  color: var(--ink-4);
+  margin-top: 4px;
+}
+
+/* ═══════════════════════════════════════════
+   SECTION TITLES
+═══════════════════════════════════════════ */
+.section-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--cream-dk);
+}
+
+/* ═══════════════════════════════════════════
+   TWO-COL LAYOUT
+═══════════════════════════════════════════ */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+
+/* ═══════════════════════════════════════════
+   CARD
+═══════════════════════════════════════════ */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+}
+.card-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-header h3 {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.card-body { padding: 16px 18px; }
+
+/* ═══════════════════════════════════════════
+   TABLE
+═══════════════════════════════════════════ */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--cream-dk);
+  background: var(--cream);
+}
+.data-table td {
+  padding: 10px 12px;
+  font-size: 12.5px;
+  color: var(--ink-2);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--cream); }
+.data-table .empty {
+  text-align: center;
+  color: var(--ink-4);
+  font-style: italic;
+  padding: 32px;
+}
+
+/* ═══════════════════════════════════════════
+   STATUS BADGES
+═══════════════════════════════════════════ */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.badge-green  { background: var(--green-lt);  color: var(--green); }
+.badge-red    { background: var(--red-lt);    color: var(--red); }
+.badge-amber  { background: var(--amber-lt);  color: var(--amber); }
+.badge-teal   { background: var(--teal-lt);   color: var(--teal); }
+.badge-gray   { background: var(--cream-dk);  color: var(--ink-3); }
+
+/* ═══════════════════════════════════════════
+   SEARCH / FILTER BAR
+═══════════════════════════════════════════ */
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+.search-input {
+  flex: 1;
+  max-width: 320px;
+  padding: 7px 12px 7px 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--ink);
+  background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238a9ab0' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") 10px center no-repeat;
+  outline: none;
+}
+.search-input:focus { border-color: var(--teal); }
+.filter-select {
+  padding: 7px 28px 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--ink-2);
+  background: var(--white);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a9ab0' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+
+/* ═══════════════════════════════════════════
+   ÉTAT DU JOUR — STATUS MODULES
+═══════════════════════════════════════════ */
+.status-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.status-row:last-child { border-bottom: none; }
+.status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dot-green { background: var(--green); }
+.dot-red   { background: var(--red); }
+.dot-amber { background: var(--amber); }
+.dot-gray  { background: var(--ink-4); }
+.status-label { flex: 1; font-size: 12.5px; color: var(--ink-2); }
+.status-value { font-size: 12px; font-weight: 600; color: var(--ink); font-family: 'DM Mono', monospace; }
+
+/* ═══════════════════════════════════════════
+   FLEET STATUS GRID
+═══════════════════════════════════════════ */
+.fleet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+.fleet-card {
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px 14px;
+  background: var(--white);
+  border-left: 3px solid var(--ink-4);
+}
+.fleet-card.disponible { border-left-color: var(--green); }
+.fleet-card.mission    { border-left-color: var(--teal); }
+.fleet-card.entretien  { border-left-color: var(--amber); }
+.fleet-card.hors       { border-left-color: var(--red); }
+.fleet-plate { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 600; color: var(--ink); }
+.fleet-model { font-size: 11px; color: var(--ink-4); margin-top: 2px; }
+.fleet-status { font-size: 11px; font-weight: 600; margin-top: 6px; }
+.fleet-card.disponible .fleet-status { color: var(--green); }
+.fleet-card.mission    .fleet-status { color: var(--teal); }
+.fleet-card.entretien  .fleet-status { color: var(--amber); }
+.fleet-card.hors       .fleet-status { color: var(--red); }
+
+/* ═══════════════════════════════════════════
+   LETTER WRITER
+═══════════════════════════════════════════ */
+.letter-layout { display: grid; grid-template-columns: 260px 1fr; gap: 20px; flex: 1; min-height: 0; }
+.template-list { display: flex; flex-direction: column; gap: 6px; }
+.template-item {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  cursor: pointer;
+  background: var(--white);
+  transition: all .15s;
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+.template-item:hover { border-color: var(--teal); color: var(--teal); }
+.template-item.active { background: var(--teal-lt); border-color: var(--teal); color: var(--teal); font-weight: 500; }
+.template-item .t-type { font-size: 10px; color: var(--ink-4); margin-top: 2px; }
+
+.letter-editor { display: flex; flex-direction: column; gap: 12px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field-group { display: flex; flex-direction: column; gap: 4px; }
+.field-label { font-size: 11px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: .08em; }
+.field-input {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--ink);
+  background: var(--white);
+  outline: none;
+  transition: border-color .15s;
+}
+.field-input:focus { border-color: var(--teal); }
+.field-textarea {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--ink);
+  background: var(--white);
+  outline: none;
+  resize: vertical;
+  min-height: 120px;
+  transition: border-color .15s;
+  line-height: 1.6;
+}
+.field-textarea:focus { border-color: var(--teal); }
+
+.letter-preview {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 32px 40px;
+  font-family: 'Times New Roman', serif;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #000;
+  min-height: 400px;
+  box-shadow: var(--shadow);
+}
+.letter-preview .lp-header { text-align: center; margin-bottom: 24px; }
+.letter-preview .lp-mspp { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: #333; }
+.letter-preview .lp-dir { font-size: 13px; font-weight: bold; text-transform: uppercase; margin-top: 4px; }
+.letter-preview .lp-ref { font-size: 11px; color: #555; margin-top: 16px; }
+.letter-preview .lp-date { text-align: right; font-size: 12px; margin-bottom: 20px; }
+.letter-preview .lp-objet { font-weight: bold; margin-bottom: 16px; font-size: 13px; }
+.letter-preview .lp-body { margin-bottom: 32px; text-align: justify; }
+.letter-preview .lp-closing { margin-bottom: 48px; }
+.letter-preview .lp-sig { }
+
+/* ═══════════════════════════════════════════
+   NOTES
+═══════════════════════════════════════════ */
+.notes-layout { display: grid; grid-template-columns: 240px 1fr; gap: 20px; flex: 1; min-height: 0; }
+.note-list { display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
+.note-item {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  cursor: pointer;
+  background: var(--white);
+  transition: all .15s;
+}
+.note-item:hover { border-color: var(--gold); }
+.note-item.active { border-color: var(--gold); background: #fffdf5; }
+.note-item .n-title { font-size: 13px; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.note-item .n-date  { font-size: 10px; color: var(--ink-4); margin-top: 2px; }
+.note-item .n-preview { font-size: 11px; color: var(--ink-3); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.note-editor { display: flex; flex-direction: column; gap: 12px; }
+.note-title-input {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 600;
+  border: none;
+  border-bottom: 2px solid var(--cream-dk);
+  padding: 8px 0;
+  color: var(--ink);
+  outline: none;
+  background: transparent;
+  width: 100%;
+}
+.note-title-input:focus { border-bottom-color: var(--gold); }
+.note-body-textarea {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--ink-2);
+  resize: none;
+  background: transparent;
+  min-height: 400px;
+}
+
+/* ═══════════════════════════════════════════
+   HEATMAP (Rapportage)
+═══════════════════════════════════════════ */
+.heatmap-wrap { overflow-x: auto; }
+.heatmap { border-collapse: collapse; font-size: 11px; }
+.heatmap th {
+  padding: 5px 8px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+  text-align: center;
+  white-space: nowrap;
+  background: var(--cream);
+  border-bottom: 2px solid var(--cream-dk);
+}
+.heatmap th.inst-col { text-align: left; min-width: 200px; padding-left: 12px; }
+.heatmap td {
+  padding: 4px 3px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,.5);
+  font-size: 10px;
+  font-weight: 700;
+  width: 26px;
+  height: 26px;
+}
+.heatmap td.inst-name {
+  text-align: left;
+  padding: 6px 12px;
+  font-size: 11.5px;
+  font-weight: 400;
+  color: var(--ink-2);
+  background: var(--white);
+  border: none;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  width: auto;
+}
+.heatmap td.month-total {
+  font-size: 9.5px;
+  font-weight: 700;
+  background: var(--cream-dk);
+  color: var(--ink-3);
+  width: 30px;
+}
+.cell-recu     { background: #c7ecd6; color: #1a5c35; }
+.cell-retard   { background: #fde8b5; color: #7a4a00; }
+.cell-manquant { background: #fad5d2; color: #8b1a14; }
+.cell-na       { background: var(--cream); color: var(--ink-4); }
+.cell-empty    { background: #f0f0f0; color: #ccc; }
+
+/* ═══════════════════════════════════════════
+   DSNE TAB (from existing app)
+═══════════════════════════════════════════ */
+.dt-top{display:grid;grid-template-columns:1fr 200px;gap:12px;margin-bottom:1.5rem}
+.dt-hero{background:#0f1f3d;padding:1.25rem 1.5rem;display:flex;flex-direction:column;justify-content:space-between}
+.dt-eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#b8972a;font-weight:600;margin-bottom:6px}
+.dt-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:#fff;line-height:1.2;margin-bottom:3px}
+.dt-sub{font-size:11px;color:rgba(255,255,255,.45)}
+.dt-rule{height:1px;background:rgba(255,255,255,.1);margin:12px 0}
+.dt-chips{display:flex;gap:5px;flex-wrap:wrap}
+.dt-chip{padding:4px 10px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:rgba(255,255,255,.6);transition:all .15s;border-radius:3px}
+.dt-chip.act{background:rgba(184,151,42,.15);border-color:#b8972a;color:#b8972a}
+.dt-chip .cn{font-size:14px;font-weight:600;display:block;color:#b8972a}
+.dt-map-box{overflow:hidden;border:1px solid rgba(255,255,255,.1)}
+#dt-map{height:100%;width:100%;min-height:190px}
+.dt-two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem}
+.dt-blk-lbl{font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#b8972a;margin-bottom:8px}
+.dt-prow{display:flex;align-items:flex-start;justify-content:space-between;padding:.75rem 1rem;background:#fff;border:1px solid #dde2ec}
+.dt-pname{font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:600;color:#0f1f3d}
+.dt-prole{font-size:11px;color:#8a97ad;margin-top:2px}
+.dt-ptag{font-size:10px;padding:2px 8px;background:#f0f4ff;color:#0f1f3d;border:1px solid #dde2ec;font-weight:500;white-space:nowrap;margin-left:8px;flex-shrink:0}
+.dt-uas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem}
+.dt-uas-card{padding:.875rem 1rem;background:#fff;border:1px solid #dde2ec;cursor:pointer;transition:all .15s;border-top:3px solid #dde2ec}
+.dt-uas-card:hover,.dt-uas-card.act{border-top-color:#b8972a;background:#fafbff}
+.dt-uas-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:#8a97ad;margin-bottom:4px}
+.dt-uas-name{font-family:'Cormorant Garamond',serif;font-size:13px;color:#0f1f3d}
+.dt-uas-ct{font-size:10px;color:#8a97ad;margin-top:3px}
+.dt-inst{display:flex;align-items:center;justify-content:space-between;padding:.625rem 1rem;background:#fff;border:1px solid #dde2ec;border-left:3px solid #b8972a;margin-bottom:4px;cursor:pointer;transition:background .15s}
+.dt-inst:hover{background:#fafbff}
+.dt-iname{font-size:12px;font-weight:500;color:#0f1f3d}
+.dt-idm{font-size:10px;color:#8a97ad;margin-top:2px}
+.dt-ibadge{font-size:10px;padding:2px 8px;font-weight:500;white-space:nowrap;flex-shrink:0;margin-left:8px;border:1px solid #dde2ec;color:#4a5568;background:#f7f8fa}
+.dt-frow{display:flex;gap:6px;margin-bottom:.875rem}
+.dt-frow input,.dt-frow select{padding:6px 10px;border:1px solid #dde2ec;font-size:12px;background:#fff;color:#1a2235;font-family:'DM Sans',sans-serif}
+.dt-frow input{flex:1}
+.dt-grp{margin-bottom:1rem}
+.dt-ghd{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#8a97ad;padding-bottom:6px;border-bottom:1px solid #dde2ec;margin-bottom:6px}
+
+/* ═══════════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════════ */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--cream-dk); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ink-4); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════════ -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="eyebrow">MSPP  Nord-Est</div>
+    <div class="title">Bureau de Direction</div>
+    <div class="sub">DSNE  Fort-Liberté</div>
+  </div>
+
+  <div class="nav-section">Institution</div>
+  <div class="nav-item active" onclick="nav('dsne',this)">
+    <span class="icon"></span> DSNE
+  </div>
+  <div class="nav-item" onclick="nav('etat',this)">
+    <span class="icon"></span> État du Jour
+  </div>
+
+  <div class="nav-section">Opérations</div>
+  <div class="nav-item" onclick="nav('visites',this)">
+    <span class="icon"></span> Visites
+  </div>
+  <div class="nav-item" onclick="nav('hyg',this)">
+    <span class="icon"></span> Hygiène <span class="badge" id="badge-hyg">2</span>
+  </div>
+  <div class="nav-item" onclick="nav('cm',this)">
+    <span class="icon"></span> Cliniques Mobiles
+  </div>
+  <div class="nav-item" onclick="nav('logistique',this)">
+    <span class="icon"></span> Logistique
+  </div>
+  <div class="nav-item" onclick="nav('compta',this)">
+    <span class="icon"></span> Comptabilité
+  </div>
+
+  <div class="nav-section">Rapports</div>
+  <div class="nav-item" onclick="nav('rapportage',this)">
+    <span class="icon"></span> Suivi Rapports
+  </div>
+
+  <div class="nav-section">Outils</div>
+  <div class="nav-item" onclick="nav('courrier',this)">
+    <span class="icon"></span> Courrier
+  </div>
+  <div class="nav-item" onclick="nav('notes',this)">
+    <span class="icon"></span> Notes
+  </div>
+  <div class="nav-item" onclick="nav('documents',this)">
+    <span class="icon"></span> Documents
+  </div>
+
+  <div class="nav-section">Système</div>
+  <div class="nav-item" onclick="nav('parametres',this)">
+    Paramètres
+  </div>
+
+  <div class="sidebar-footer">
+    <strong>Daïsha Dorsainvil</strong>
+    Secrétaire de Direction
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════
+     MAIN
+═══════════════════════════════════════════ -->
+<main class="main">
+
+<!-- ══ DSNE ══ -->
+<div class="panel active" id="p-dsne">
+  <div class="page-header">
+    <div>
+      <h1>Direction Sanitaire du Nord-Est</h1>
+      <div class="meta">MSPP  Fort-Liberté, Nord-Est, Haïti</div>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="dt-top">
+      <div class="dt-hero">
+        <div>
+          <div class="dt-eyebrow">Ministère de la Santé Publique et de la Population</div>
+          <div class="dt-title">Direction Sanitaire du Nord-Est</div>
+          <div class="dt-sub">Fort-Liberté, Nord-Est — Haïti</div>
+        </div>
+        <div>
+          <div class="dt-rule"></div>
+          <div class="dt-chips">
+            <div class="dt-chip act" onclick="dtFilter('')">
+              <span class="cn">43</span>Toutes UAS
+            </div>
+            <div class="dt-chip" onclick="dtFilter('Fort-Liberté')">
+              <span class="cn">12</span>Fort-Liberté
+            </div>
+            <div class="dt-chip" onclick="dtFilter('Ouanaminthe')">
+              <span class="cn">16</span>Ouanaminthe
+            </div>
+            <div class="dt-chip" onclick="dtFilter('Trou-du-Nord')">
+              <span class="cn">15</span>Trou-du-Nord
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="dt-map-box"><div id="dt-map"></div></div>
+    </div>
+
+    <div class="dt-two">
+      <div>
+        <div class="dt-blk-lbl">Direction</div>
+        <div class="dt-prow">
+          <div><div class="dt-pname">Dr. Jean Clervain Dorsainvil</div><div class="dt-prole">Directeur Départemental</div></div>
+          <span class="dt-ptag">Direction</span>
+        </div>
+        <div class="dt-prow" style="margin-top:6px">
+          <div><div class="dt-pname">Daïsha Dorsainvil</div><div class="dt-prole">Secrétaire de Direction</div></div>
+          <span class="dt-ptag">Secrétariat</span>
+        </div>
+      </div>
+      <div>
+        <div class="dt-blk-lbl">Administration</div>
+        <div class="dt-prow">
+          <div><div class="dt-pname">Décius Pierre</div><div class="dt-prole">Administrateur Départemental</div></div>
+          <span class="dt-ptag">ADM</span>
+        </div>
+        <div class="dt-prow" style="margin-top:6px">
+          <div><div class="dt-pname">Voldking Jean Prospere</div><div class="dt-prole">Chef Comptable</div></div>
+          <span class="dt-ptag">COMP</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dt-blk-lbl">Unités d'Arrondissement de Santé</div>
+    <div class="dt-uas-grid">
+      <div class="dt-uas-card">
+        <div class="dt-uas-lbl">Fort-Liberté</div>
+        <div class="dt-uas-name">Dr Yvesson John Milien</div>
+        <div class="dt-uas-ct">12 institutions</div>
+      </div>
+      <div class="dt-uas-card">
+        <div class="dt-uas-lbl">Ouanaminthe</div>
+        <div class="dt-uas-name">Dr Dieulin Toussaint</div>
+        <div class="dt-uas-ct">16 institutions</div>
+      </div>
+      <div class="dt-uas-card">
+        <div class="dt-uas-lbl">Trou-du-Nord</div>
+        <div class="dt-uas-name">Dr Jims Saint-Hilaire</div>
+        <div class="dt-uas-ct">15 institutions</div>
+      </div>
+    </div>
+
+    <div class="dt-frow">
+      <input type="text" id="dt-search" placeholder="Rechercher une institution…" oninput="dtRender()">
+      <select id="dt-uas-sel" onchange="dtRender()">
+        <option value="">Toutes les UAS</option>
+        <option>Fort-Liberté</option>
+        <option>Ouanaminthe</option>
+        <option>Trou-du-Nord</option>
+        <option>Hors UAS</option>
+      </select>
+      <select id="dt-type-sel" onchange="dtRender()">
+        <option value="">Tous types</option>
+        <option>Hôpital Communautaire de Référence</option>
+        <option>Centre de Santé</option>
+        <option>CAL</option>
+        <option>Dispensaire</option>
+        <option>CSL</option>
+        <option>CDI</option>
+        <option>CMS / Hôpital</option>
+      </select>
+    </div>
+    <div id="dt-list"></div>
+  </div>
+</div>
+
+<!-- ══ ÉTAT DU JOUR ══ -->
+<div class="panel" id="p-etat">
+  <div class="page-header">
+    <div>
+      <h1>État du Jour</h1>
+      <div class="meta" id="etat-date"></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-ghost" onclick="etatRefresh()">↻ Actualiser</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="kpi-grid" id="etat-kpis"></div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header"><h3>Flotte</h3></div>
+        <div class="card-body" id="etat-fleet"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>Hygiène — En attente</h3></div>
+        <div class="card-body" id="etat-hyg"></div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header"><h3>Rapportage — Dernier mois</h3></div>
+        <div class="card-body" id="etat-rp"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>Cliniques Mobiles</h3></div>
+        <div class="card-body" id="etat-cm"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ VISITES ══ -->
+<div class="panel" id="p-visites">
+  <div class="page-header">
+    <div>
+      <h1>Registre de Visites</h1>
+      <div class="meta">Portail d'accueil  DSNE</div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-ghost" onclick="loadVisites()">↻ Importer</button>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="kpi-grid">
+      <div class="kpi-card teal">
+        <div class="kpi-label">Total visites</div>
+        <div class="kpi-value" id="vis-total">—</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-label">Autorisées</div>
+        <div class="kpi-value" id="vis-auth">—</div>
+      </div>
+      <div class="kpi-card red">
+        <div class="kpi-label">Refusées</div>
+        <div class="kpi-value" id="vis-refused">—</div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="kpi-label">En cours</div>
+        <div class="kpi-value" id="vis-active">—</div>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <input class="search-input" type="text" placeholder="Rechercher un visiteur…" oninput="renderVisites(this.value)">
+    </div>
+    <div class="card">
+      <table class="data-table" id="vis-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Visiteur</th>
+            <th>Organisation</th>
+            <th>Service</th>
+            <th>Personne visitée</th>
+            <th>Statut</th>
+            <th>Agent</th>
+            <th>Entrée</th>
+          </tr>
+        </thead>
+        <tbody id="vis-tbody">
+          <tr><td colspan="8" class="empty">Aucune donnée. Importez le fichier Excel ci-dessus.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HYGIÈNE ══ -->
+<div class="panel" id="p-hyg">
+  <div class="page-header">
+    <div>
+      <h1>Certificats d'Hygiène Publique</h1>
+      <div class="meta">Suivi des demandes  DSNE-HP</div>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="kpi-grid" id="hyg-kpis"></div>
+    <div class="filter-bar">
+      <input class="search-input" type="text" placeholder="Rechercher un établissement…" oninput="renderHyg(this.value)">
+      <select class="filter-select" onchange="renderHyg('',this.value)">
+        <option value="">Tous statuts</option>
+        <option>En attente d'approbation</option>
+        <option>Certificat envoyé</option>
+      </select>
+    </div>
+    <div class="card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Référence</th>
+            <th>Établissement</th>
+            <th>Responsable</th>
+            <th>Date émission</th>
+            <th>Expiration</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody id="hyg-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CLINIQUES MOBILES ══ -->
+<div class="panel" id="p-cm">
+  <div class="page-header">
+    <div>
+      <h1>Cliniques Mobiles</h1>
+      <div class="meta">Suivi des demandes d'autorisation  DSNE</div>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">Total demandes</div><div class="kpi-value" id="cm-total">0</div></div>
+      <div class="kpi-card amber"><div class="kpi-label">En attente</div><div class="kpi-value" id="cm-pending">0</div></div>
+      <div class="kpi-card green"><div class="kpi-label">Approuvées</div><div class="kpi-value" id="cm-approved">0</div></div>
+      <div class="kpi-card red"><div class="kpi-label">Refusées</div><div class="kpi-value" id="cm-refused">0</div></div>
+    </div>
+    <div class="card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Organisation</th>
+            <th>Modalités</th>
+            <th>Dossier complet</th>
+            <th>Recommandation</th>
+            <th>Statut</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="cm-tbody">
+          <tr><td colspan="7" class="empty">Aucune demande reçue pour le moment.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOGISTIQUE ══ -->
+<div class="panel" id="p-logistique">
+  <div class="page-header">
+    <div>
+      <h1>Logistique</h1>
+      <div class="meta">Flotte  Journal de bord  Entretien</div>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="kpi-grid" id="log-kpis"></div>
+    <div class="section-title">État de la flotte</div>
+    <div class="fleet-grid" id="fleet-grid" style="margin-bottom:24px"></div>
+    <div class="section-title">Journal de bord</div>
+    <div class="card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Véhicule</th>
+            <th>Chauffeur</th>
+            <th>Destination</th>
+            <th>KM parcourus</th>
+            <th>Carburant (L)</th>
+            <th>Total HTG</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody id="log-tbody">
+          <tr><td colspan="8" class="empty">Aucune mission enregistrée.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ COMPTABILITÉ ══ -->
+<div class="panel" id="p-compta">
+  <div class="page-header">
+    <div>
+      <h1>Comptabilité</h1>
+      <div class="meta">Suivi des comptes bancaires  Chef Comptable : Voldking Jean Prospere</div>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="kpi-grid" id="compta-kpis"></div>
+    <div class="section-title">Mouvements récents</div>
+    <div class="card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Compte</th>
+            <th>Activity ID</th>
+            <th>Description</th>
+            <th>Entrée (+)</th>
+            <th>Sortie (−)</th>
+            <th>Solde</th>
+          </tr>
+        </thead>
+        <tbody id="compta-tbody">
+          <tr><td colspan="7" class="empty">Aucun mouvement enregistré.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RAPPORTAGE ══ -->
+<div class="panel" id="p-rapportage">
+  <div class="page-header">
+    <div>
+      <h1>Suivi des Rapports</h1>
+      <div class="meta">Déc 2025 → Nov 2026  43 institutions  FIN / RH / EPI</div>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="kpi-grid" id="rp-kpis"></div>
+    <div class="section-title">Heatmap de conformité</div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-body">
+        <div class="heatmap-wrap">
+          <table class="heatmap" id="rp-heatmap"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ COURRIER ══ -->
+<div class="panel" id="p-courrier">
+  <div class="page-header">
+    <div>
+      <h1>Courrier & Modèles</h1>
+      <div class="meta">Rédaction institutionnelle  DSNE</div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-ghost" onclick="exportPDF()">Exporter PDF</button>
+      <button class="btn btn-ghost" onclick="exportDOCX()">Exporter DOCX</button>
+      <button class="btn btn-primary" onclick="printLetter()">Imprimer</button>
+    </div>
+  </div>
+  <div class="page-body" style="flex:1;display:flex;flex-direction:column">
+    <div class="letter-layout" style="flex:1">
+      <!-- Template list -->
+      <div>
+        <div class="section-title">Modèles disponibles</div>
+        <div class="template-list" id="template-list"></div>
+      </div>
+      <!-- Editor + Preview -->
+      <div style="display:flex;flex-direction:column;gap:16px;overflow-y:auto">
+        <!-- Meta fields always shown -->
+        <div style="background:#ffffff;border:1px solid #e8e3d9;border-radius:6px;padding:16px">
+          <div class="section-title" style="margin-bottom:12px">Informations générales</div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label">Destinataire</label>
+              <input class="field-input" id="l-dest" placeholder="Nom et titre" oninput="renderLetter()">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Date</label>
+              <input class="field-input" id="l-date" type="date" oninput="renderLetter()">
+            </div>
+          </div>
+          <div class="field-row" style="margin-top:10px">
+            <div class="field-group">
+              <label class="field-label">Objet</label>
+              <input class="field-input" id="l-objet" placeholder="Objet de la lettre" oninput="renderLetter()">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Référence</label>
+              <input class="field-input" id="l-ref" placeholder="ex. DSNE/DIR/L/…" oninput="renderLetter()">
+            </div>
+          </div>
+        </div>
+        <!-- Dynamic template fields -->
+        <div style="background:#ffffff;border:1px solid #e8e3d9;border-radius:6px;padding:16px" id="template-fields-wrap">
+          <div class="section-title" style="margin-bottom:12px" id="template-fields-title">Champs du modèle</div>
+          <div id="template-fields"></div>
+        </div>
+        <!-- Preview -->
+        <div class="section-title">Aperçu de la lettre</div>
+        <div class="letter-preview" id="letter-preview"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ NOTES ══ -->
+<div class="panel" id="p-notes">
+  <div class="page-header">
+    <div><h1>Notes</h1><div class="meta">Sauvegardées localement dans votre navigateur</div></div>
+    <div class="actions">
+      <button class="btn btn-primary" onclick="newNote()">+ Nouvelle note</button>
+    </div>
+  </div>
+  <div class="page-body" style="flex:1;display:flex;flex-direction:column">
+    <div class="notes-layout" style="flex:1">
+      <div>
+        <div class="section-title">Mes notes</div>
+        <div class="note-list" id="note-list"></div>
+      </div>
+      <div class="note-editor" id="note-editor" style="display:none">
+        <input class="note-title-input" id="note-title" placeholder="Titre de la note…" oninput="saveNote()">
+        <textarea class="note-body-textarea" id="note-body" placeholder="Écrivez ici…" oninput="saveNote()"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn btn-ghost" onclick="deleteNote()" style="color:#c0392b;border-color:#c0392b">Supprimer</button>
+        </div>
+      </div>
+      <div id="note-empty" style="color:#8a9ab0;font-style:italic;padding:32px">Sélectionnez une note ou créez-en une nouvelle.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DOCUMENTS ══ -->
+<div class="panel" id="p-documents">
+  <div class="page-header">
+    <div><h1>Documents</h1><div class="meta">Bilans trimestriels  Rapports  Fichiers</div></div>
+    <div class="actions">
+      <label class="btn btn-primary" style="cursor:pointer">
+        + Ajouter <input type="file" multiple style="display:none" onchange="addDocs(this)">
+      </label>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="filter-bar">
+      <input class="search-input" type="text" placeholder="Rechercher un document…" oninput="renderDocs(this.value)">
+      <select class="filter-select" onchange="renderDocs('',this.value)">
+        <option value="">Toutes catégories</option>
+        <option>Bilan trimestriel</option>
+        <option>Rapport mensuel</option>
+        <option>Correspondance</option>
+        <option>Autre</option>
+      </select>
+    </div>
+    <div id="doc-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px"></div>
+    <div id="doc-empty" style="text-align:center;padding:60px;color:#8a9ab0;font-style:italic">
+      Aucun document. Cliquez sur "+ Ajouter" pour commencer.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     DATA
+═══════════════════════════════════════════ -->
+<script>
+
+/* ── INSTITUTIONS ── */
+const INSTITUTIONS = [
+  {nom:'Hopital de Fort-Liberte',type:'Hôpital Communautaire de Référence',uas:'Fort-Liberté',commune:'Fort-Liberté',lat:19.6621,lng:-71.8388,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'CS ND de Lourdes (Grand Bassin)',type:'Centre de Santé',uas:'Fort-Liberté',commune:'Fort-Liberté',lat:19.655,lng:-71.832,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'CS Bethesda (Grand Bassin)(privé)',type:'Centre de Santé',uas:'Fort-Liberté',commune:'Fort-Liberté',lat:19.658,lng:-71.837,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire de Danda',type:'Dispensaire',uas:'Fort-Liberté',commune:'Fort-Liberté',lat:19.671,lng:-71.822,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'CEMEFCO (privé)',type:'Centre de Santé',uas:'Fort-Liberté',commune:'Fort-Liberté',lat:19.659,lng:-71.841,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Clinique Eben-Ezer de Fort-Liberte (privé)',type:'Centre de Santé',uas:'Fort-Liberté',commune:'Fort-Liberté',lat:19.660,lng:-71.839,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'CS de Terrier-Rouge',type:'Centre de Santé',uas:'Fort-Liberté',commune:'Terrier-Rouge',lat:19.638,lng:-71.803,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'CAL de Mombin-Crochu',type:'CAL',uas:'Fort-Liberté',commune:'Mombin-Crochu',lat:19.574,lng:-71.940,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire de Dupity',type:'Dispensaire',uas:'Fort-Liberté',commune:'Fort-Liberté',lat:19.672,lng:-71.848,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire de Merande',type:'Dispensaire',uas:'Fort-Liberté',commune:'Terrier-Rouge',lat:19.629,lng:-71.789,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire Lamine',type:'Dispensaire',uas:'Fort-Liberté',commune:'Fort-Liberté',lat:19.664,lng:-71.855,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire de Phaeton',type:'Dispensaire',uas:'Fort-Liberté',commune:'Fort-Liberté',lat:19.679,lng:-71.845,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'CDI de Trou du Nord',type:'CDI',uas:'Trou-du-Nord',commune:'Trou-du-Nord',lat:19.613,lng:-71.998,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Clinique Esperance et Vie (privé)',type:'Centre de Santé',uas:'Trou-du-Nord',commune:'Trou-du-Nord',lat:19.615,lng:-72.001,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'CAL de Capotille',type:'CAL',uas:'Ouanaminthe',commune:'Capotille',lat:19.569,lng:-71.777,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'CS de Bois de Laurence',type:'Centre de Santé',uas:'Ouanaminthe',commune:'Ouanaminthe',lat:19.558,lng:-71.752,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire Caracol',type:'Dispensaire',uas:'Trou-du-Nord',commune:'Caracol',lat:19.609,lng:-72.023,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire de Leroux Cachiman',type:'Dispensaire',uas:'Trou-du-Nord',commune:'Trou-du-Nord',lat:19.621,lng:-71.990,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire de Gens de Nantes',type:'Dispensaire',uas:'Trou-du-Nord',commune:'Trou-du-Nord',lat:19.598,lng:-72.010,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire Acul Samedi',type:'Dispensaire',uas:'Trou-du-Nord',commune:'Trou-du-Nord',lat:19.605,lng:-71.985,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire Derac',type:'Dispensaire',uas:'Trou-du-Nord',commune:'Trou-du-Nord',lat:19.630,lng:-72.015,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire Acul des Pins',type:'Dispensaire',uas:'Trou-du-Nord',commune:'Trou-du-Nord',lat:19.596,lng:-72.003,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'CSL de Vallieres',type:'CSL',uas:'Trou-du-Nord',commune:'Vallières',lat:19.530,lng:-72.060,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'CAL de Ouanaminthe',type:'CAL',uas:'Ouanaminthe',commune:'Ouanaminthe',lat:19.553,lng:-71.732,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire de Dilaire',type:'Dispensaire',uas:'Ouanaminthe',commune:'Ouanaminthe',lat:19.548,lng:-71.740,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire de Pilette',type:'Dispensaire',uas:'Ouanaminthe',commune:'Ouanaminthe',lat:19.571,lng:-71.758,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'CAL Carice',type:'CAL',uas:'Ouanaminthe',commune:'Carice',lat:19.489,lng:-71.867,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'CS Rose Bonite',type:'Centre de Santé',uas:'Ouanaminthe',commune:'Ouanaminthe',lat:19.560,lng:-71.744,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire de Perches',type:'Dispensaire',uas:'Ouanaminthe',commune:'Perches',lat:19.504,lng:-71.794,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'CS de Cahesse',type:'Centre de Santé',uas:'Ouanaminthe',commune:'Ouanaminthe',lat:19.544,lng:-71.727,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire Savane Longue',type:'Dispensaire',uas:'Ouanaminthe',commune:'Ouanaminthe',lat:19.538,lng:-71.769,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire Savane au Lait',type:'Dispensaire',uas:'Ouanaminthe',commune:'Ouanaminthe',lat:19.530,lng:-71.780,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire de Ferrier',type:'Dispensaire',uas:'Ouanaminthe',commune:'Ferrier',lat:19.598,lng:-71.682,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire de Meillac',type:'Dispensaire',uas:'Fort-Liberté',commune:'Meillac',lat:19.690,lng:-71.900,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'CAL de Mont-Organise',type:'CAL',uas:'Trou-du-Nord',commune:'Mont-Organisé',lat:19.543,lng:-72.013,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Univers Centre Medical (privé)',type:'Centre de Santé',uas:'Ouanaminthe',commune:'Ouanaminthe',lat:19.556,lng:-71.735,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'CS de Jacquezyl',type:'Centre de Santé',uas:'Ouanaminthe',commune:'Ouanaminthe',lat:19.562,lng:-71.749,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Disp NDL de Sainte Suzanne',type:'Dispensaire',uas:'Trou-du-Nord',commune:'Sainte-Suzanne',lat:19.658,lng:-72.110,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire Ste Suzanne',type:'Dispensaire',uas:'Trou-du-Nord',commune:'Sainte-Suzanne',lat:19.655,lng:-72.108,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire de Grosse-Roche',type:'Dispensaire',uas:'Trou-du-Nord',commune:'Trou-du-Nord',lat:19.588,lng:-72.042,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire de Roche Plate',type:'Dispensaire',uas:'Ouanaminthe',commune:'Ouanaminthe',lat:19.525,lng:-71.800,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire de Bois Poux',type:'Dispensaire',uas:'Trou-du-Nord',commune:'Trou-du-Nord',lat:19.601,lng:-72.057,statut:'Fonctionnel',dm:'À compléter'},
+  {nom:'Dispensaire de Corosse',type:'Dispensaire',uas:'Ouanaminthe',commune:'Ouanaminthe',lat:19.516,lng:-71.812,statut:'Fonctionnel',dm:'À compléter'},
+];
+
+/* ── HYG DATA ── */
+const HYG_DATA = [
+  {ref:'DSNE-HP-04052026-HYG-1',nom:'Cojeha',nif:'12345679',adresse:'RN 6 Malfety',responsable:'Daisha Dorsainvil',email:'daishastephanie@gmail.com',emission:'2026-05-04',expiration:'2027-05-04',statut:"En attente d'approbation"},
+  {ref:'DSNE-HP-04052026-HYG-2',nom:'Test',nif:'NIF12345678',adresse:'ADDRESSE COMPLETO',responsable:'NOM RESP',email:'daishastephanie@gmail.com',emission:'2026-05-04',expiration:'2027-05-04',statut:'Certificat envoyé'},
+  {ref:'DSNE-HP-04052026-HYG-3',nom:'T-sherles',nif:'123456789',adresse:'Rye Anglade #14',responsable:'Daisha Dorsainvil',email:'daishastephanie@gmail.com',emission:'2026-05-04',expiration:'2027-05-04',statut:'Certificat envoyé'},
+  {ref:'DSNE-HP-18052026-HYG-1',nom:'Hotel Restaurant le Palmiste',nif:'123-456-789-0',adresse:'Route Nationale #6, Fort-Liberté',responsable:'Jean-Pierre Estimable',email:'sec.direction.dsne@gmail.com',emission:'2026-05-18',expiration:'2027-05-18',statut:"En attente d'approbation"},
+];
+
+/* ── FLEET DATA ── */
+const FLEET_DATA = [
+  {n:'1',model:'LANDCRUISER PICKUP',plaque:'SE-001225',statut:'Disponible',obs:'Fonctionnelle'},
+  {n:'2',model:'LAND CRUISER PICKUP',plaque:'IT-',statut:'Hors service',obs:'En cas d\'urgences - ADM'},
+  {n:'3',model:'LANDCRUISER SIMPLE',plaque:'IT-04379',statut:'Hors service',obs:'En cas d\'urgences - DD'},
+  {n:'4',model:'LAND CRUISER',plaque:'SE-01174',statut:'Disponible',obs:'Fonctionnelle - PEV'},
+  {n:'5',model:'CHEVROLET PICKUP',plaque:'IT-',statut:'En entretien',obs:'En panne (garage)'},
+  {n:'6',model:'BUS NISSAN',plaque:'SE-03701',statut:'Hors service',obs:'Pas en état d\'utiliser'},
+  {n:'7',model:'TOYOTA LANDCRUISER',plaque:'OI-00405',statut:'Hors service',obs:'Pas en état d\'utiliser'},
+  {n:'8',model:'NISSAN FRONTIER PICKUP',plaque:'SE-03049',statut:'Hors service',obs:'Pas en état d\'utiliser'},
+  {n:'9',model:'PICKUP WINGLE',plaque:'SE-03098',statut:'Hors service',obs:'Mauvais état'},
+  {n:'10',model:'TOYOTA LANDCRUISER',plaque:'SE-02056',statut:'Hors service',obs:'Mauvais état'},
+  {n:'11',model:'GROS CAMION INTERNATIONAL',plaque:'SE-04151',statut:'Hors service',obs:'Pas en état d\'utiliser'},
+];
+
+/* ── RAPPORTAGE DATA (embedded) ── */
+const RP_DATA = [
+  {inst:'CS ND de Lourdes (Grand Bassin)',months:{Déc:{FIN:'Reçu',RH:'',EPI:'En retard'},Jan:{FIN:'Reçu',RH:'Reçu',EPI:'En retard'},Fév:{FIN:'Reçu',RH:'Reçu',EPI:'Reçu'},Mar:{FIN:'Manquant',RH:'Reçu',EPI:'En retard'},Avr:{FIN:'Reçu',RH:'',EPI:'En retard'},Mai:{FIN:'',RH:'',EPI:''},Juin:{FIN:'',RH:'',EPI:''},Juil:{FIN:'',RH:'',EPI:''},Août:{FIN:'',RH:'',EPI:''},Sep:{FIN:'',RH:'',EPI:''},Oct:{FIN:'',RH:'',EPI:''},Nov:{FIN:'',RH:'',EPI:''}},recus:8,conformite:22},
+  {inst:'CS Bethesda (Grand Bassin)(privé)',months:{Déc:{FIN:'Reçu',RH:'',EPI:''},Jan:{FIN:'Reçu',RH:'Reçu',EPI:''},Fév:{FIN:'Reçu',RH:'Reçu',EPI:''},Mar:{FIN:'',RH:'',EPI:''},Avr:{FIN:'',RH:'',EPI:''},Mai:{FIN:'',RH:'',EPI:''},Juin:{FIN:'',RH:'',EPI:''},Juil:{FIN:'',RH:'',EPI:''},Août:{FIN:'',RH:'',EPI:''},Sep:{FIN:'',RH:'',EPI:''},Oct:{FIN:'',RH:'',EPI:''},Nov:{FIN:'',RH:'',EPI:''}},recus:5,conformite:14},
+  {inst:'CAL de Ouanaminthe',months:{Déc:{FIN:'',RH:'',EPI:'Reçu'},Jan:{FIN:'',RH:'Reçu',EPI:'Reçu'},Fév:{FIN:'',RH:'Reçu',EPI:'Reçu'},Mar:{FIN:'',RH:'',EPI:''},Avr:{FIN:'',RH:'',EPI:''},Mai:{FIN:'',RH:'',EPI:''},Juin:{FIN:'',RH:'',EPI:''},Juil:{FIN:'',RH:'',EPI:''},Août:{FIN:'',RH:'',EPI:''},Sep:{FIN:'',RH:'',EPI:''},Oct:{FIN:'',RH:'',EPI:''},Nov:{FIN:'',RH:'',EPI:''}},recus:5,conformite:14},
+  {inst:'CAL de Capotille',months:{Déc:{FIN:'',RH:'',EPI:'Reçu'},Jan:{FIN:'',RH:'Reçu',EPI:'Reçu'},Fév:{FIN:'',RH:'Reçu',EPI:'Reçu'},Mar:{FIN:'',RH:'',EPI:''},Avr:{FIN:'',RH:'',EPI:''},Mai:{FIN:'',RH:'',EPI:''},Juin:{FIN:'',RH:'',EPI:''},Juil:{FIN:'',RH:'',EPI:''},Août:{FIN:'',RH:'',EPI:''},Sep:{FIN:'',RH:'',EPI:''},Oct:{FIN:'',RH:'',EPI:''},Nov:{FIN:'',RH:'',EPI:''}},recus:5,conformite:14},
+  {inst:'Hopital de Fort-Liberte',months:{Déc:{FIN:'Reçu',RH:'',EPI:'Reçu'},Jan:{FIN:'Reçu',RH:'Reçu',EPI:'Reçu'},Fév:{FIN:'Reçu',RH:'Reçu',EPI:'Reçu'},Mar:{FIN:'',RH:'',EPI:''},Avr:{FIN:'',RH:'',EPI:''},Mai:{FIN:'',RH:'',EPI:''},Juin:{FIN:'',RH:'',EPI:''},Juil:{FIN:'',RH:'',EPI:''},Août:{FIN:'',RH:'',EPI:''},Sep:{FIN:'',RH:'',EPI:''},Oct:{FIN:'',RH:'',EPI:''},Nov:{FIN:'',RH:'',EPI:''}},recus:8,conformite:22},
+];
+const RP_MONTHS        = ['Déc','Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov'];
+const RP_MONTHS_REMOTE = ['Dec','Jan','Fev','Mar','Avr','Mai','Juin','Juil','Aout','Sep','Oct','Nov'];
+
+/* ── TEMPLATES ── */
+const TEMPLATES = [
+  {
+    id:'engagement', label:"Lettre d'engagement", type:'Ressources humaines',
+    objet:"Lettre d'engagement",
+    fields:[
+      {id:'f_nom',   label:'Nom complet',    placeholder:'Prénom Nom'},
+      {id:'f_poste', label:'Poste occupé',   placeholder:'ex. Technicien de laboratoire'},
+      {id:'f_debut', label:'Date de prise de service', type:'date', placeholder:''},
+      {id:'f_super', label:'Superviseur direct', placeholder:'Titre et nom'},
+      {id:'f_taches',label:'Description des tâches', type:'textarea', placeholder:'Décrire les responsabilités principales…'},
+    ],
+    body: (f) => `Nous avons l'honneur de vous informer de votre engagement en qualité de ${f.f_poste||'[POSTE]'} au sein de la Direction Sanitaire du Nord-Est (DSNE), à compter du ${f.f_debut||'[DATE]'}.
+
+Votre travail consistera à ${f.f_taches||'[DESCRIPTION DES TÂCHES]'}. Vous serez placé(e) sous l'autorité directe de ${f.f_super||'[SUPERVISEUR]'}.
+
+Nous comptons sur votre professionnalisme et votre dévouement pour contribuer à la réalisation des missions de santé publique qui nous sont confiées.
+
+Dans l'attente de votre prise de service, veuillez agréer, ${f.f_nom||'[Destinataire]'}, l'expression de notre considération distinguée.`,
+  },
+  {
+    id:'cessation', label:'Cessation de service', type:'Ressources humaines',
+    objet:'Cessation de service',
+    fields:[
+      {id:'f_nom',  label:'Nom complet',   placeholder:'Prénom Nom'},
+      {id:'f_poste',label:'Poste occupé',  placeholder:'ex. Infirmier'},
+      {id:'f_fin',  label:'Date de cessation', type:'date', placeholder:''},
+      {id:'f_motif',label:'Motif (optionnel)', type:'textarea', placeholder:'ex. Fin de contrat, mutation…'},
+    ],
+    body: (f) => `Nous vous informons par la présente que les services de ${f.f_nom||'[NOM]'}, en qualité de ${f.f_poste||'[POSTE]'}, au sein de la Direction Sanitaire du Nord-Est (DSNE) prendront fin à la date du ${f.f_fin||'[DATE]'}.${f.f_motif?'\n\n'+f.f_motif:''}
+
+Nous lui adressons nos remerciements pour sa contribution et lui souhaitons bonne continuation dans ses activités professionnelles.
+
+Veuillez agréer, ${f.f_nom||'[Destinataire]'}, l'expression de notre considération distinguée.`,
+  },
+  {
+    id:'convocation', label:'Convocation / réunion', type:'Administration',
+    objet:'Convocation à réunion',
+    fields:[
+      {id:'f_date',  label:'Date de la réunion', type:'date', placeholder:''},
+      {id:'f_heure', label:'Heure',   placeholder:'ex. 09h00'},
+      {id:'f_salle', label:'Salle / lieu', placeholder:'ex. Salle de conférence DSNE'},
+      {id:'f_pts',   label:'Points à l\'ordre du jour', type:'textarea', placeholder:'1. Présentation du rapport mensuel\n2. Discussion budgétaire\n3. Divers'},
+    ],
+    body: (f) => `Vous êtes convoqué(e) à une réunion qui se tiendra le ${f.f_date||'[DATE]'} à ${f.f_heure||'[HEURE]'} à la Direction Sanitaire du Nord-Est, ${f.f_salle||'salle [SALLE]'}.
+
+Ordre du jour :
+${f.f_pts||'1. [POINT 1]\n2. [POINT 2]\n3. Questions diverses'}
+
+Votre présence est obligatoire. Veuillez confirmer votre participation auprès du Secrétariat de Direction.
+
+Veuillez agréer l'expression de notre considération distinguée.`,
+  },
+  {
+    id:'recommandation', label:'Lettre de recommandation', type:'Partenaires',
+    objet:'Lettre de recommandation',
+    fields:[
+      {id:'f_nom',   label:'Nom du bénéficiaire', placeholder:'Prénom Nom'},
+      {id:'f_titre', label:'Titre / fonction',    placeholder:'ex. Médecin de famille'},
+      {id:'f_objet', label:'Objet de la recommandation', type:'textarea', placeholder:'ex. une opportunité de formation en santé publique'},
+      {id:'f_qualites', label:'Qualités observées', type:'textarea', placeholder:'ex. professionnalisme exemplaire, rigueur clinique…'},
+    ],
+    body: (f) => `La Direction Sanitaire du Nord-Est (DSNE) recommande vivement ${f.f_nom||'[NOM]'}, ${f.f_titre||'[TITRE]'}, pour ${f.f_objet||'[OBJET]'}.
+
+Au cours de sa collaboration avec la DSNE, ${f.f_nom||'[NOM]'} a démontré ${f.f_qualites||'un professionnalisme exemplaire, une grande capacité de travail et un dévouement constant aux objectifs de santé publique du département'}.
+
+Nous appuyons sa candidature sans réserve et restons disponibles pour tout renseignement complémentaire.
+
+Veuillez agréer l'expression de notre haute considération.`,
+  },
+  {
+    id:'autorisation', label:'Autorisation clinique mobile', type:'Partenaires / CM',
+    objet:'Autorisation de clinique mobile',
+    fields:[
+      {id:'f_org',     label:'Organisation demandeuse', placeholder:'ex. CMMB, CRS…'},
+      {id:'f_commune', label:'Commune ciblée',          placeholder:'ex. Ouanaminthe'},
+      {id:'f_date',    label:'Date de l\'activité',     type:'date', placeholder:''},
+      {id:'f_cond',    label:'Conditions particulières (optionnel)', type:'textarea', placeholder:''},
+    ],
+    body: (f) => `La Direction Sanitaire du Nord-Est (DSNE) autorise l'organisation ${f.f_org||'[ORGANISATION]'} à organiser une clinique mobile dans la commune de ${f.f_commune||'[COMMUNE]'}, le ${f.f_date||'[DATE]'}.
+
+Cette autorisation est accordée sous réserve du respect des protocoles sanitaires en vigueur, de la présence d'un personnel qualifié et licencié, et de la soumission d'un rapport post-activité à la DSNE dans les 15 jours suivant l'intervention.${f.f_cond?'\n\n'+f.f_cond:''}
+
+Toute modification du plan d'activité devra être communiquée à la DSNE avant la tenue de l'événement.
+
+Veuillez agréer l'expression de notre considération distinguée.`,
+  },
+  {
+    id:'note-satisfaction', label:'Note de satisfaction', type:'Personnel',
+    objet:'Note de satisfaction',
+    fields:[
+      {id:'f_nom',   label:'Nom du bénéficiaire', placeholder:'Prénom Nom'},
+      {id:'f_titre', label:'Titre / fonction',    placeholder:'ex. Infirmière chef'},
+      {id:'f_motif', label:'Motif de la satisfaction', type:'textarea', placeholder:'ex. son engagement exceptionnel lors de la supervision du mois de mars…'},
+    ],
+    body: (f) => `La Direction Sanitaire du Nord-Est (DSNE) tient à exprimer sa satisfaction à l'égard de ${f.f_nom||'[NOM]'}, ${f.f_titre||'[TITRE]'}, pour ${f.f_motif||'[MOTIF]'}.
+
+Cette contribution remarquable témoigne de l'engagement et du professionnalisme de ${f.f_nom||'[NOM]'} au service de la santé publique dans le département du Nord-Est.
+
+Nous lui adressons nos sincères félicitations.`,
+  },
+];
+
+/* ── VISITES DATA (sample, can be overridden by import) ── */
+let VISITES_DATA = [
+  {id:'VIS-27052026-001',entree:'2026-05-27 20:41',carte:'ADM-001',nom:'Test Visiteur',type_piece:'CIN',numero:'CIN-123456',telephone:'',org:'Organisation Test',service:'ADM — Administration',personne:'Pierre Décius',motif:'Réunion ou rencontre',autorisee:'Oui',motif_refus:'',autorisateur:'Agent Test',agent:'Agent Réception',statut:'Sorti',sortie:'2026-05-27 20:41'},
+  {id:'VIS-27052026-002',entree:'2026-05-27 20:41',carte:'DIR-001',nom:'Visiteur Refusé',type_piece:'Passeport',numero:'PASS-789',telephone:'',org:'Autre Organisation',service:'DIR — Direction',personne:'Dr. Jean Clervain Dorsainvil',motif:'Consultation ou demande d\'information',autorisee:'Non',motif_refus:'Directeur non disponible',autorisateur:'',agent:'Agent Réception',statut:'Refusé',sortie:''},
+];
+
+</script>
+
+<!-- ═══════════════════════════════════════════
+     APP LOGIC
+═══════════════════════════════════════════ -->
+<script>
+
+/* ── NAV ── */
+function nav(id, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('p-' + id).classList.add('active');
+  if (el) el.classList.add('active');
+
+  // Lazy init
+  const inits = {
+    dsne: initDsne,
+    etat: initEtat,
+    hyg: initHyg,
+    visites: initVisites,
+    logistique: initLogistique,
+    rapportage: initRapportage,
+    courrier: initCourrier,
+    notes: initNotes,
+    documents: initDocs,
+    cm: initCM,
+    compta: initCompta,
+    parametres: initParametres,
+    parametres: initParametres,
+  };
+  if (inits[id]) inits[id]();
+}
+
+/* ── HELPERS ── */
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const fmtDate = s => { if(!s) return '—'; try { return new Date(s).toLocaleDateString('fr-FR'); } catch(e) { return s; } };
+
+/* ══════════════════════════════════════════
+   DSNE TAB
+══════════════════════════════════════════ */
+let dtMap = null, dtInited = false;
+const UAS_COLORS = {'Fort-Liberté':'#1a3a6b','Ouanaminthe':'#2d6a3f','Trou-du-Nord':'#7a3a0c','Hors UAS':'#555'};
+
+function initDsne() {
+  if (dtInited) return; dtInited = true;
+  dtMap = L.map('dt-map').setView([19.58, -71.87], 9);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OpenStreetMap', maxZoom:16}).addTo(dtMap);
+  INSTITUTIONS.forEach(inst => {
+    const color = UAS_COLORS[inst.uas] || '#555';
+    L.circleMarker([inst.lat, inst.lng], {radius:6, color:'white', weight:1.5, fillColor:color, fillOpacity:.85})
+      .bindPopup(`<b style="font-size:12px">${inst.nom}</b><br><span style="font-size:10px;color:#888">${inst.type}  ${inst.uas}</span>`)
+      .addTo(dtMap);
+  });
+  dtRender();
+}
+
+let dtFilterUAS = '';
+function dtFilter(uas) {
+  dtFilterUAS = uas;
+  document.querySelectorAll('.dt-chip').forEach(c => c.classList.remove('act'));
+  event.currentTarget.classList.add('act');
+  document.getElementById('dt-uas-sel').value = uas;
+  dtRender();
+}
+
+function dtRender() {
+  const q = (document.getElementById('dt-search')?.value||'').toLowerCase();
+  const uas = document.getElementById('dt-uas-sel')?.value || dtFilterUAS;
+  const type = document.getElementById('dt-type-sel')?.value || '';
+  const filtered = INSTITUTIONS.filter(i =>
+    (!uas || i.uas === uas) &&
+    (!type || i.type === type) &&
+    (!q || i.nom.toLowerCase().includes(q) || i.commune.toLowerCase().includes(q))
+  );
+  const groups = {};
+  filtered.forEach(i => { (groups[i.uas] = groups[i.uas]||[]).push(i); });
+  const colors = {'Fort-Liberté':'#b8972a','Ouanaminthe':'#2d6a3f','Trou-du-Nord':'#7a3a0c','Hors UAS':'#555'};
+  let html = '';
+  Object.entries(groups).forEach(([uas, insts]) => {
+    html += `<div class="dt-grp"><div class="dt-ghd" style="color:${colors[uas]||'#888'}">${uas} — ${insts.length} institution${insts.length>1?'s':''}</div>`;
+    insts.forEach(i => {
+      html += `<div class="dt-inst"><div><div class="dt-iname">${esc(i.nom)}</div><div class="dt-idm">${esc(i.commune)} ${i.dm && i.dm!=='À compléter'?' DM : '+esc(i.dm):''}</div></div><span class="dt-ibadge">${esc(i.type)}</span></div>`;
+    });
+    html += '</div>';
+  });
+  if (!html) html = '<div style="color:#8a9ab0;font-style:italic;padding:16px">Aucun résultat.</div>';
+  document.getElementById('dt-list').innerHTML = html;
+}
+
+/* ══════════════════════════════════════════
+   ÉTAT DU JOUR
+══════════════════════════════════════════ */
+function initEtat() { etatRefresh(); }
+
+function etatRefresh() {
+  const now = new Date();
+  document.getElementById('etat-date').textContent =
+    now.toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+
+  // KPIs
+  const hygPending = HYG_DATA.filter(h => h.statut === "En attente d'approbation").length;
+  const hygTotal   = HYG_DATA.length;
+  const fleetDispo = FLEET_DATA.filter(v => v.statut === 'Disponible').length;
+  const fleetTotal = FLEET_DATA.filter(v => v.plaque).length;
+  const visTotal   = VISITES_DATA.length;
+  const rpLast     = {recus: RP_DATA.reduce((s,i)=>s+(i.months['Fév'].FIN==='Reçu'?1:0),0), total: RP_DATA.length};
+
+  document.getElementById('etat-kpis').innerHTML = `
+    <div class="kpi-card teal"><div class="kpi-label">Visites enregistrées</div><div class="kpi-value">${visTotal}</div><div class="kpi-sub">Total dans le registre</div></div>
+    <div class="kpi-card amber"><div class="kpi-label">HYG en attente</div><div class="kpi-value">${hygPending}</div><div class="kpi-sub">sur ${hygTotal} certificats</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Véhicules disponibles</div><div class="kpi-value">${fleetDispo}</div><div class="kpi-sub">sur ${fleetTotal} véhicules</div></div>
+    <div class="kpi-card"><div class="kpi-label">Rapportage — Fév</div><div class="kpi-value">${rpLast.recus}</div><div class="kpi-sub">FIN reçus sur ${rpLast.total} institutions</div></div>
+  `;
+
+  // Fleet status
+  const fc = {'Disponible':'dot-green','En mission':'dot-teal','En entretien':'dot-amber','Hors service':'dot-red'};
+  document.getElementById('etat-fleet').innerHTML = FLEET_DATA.filter(v=>v.plaque).slice(0,6).map(v=>`
+    <div class="status-row">
+      <span class="status-dot ${fc[v.statut]||'dot-gray'}"></span>
+      <span class="status-label">${esc(v.plaque)} — ${esc(v.model)}</span>
+      <span class="status-value">${esc(v.statut)}</span>
+    </div>`).join('');
+
+  // HYG pending
+  const pending = HYG_DATA.filter(h => h.statut === "En attente d'approbation");
+  document.getElementById('etat-hyg').innerHTML = pending.length
+    ? pending.map(h=>`<div class="status-row"><span class="status-dot dot-amber"></span><span class="status-label">${esc(h.nom)}</span><span class="status-value">${esc(h.ref.split('-').slice(-1)[0])}</span></div>`).join('')
+    : '<div style="color:#8a9ab0;font-style:italic;font-size:12px">Aucun certificat en attente.</div>';
+
+  // Rapportage last month
+  const lastRp = RP_DATA.slice(0,4).map(i=>{
+    const m = i.months['Fév'];
+    const tot = [m.FIN,m.RH,m.EPI].filter(v=>v==='Reçu').length;
+    return `<div class="status-row"><span class="status-dot ${tot===3?'dot-green':tot>0?'dot-amber':'dot-gray'}"></span><span class="status-label" style="font-size:11px">${esc(i.inst)}</span><span class="status-value">${tot}/3</span></div>`;
+  }).join('');
+  document.getElementById('etat-rp').innerHTML = lastRp || '<div style="color:#8a9ab0;font-style:italic">—</div>';
+
+  // CM
+  document.getElementById('etat-cm').innerHTML = `<div style="color:#8a9ab0;font-style:italic;font-size:12px;padding:12px 0">Aucune demande de clinique mobile reçue pour le moment.</div>`;
+}
+
+/* ══════════════════════════════════════════
+   VISITES
+══════════════════════════════════════════ */
+let visitesInited = false;
+function initVisites() { if(visitesInited) return; visitesInited=true; renderVisites(''); }
+
+function renderVisites(q) {
+  const filtered = VISITES_DATA.filter(v => !q || v.nom.toLowerCase().includes(q.toLowerCase()) || v.org.toLowerCase().includes(q.toLowerCase()));
+  const auth = filtered.filter(v=>v.autorisee==='Oui').length;
+  const refused = filtered.filter(v=>v.autorisee==='Non').length;
+  const active = filtered.filter(v=>v.statut==='Dans les locaux').length;
+  document.getElementById('vis-total').textContent = filtered.length;
+  document.getElementById('vis-auth').textContent = auth;
+  document.getElementById('vis-refused').textContent = refused;
+  document.getElementById('vis-active').textContent = active;
+
+  const statusBadge = s => {
+    if(s==='Sorti') return '<span class="badge badge-green">Sorti</span>';
+    if(s==='Refusé') return '<span class="badge badge-red">Refusé</span>';
+    if(s==='Dans les locaux') return '<span class="badge badge-teal">Dans les locaux</span>';
+    return `<span class="badge badge-gray">${esc(s)}</span>`;
+  };
+  document.getElementById('vis-tbody').innerHTML = filtered.length ? filtered.map(v=>`
+    <tr>
+      <td><code style="font-size:10px">${esc(v.id)}</code></td>
+      <td><strong>${esc(v.nom)}</strong><br><span style="font-size:10px;color:#8a9ab0">${esc(v.type_piece)} ${esc(v.numero)}</span></td>
+      <td>${esc(v.org)}</td>
+      <td>${esc(v.service)}</td>
+      <td>${esc(v.personne)}</td>
+      <td>${statusBadge(v.statut)}</td>
+      <td>${esc(v.agent)}</td>
+      <td>${esc(v.entree)}</td>
+    </tr>`).join('') : '<tr><td colspan="8" class="empty">Aucun résultat.</td></tr>';
+}
+
+function loadVisites() {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = '.xlsx,.csv';
+  input.onchange = e => alert('Importation Excel disponible dans la version Supabase. Pour l\'instant, les données test sont affichées.');
+  input.click();
+}
+
+/* ══════════════════════════════════════════
+   HYGIÈNE
+══════════════════════════════════════════ */
+let hygInited = false;
+function initHyg() { if(hygInited) return; hygInited=true; renderHyg(); }
+
+function renderHyg(q='', statut='') {
+  const filtered = HYG_DATA.filter(h =>
+    (!q || h.nom.toLowerCase().includes(q.toLowerCase())) &&
+    (!statut || h.statut === statut)
+  );
+  const pending  = HYG_DATA.filter(h=>h.statut==="En attente d'approbation").length;
+  const sent     = HYG_DATA.filter(h=>h.statut==='Certificat envoyé').length;
+  document.getElementById('hyg-kpis').innerHTML = `
+    <div class="kpi-card"><div class="kpi-label">Total certificats</div><div class="kpi-value">${HYG_DATA.length}</div></div>
+    <div class="kpi-card amber"><div class="kpi-label">En attente</div><div class="kpi-value">${pending}</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Envoyés</div><div class="kpi-value">${sent}</div></div>
+  `;
+  document.getElementById('hyg-tbody').innerHTML = filtered.map(h => {
+    const badge = h.statut.includes('attente')
+      ? '<span class="badge badge-amber">En attente</span>'
+      : '<span class="badge badge-green">Envoyé</span>';
+    return `<tr>
+      <td><code style="font-size:10px">${esc(h.ref)}</code></td>
+      <td><strong>${esc(h.nom)}</strong><br><span style="font-size:10px;color:#8a9ab0">${esc(h.adresse)}</span></td>
+      <td>${esc(h.responsable)}</td>
+      <td>${esc(h.emission)}</td>
+      <td>${esc(h.expiration)}</td>
+      <td>${badge}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="6" class="empty">Aucun résultat.</td></tr>';
+}
+
+/* ══════════════════════════════════════════
+   CM
+══════════════════════════════════════════ */
+let cmInited = false;
+function initCM() {
+  if(cmInited) return; cmInited=true;
+  document.getElementById('cm-total').textContent = '0';
+  document.getElementById('cm-pending').textContent = '0';
+  document.getElementById('cm-approved').textContent = '0';
+  document.getElementById('cm-refused').textContent = '0';
+}
+
+/* ══════════════════════════════════════════
+   LOGISTIQUE
+══════════════════════════════════════════ */
+let logInited = false;
+function initLogistique() {
+  if(logInited) return; logInited=true;
+
+  const dispo    = FLEET_DATA.filter(v=>v.statut==='Disponible').length;
+  const mission  = FLEET_DATA.filter(v=>v.statut==='En mission').length;
+  const entretien= FLEET_DATA.filter(v=>v.statut==='En entretien').length;
+  const hors     = FLEET_DATA.filter(v=>v.statut==='Hors service').length;
+
+  document.getElementById('log-kpis').innerHTML = `
+    <div class="kpi-card green"><div class="kpi-label">Disponibles</div><div class="kpi-value">${dispo}</div></div>
+    <div class="kpi-card teal"><div class="kpi-label">En mission</div><div class="kpi-value">${mission}</div></div>
+    <div class="kpi-card amber"><div class="kpi-label">En entretien</div><div class="kpi-value">${entretien}</div></div>
+    <div class="kpi-card red"><div class="kpi-label">Hors service</div><div class="kpi-value">${hors}</div></div>
+  `;
+
+  const cls = {'Disponible':'disponible','En mission':'mission','En entretien':'entretien','Hors service':'hors'};
+  document.getElementById('fleet-grid').innerHTML = FLEET_DATA.filter(v=>v.plaque).map(v=>`
+    <div class="fleet-card ${cls[v.statut]||''}">
+      <div class="fleet-plate">${esc(v.plaque)}</div>
+      <div class="fleet-model">${esc(v.model)}</div>
+      <div class="fleet-status">${esc(v.statut)}</div>
+      ${v.obs?`<div style="font-size:10px;color:#8a9ab0;margin-top:4px">${esc(v.obs)}</div>`:''}
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════════
+   COMPTABILITÉ
+══════════════════════════════════════════ */
+let comptaInited = false;
+function initCompta() {
+  if(comptaInited) return; comptaInited=true;
+  document.getElementById('compta-kpis').innerHTML = `
+    <div class="kpi-card"><div class="kpi-label">Compte 1</div><div class="kpi-value">—</div><div class="kpi-sub">HTG</div></div>
+    <div class="kpi-card"><div class="kpi-label">Compte 2</div><div class="kpi-value">—</div><div class="kpi-sub">HTG</div></div>
+    <div class="kpi-card"><div class="kpi-label">Compte 3</div><div class="kpi-value">—</div><div class="kpi-sub">HTG</div></div>
+    <div class="kpi-card"><div class="kpi-label">Compte 4</div><div class="kpi-value">—</div><div class="kpi-sub">HTG</div></div>
+  `;
+}
+
+/* ══════════════════════════════════════════
+   RAPPORTAGE
+══════════════════════════════════════════ */
+let rpInited = false;
+function initRapportage() {
+  if(rpInited) return; rpInited=true;
+  // Use live data from Apps Script if available, otherwise fall back to embedded
+  const rawData = (typeof liveRPData !== 'undefined' && liveRPData && liveRPData.length) ? liveRPData : RP_DATA;
+  const liveLabel = (typeof liveRPData !== 'undefined' && liveRPData) ? ' · Données en direct' : ' · Snapshot Avr 2026';
+  // Normalize month keys — Apps Script returns unaccented (Dec,Fev,Aout), heatmap expects accented (Déc,Fév,Août)
+  const MONTH_MAP = {'Dec':'Déc','Fev':'Fév','Aout':'Août'};
+  const data = rawData.map(function(inst) {
+    if (!inst.months) return inst;
+    var nm = {};
+    Object.keys(inst.months).forEach(function(k) {
+      nm[MONTH_MAP[k] || k] = inst.months[k];
+    });
+    return Object.assign({}, inst, {months: nm});
+  });
+
+  const totalRecus = data.reduce((s,i)=>s+i.recus,0);
+  const avgConf = Math.round(data.reduce((s,i)=>s+i.conformite,0)/data.length);
+  document.getElementById('rp-kpis').innerHTML = `
+    <div class="kpi-card teal"><div class="kpi-label">Institutions suivies</div><div class="kpi-value">${data.length}</div><div class="kpi-sub">sur 43 au total</div></div>
+    <div class="kpi-card"><div class="kpi-label">Rapports reçus</div><div class="kpi-value">${totalRecus}</div><div class="kpi-sub">Déc–Fév</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Conformité moy.</div><div class="kpi-value">${avgConf}%</div><div class="kpi-sub">Institutions avec données</div></div>
+  `;
+
+  const cellVal = v => {
+    if(!v) return {cls:'cell-empty',label:'-'};
+    const vl = v.toLowerCase();
+    if(vl==='reçu') return {cls:'cell-recu',label:'R'};
+    if(vl==='en retard') return {cls:'cell-retard',label:'!'};
+    if(vl==='manquant') return {cls:'cell-manquant',label:'M'};
+    return {cls:'cell-na',label:'—'};
+  };
+
+  let html = '<thead><tr><th class="inst-col">Institution</th>';
+  RP_MONTHS.forEach(m => html += `<th colspan="3">${m}</th>`);
+  html += '</tr><tr><th></th>';
+  RP_MONTHS.forEach(() => html += '<th>F</th><th>R</th><th>E</th>');
+  html += '</tr></thead><tbody>';
+
+  data.forEach(inst => {
+    html += `<td class="inst-name">${esc(inst.inst)}</td>`;
+    RP_MONTHS.forEach(m => {
+      const mo = inst.months[m];
+      ['FIN','RH','EPI'].forEach(p => {
+        const {cls,label} = cellVal(mo[p]);
+        html += `<td class="${cls}" title="${m} ${p}: ${mo[p]||'—'}">${label}</td>`;
+      });
+    });
+    html += '</tr>';
+    html = html.replace('<td class="inst-name">', '<tr><td class="inst-name">');
+  });
+  html += '</tbody>';
+  document.getElementById('rp-heatmap').innerHTML = html;
+}
+
+/* ══════════════════════════════════════════
+   COURRIER
+══════════════════════════════════════════ */
+let courrierInited = false;
+let activeTemplate = TEMPLATES[0];
+
+function initCourrier() {
+  if(courrierInited) return; courrierInited=true;
+  document.getElementById('l-date').value = new Date().toISOString().split('T')[0];
+  renderTemplateList();
+  loadTemplate(TEMPLATES[0]);
+}
+
+function renderTemplateList() {
+  document.getElementById('template-list').innerHTML = TEMPLATES.map(t=>
+    `<div class="template-item ${t.id===activeTemplate.id?'active':''}" onclick="loadTemplate(TEMPLATES.find(x=>x.id==='${t.id}'))">
+      ${esc(t.label)}
+      <div class="t-type">${esc(t.type)}</div>
+    </div>`
+  ).join('');
+}
+
+function loadTemplate(t) {
+  activeTemplate = t;
+  document.getElementById('l-objet').value = t.objet;
+  document.getElementById('template-fields-title').textContent = 'Champs — ' + t.label;
+  renderTemplateFields();
+  renderTemplateList();
+  renderLetter();
+}
+
+function renderTemplateFields() {
+  const t = activeTemplate;
+  if(!t.fields || !t.fields.length) {
+    document.getElementById('template-fields-wrap').style.display = 'none';
+    return;
+  }
+  document.getElementById('template-fields-wrap').style.display = '';
+  let html = '';
+  // Group fields in pairs for two-column layout
+  for(let i = 0; i < t.fields.length; i += 2) {
+    const f1 = t.fields[i];
+    const f2 = t.fields[i+1];
+    if(f1.type === 'textarea') {
+      html += `<div class="field-group" style="margin-bottom:10px">
+        <label class="field-label">${esc(f1.label)}</label>
+        <textarea class="field-textarea" id="${f1.id}" placeholder="${esc(f1.placeholder||'')}" oninput="renderLetter()" rows="4"></textarea>
+      </div>`;
+    } else {
+      html += '<div class="field-row" style="margin-bottom:10px">';
+      html += `<div class="field-group">
+        <label class="field-label">${esc(f1.label)}</label>
+        <input class="field-input" id="${f1.id}" type="${f1.type||'text'}" placeholder="${esc(f1.placeholder||'')}" oninput="renderLetter()">
+      </div>`;
+      if(f2) {
+        if(f2.type === 'textarea') {
+          html += `</div><div class="field-group" style="margin-bottom:10px">
+            <label class="field-label">${esc(f2.label)}</label>
+            <textarea class="field-textarea" id="${f2.id}" placeholder="${esc(f2.placeholder||'')}" oninput="renderLetter()" rows="4"></textarea>
+          </div>`;
+        } else {
+          html += `<div class="field-group">
+            <label class="field-label">${esc(f2.label)}</label>
+            <input class="field-input" id="${f2.id}" type="${f2.type||'text'}" placeholder="${esc(f2.placeholder||'')}" oninput="renderLetter()">
+          </div></div>`;
+        }
+      } else {
+        html += '</div>';
+      }
+    }
+  }
+  document.getElementById('template-fields').innerHTML = html;
+}
+
+function getFieldValues() {
+  const vals = {};
+  if(!activeTemplate.fields) return vals;
+  activeTemplate.fields.forEach(f => {
+    const el = document.getElementById(f.id);
+    vals[f.id] = el ? el.value.trim() : '';
+  });
+  return vals;
+}
+
+function getBodyText() {
+  const vals = getFieldValues();
+  return typeof activeTemplate.body === 'function'
+    ? activeTemplate.body(vals)
+    : (activeTemplate.body || '');
+}
+
+function renderLetter() {
+  const dest  = document.getElementById('l-dest').value  || '[Destinataire]';
+  const date  = document.getElementById('l-date').value  || '';
+  const objet = document.getElementById('l-objet').value || '[Objet]';
+  const ref   = document.getElementById('l-ref').value   || '';
+  const body  = getBodyText();
+  const fmtD  = date ? new Date(date+' ').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}) : '[Date]';
+
+  document.getElementById('letter-preview').innerHTML = `
+    <div class="lp-header">
+      <div class="lp-mspp">Ministère de la Santé Publique et de la Population</div>
+      <div class="lp-dir">Direction Sanitaire du Nord-Est</div>
+    </div>
+    ${ref?`<div class="lp-ref">Réf. : ${esc(ref)}</div>`:''}
+    <div class="lp-date">Fort-Liberté, le ${fmtD}</div>
+    <div style="margin-bottom:16px">À l'attention de :<br><strong>${esc(dest)}</strong></div>
+    <div class="lp-objet">Objet : ${esc(objet)}</div>
+    <div class="lp-body">${esc(body).replace(/\n/g,'<br>')}</div>
+    <div class="lp-closing">Salutations distinguées,</div>
+    <div class="lp-sig">
+      <strong>Dr. Jean Clervain Dorsainvil</strong><br>
+      Directeur Départemental<br>
+      Direction Sanitaire du Nord-Est
+    </div>
+  `;
+}
+
+function printLetter() { window.print(); }
+
+function exportPDF() {
+  const preview = document.getElementById('letter-preview');
+  const w = window.open('', '_blank');
+  const css = [
+    'body { font-family: "Times New Roman", serif; font-size: 12pt; margin: 2cm; color: #000; line-height: 1.8; }',
+    '.lp-header { text-align: center; margin-bottom: 24px; }',
+    '.lp-mspp { font-size: 10pt; text-transform: uppercase; letter-spacing: .1em; }',
+    '.lp-dir { font-size: 13pt; font-weight: bold; text-transform: uppercase; margin-top: 4px; }',
+    '.lp-ref { font-size: 10pt; color: #555; margin-top: 16px; }',
+    '.lp-date { text-align: right; margin-bottom: 20px; }',
+    '.lp-objet { font-weight: bold; margin-bottom: 16px; }',
+    '.lp-body { text-align: justify; margin-bottom: 32px; }',
+    '.lp-closing { margin-bottom: 48px; }',
+    '@media print { body { margin: 2cm; } }'
+  ].join('\n');
+  w.document.open();
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' + css + '<\/style><\/head><body>');
+  w.document.write(preview.innerHTML);
+  w.document.write('<\/body><\/html>');
+  w.document.close();
+  setTimeout(function(){ w.print(); }, 400);
+}
+
+
+function exportDOCX() {
+  const dest  = document.getElementById('l-dest').value  || '';
+  const date  = document.getElementById('l-date').value  || new Date().toISOString().split('T')[0];
+  const objet = document.getElementById('l-objet').value || '';
+  const ref   = document.getElementById('l-ref').value   || '';
+  const body  = getBodyText();
+  const fmtD  = new Date(date+' ').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+
+  // Build RTF content as a DOCX-compatible plain text export
+  // Since we're in a pure browser environment, we export as .doc (RTF) which Word opens natively
+  const rtf = `{\\rtf1\\ansi\\deff0
+{\\fonttbl{\\f0 Times New Roman;}}
+{\\colortbl ;\\red0\\green0\\blue0;}
+\\f0\\fs24\\cf1
+\\pard\\qc\\b Ministère de la Santé Publique et de la Population\\b0\\par
+\\pard\\qc\\b Direction Sanitaire du Nord-Est\\b0\\par
+\\par
+${ref ? `\\pard Réf. : ${ref}\\par\\par` : ''}
+\\pard\\qr Fort-Liberté, le ${fmtD}\\par
+\\par
+\\pard À l'attention de :\\par
+\\b ${dest || '[Destinataire]'}\\b0\\par
+\\par
+\\b Objet : ${objet || '[Objet]'}\\b0\\par
+\\par
+${body.split('\n').map(l => `\\pard ${l}\\par`).join('\n')}
+\\par
+\\pard Salutations distinguées,\\par
+\\par\\par\\par
+\\pard\\b Dr. Jean Clervain Dorsainvil\\b0\\par
+\\pard Directeur Départemental\\par
+\\pard Direction Sanitaire du Nord-Est\\par
+}`;
+
+  const blob = new Blob([rtf], {type: 'application/rtf'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = (objet || 'Lettre').replace(/[^a-zA-Z0-9_\- ]/g,'_').slice(0,50) + '.doc';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ══════════════════════════════════════════
+   NOTES
+══════════════════════════════════════════ */
+let notesInited = false;
+let notes = [];
+let activeNoteId = null;
+
+function initNotes() {
+  if(notesInited) return; notesInited=true;
+  const saved = localStorage.getItem('dsne_notes');
+  notes = saved ? JSON.parse(saved) : [];
+  renderNoteList();
+}
+
+function renderNoteList() {
+  const list = document.getElementById('note-list');
+  if (!notes.length) {
+    list.innerHTML = '<div style="color:#8a9ab0;font-style:italic;font-size:12px;padding:8px">Aucune note.</div>';
+    return;
+  }
+  list.innerHTML = notes.map(n=>`
+    <div class="note-item ${n.id===activeNoteId?'active':''}" onclick="openNote('${n.id}')">
+      <div class="n-title">${esc(n.title||'Sans titre')}</div>
+      <div class="n-date">${fmtDate(n.updated)}</div>
+      <div class="n-preview">${esc((n.body||'').slice(0,60))}</div>
+    </div>`).join('');
+}
+
+function newNote() {
+  const id = 'note_' + Date.now();
+  notes.unshift({id, title:'', body:'', updated: new Date().toISOString()});
+  saveNotes();
+  openNote(id);
+}
+
+function openNote(id) {
+  activeNoteId = id;
+  const n = notes.find(x=>x.id===id);
+  if(!n) return;
+  document.getElementById('note-editor').style.display = 'flex';
+  document.getElementById('note-empty').style.display = 'none';
+  document.getElementById('note-title').value = n.title||'';
+  document.getElementById('note-body').value = n.body||'';
+  renderNoteList();
+}
+
+function saveNote() {
+  const n = notes.find(x=>x.id===activeNoteId);
+  if(!n) return;
+  n.title = document.getElementById('note-title').value;
+  n.body  = document.getElementById('note-body').value;
+  n.updated = new Date().toISOString();
+  saveNotes();
+  renderNoteList();
+}
+
+function deleteNote() {
+  if(!confirm('Supprimer cette note ?')) return;
+  notes = notes.filter(n=>n.id!==activeNoteId);
+  activeNoteId = null;
+  saveNotes();
+  document.getElementById('note-editor').style.display = 'none';
+  document.getElementById('note-empty').style.display = '';
+  renderNoteList();
+}
+
+function saveNotes() { localStorage.setItem('dsne_notes', JSON.stringify(notes)); }
+
+/* ══════════════════════════════════════════
+   DOCUMENTS
+══════════════════════════════════════════ */
+let docsInited = false;
+let docs = [];
+
+function initDocs() {
+  if(docsInited) return; docsInited=true;
+  const saved = localStorage.getItem('dsne_docs_meta');
+  docs = saved ? JSON.parse(saved) : [];
+  renderDocs();
+}
+
+function addDocs(input) {
+  const files = Array.from(input.files);
+  files.forEach(f => {
+    docs.unshift({id:'doc_'+Date.now(), name:f.name, size:f.size, type:'Autre', added:new Date().toISOString()});
+  });
+  localStorage.setItem('dsne_docs_meta', JSON.stringify(docs));
+  renderDocs();
+  alert(`${files.length} fichier(s) référencé(s). (Stockage complet via Supabase bientôt disponible)`);
+}
+
+function renderDocs(q='', cat='') {
+  const filtered = docs.filter(d =>
+    (!q || d.name.toLowerCase().includes(q.toLowerCase())) &&
+    (!cat || d.type === cat)
+  );
+  const grid = document.getElementById('doc-grid');
+  const empty = document.getElementById('doc-empty');
+  if(!filtered.length) { grid.innerHTML=''; empty.style.display=''; return; }
+  empty.style.display='none';
+  grid.innerHTML = filtered.map(d=>`
+    <div style="background:#ffffff;border:1px solid #e8e3d9;border-radius:6px;padding:16px;box-shadow:var(--shadow)">
+      <div style="font-size:28px;margin-bottom:8px">${d.name.endsWith('.pdf')?'':d.name.endsWith('.xlsx')?'':d.name.endsWith('.docx')?'':''}</div>
+      <div style="font-size:12px;font-weight:500;color:#0c1a2e;word-break:break-word">${esc(d.name)}</div>
+      <div style="font-size:10px;color:#8a9ab0;margin-top:4px">${fmtDate(d.added)}</div>
+      <div style="margin-top:8px">
+        <select style="font-size:10px;padding:3px 6px;border:1px solid #e8e3d9;border-radius:3px;background:#ffffff" onchange="setDocType('${d.id}',this.value)">
+          <option ${d.type==='Bilan trimestriel'?'selected':''}>Bilan trimestriel</option>
+          <option ${d.type==='Rapport mensuel'?'selected':''}>Rapport mensuel</option>
+          <option ${d.type==='Correspondance'?'selected':''}>Correspondance</option>
+          <option ${d.type==='Autre'?'selected':''}>Autre</option>
+        </select>
+      </div>
+    </div>`).join('');
+}
+
+function setDocType(id, type) {
+  const d = docs.find(x=>x.id===id);
+  if(d) { d.type=type; localStorage.setItem('dsne_docs_meta',JSON.stringify(docs)); }
+}
+
+/* ── BOOT ── */
+document.addEventListener('DOMContentLoaded', () => {
+  initDsne();
+  // Update HYG badge
+  const p = HYG_DATA.filter(h=>h.statut==="En attente d'approbation").length;
+  const b = document.getElementById('badge-hyg');
+  if(b) b.textContent = p;
+});
+
+</script>
+
+
+<!-- PARAMETRES PANEL -->
+<div class="panel" id="p-parametres">
+  <div class="page-header">
+    <div><h1>Paramètres système</h1><div class="meta">Administration · Bureau de Direction DSNE</div></div>
+  </div>
+  <div class="page-body">
+    <div class="section-title">Sources de données connectées</div>
+    <div class="card" style="margin-bottom:24px">
+      <div class="card-header">
+        <h3>Google Sheets via Apps Script</h3>
+        <button class="btn btn-primary" onclick="testAllSources()">Tester toutes</button>
+      </div>
+      <div class="card-body">
+        <p style="font-size:12px;color:#5a6a80;margin-bottom:16px">Collez l'URL de déploiement Apps Script pour chaque sheet. Les données restent privées.</p>
+        <div id="sources-list"></div>
+        <button class="btn btn-ghost" style="margin-top:12px" onclick="addSource()">+ Ajouter une source</button>
+      </div>
+    </div>
+
+    <div class="section-title">Applications connectées</div>
+    <div class="card" style="margin-bottom:24px">
+      <div class="card-header">
+        <h3>Portails et outils DSNE</h3>
+        <button class="btn btn-primary" onclick="addApp()">+ Connecter une app</button>
+      </div>
+      <div class="card-body">
+        <p style="font-size:12px;color:#5a6a80;margin-bottom:16px">Enregistrez vos applications pour les ouvrir directement depuis le Bureau.</p>
+        <div id="apps-list"></div>
+      </div>
+    </div>
+
+    <div class="section-title">Profil</div>
+    <div class="card" style="margin-bottom:24px">
+      <div class="card-body">
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Nom complet</label>
+            <input class="field-input" id="prof-nom" value="Daisha Dorsainvil" oninput="saveProfile()">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Titre</label>
+            <input class="field-input" id="prof-titre" value="Secrétaire de Direction" oninput="saveProfile()">
+          </div>
+        </div>
+        <div class="field-row" style="margin-top:10px">
+          <div class="field-group">
+            <label class="field-label">Email</label>
+            <input class="field-input" id="prof-email" value="sec.direction.dsne@gmail.com" oninput="saveProfile()">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Institution</label>
+            <input class="field-input" id="prof-inst" value="Direction Sanitaire du Nord-Est" oninput="saveProfile()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Guide — Connecter un Google Sheet</div>
+    <div class="card">
+      <div class="card-body">
+        <div style="font-size:13px;color:#2a3a50;line-height:2.1">
+          <strong>Etape 1</strong> — Ouvrez votre Google Sheet (ex. Suivi des Rapports)<br>
+          <strong>Etape 2</strong> — Cliquez <em>Extensions</em> dans le menu, puis <em>Apps Script</em><br>
+          <strong>Etape 3</strong> — Effacez tout le code existant, collez le code ci-dessous, cliquez Enregistrer<br>
+          <strong>Etape 4</strong> — Cliquez <em>Deployer</em>, puis <em>Nouveau deploiement</em><br>
+          <strong>Etape 5</strong> — Type : <strong>Application Web</strong> · Qui a acces : <strong>Tout le monde</strong><br>
+          <strong>Etape 6</strong> — Autorisez l'acces a votre compte Google, copiez l'URL generee<br>
+          <strong>Etape 7</strong> — Collez l'URL dans la source "Suivi des Rapports" ci-dessus<br>
+          <strong>Etape 8</strong> — Cliquez <strong>Tester</strong> — si vert, vos donnees sont en direct
+        </div>
+        <div style="margin-top:20px">
+          <div class="section-title" style="margin-bottom:8px">Code Apps Script — Suivi des Rapports</div>
+          <pre id="rp-script-code" style="background:#0c1a2e;color:#a8d8a8;padding:16px;border-radius:6px;font-size:11px;font-family:'DM Mono',monospace;overflow-x:auto;line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto"></pre>
+          <button class="btn btn-ghost" style="margin-top:8px" onclick="copyScript()">Copier le code</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+/* ══════════════════════════════════════════
+   PARAMETRES & LIVE DATA
+══════════════════════════════════════════ */
+
+const RP_SCRIPT_CODE = `function doGet(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var action = (e && e.parameter && e.parameter.action) ? e.parameter.action : 'read';
+  if (action === 'read') { return readData(ss); }
+  return ContentService.createTextOutput(JSON.stringify({error:'Unknown action'}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function readData(ss) {
+  var sheet = ss.getSheetByName('Suivi Rapports') || ss.getSheets()[0];
+  var data = sheet.getDataRange().getValues();
+  var fracCols = [6,10,14,18,22,26,30,34,38,42,46,50];
+  var months = ['Dec','Jan','Fev','Mar','Avr','Mai','Juin','Juil','Aout','Sep','Oct','Nov'];
+  var institutions = [];
+
+  for (var r = 4; r < data.length; r++) {
+    var row = data[r];
+    var name = row[1] ? String(row[1]).trim() : '';
+    if (!name || name === 'DSNE' || name === 'Total') continue;
+    var monthly = {};
+    for (var m = 0; m < 12; m++) {
+      var fc = fracCols[m];
+      monthly[months[m]] = {
+        FIN: String(row[fc-3]||'').trim(),
+        RH:  String(row[fc-2]||'').trim(),
+        EPI: String(row[fc-1]||'').trim()
+      };
+    }
+    institutions.push({
+      inst: name,
+      recus: parseInt(row[51]) || 0,
+      manquants: parseInt(row[52]) || 0,
+      retard: parseInt(row[53]) || 0,
+      conformite: parseFloat(String(row[54]||'0').replace('%','')) || 0,
+      months: monthly
+    });
+  }
+
+  return ContentService
+    .createTextOutput(JSON.stringify({
+      source: 'Suivi Rapports DSNE',
+      count: institutions.length,
+      data: institutions
+    }))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+
+const DEFAULT_SOURCES = [
+  {id:'rp',        name:'Suivi des Rapports',    sheet:'Suivi_des_rapports',    url:'', status:'non configuré'},
+  {id:'hyg',       name:'Certificats Hygiène',   sheet:'Suivi_Certificats_HYG', url:'', status:'non configuré'},
+  {id:'cm',        name:'Cliniques Mobiles',      sheet:'CM_Activites',          url:'', status:'non configuré'},
+  {id:'visites',   name:'Registre de Visites',    sheet:'Registre_Visites',      url:'', status:'non configuré'},
+  {id:'logistique',name:'Logistique',             sheet:'Feuille_Logistique',    url:'', status:'non configuré'},
+];
+
+const DEFAULT_APPS = [
+  {id:'cm-app',      name:'Workflow Cliniques Mobiles', url:'', desc:'Formulaire de demande CM + automatisation'},
+  {id:'hyg-app',     name:'Portail Hygiène Publique',   url:'', desc:'Certificats HYG + workflow approbation'},
+  {id:'visites-app', name:'Portail de Réception',       url:'', desc:'Registre des visiteurs DSNE'},
+];
+
+let paramSources = [];
+let paramApps    = [];
+let paramInited  = false;
+
+function initParametres() {
+  if (paramInited) return;
+  paramInited = true;
+  const savedSources = localStorage.getItem('dsne_sources');
+  const savedApps    = localStorage.getItem('dsne_apps');
+  paramSources = savedSources ? JSON.parse(savedSources) : JSON.parse(JSON.stringify(DEFAULT_SOURCES));
+  paramApps    = savedApps    ? JSON.parse(savedApps)    : JSON.parse(JSON.stringify(DEFAULT_APPS));
+  renderSources();
+  renderApps();
+  const el = document.getElementById('rp-script-code');
+  if (el) el.textContent = RP_SCRIPT_CODE;
+  loadProfile();
+}
+
+function saveSources() { localStorage.setItem('dsne_sources', JSON.stringify(paramSources)); }
+function saveApps()    { localStorage.setItem('dsne_apps',    JSON.stringify(paramApps)); }
+
+function renderSources() {
+  const el = document.getElementById('sources-list');
+  if (!el) return;
+  el.innerHTML = paramSources.map(function(s) {
+    const statusCls = s.status.startsWith('connecté') ? 'badge-green' : s.status === 'erreur' ? 'badge-red' : 'badge-gray';
+    return '<div style="display:grid;grid-template-columns:180px 1fr auto auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #e8e3d9">'
+      + '<div><div style="font-size:12.5px;font-weight:500;color:#0c1a2e">' + esc(s.name) + '</div>'
+      + '<div style="font-size:10px;color:#8a9ab0">' + esc(s.sheet) + '</div></div>'
+      + '<input class="field-input" style="font-size:11px" placeholder="https://script.google.com/macros/s/…/exec"'
+      + ' value="' + esc(s.url) + '" oninput="updateSourceUrl(\'' + s.id + '\', this.value)">'
+      + '<span class="badge ' + statusCls + '">' + esc(s.status) + '</span>'
+      + '<div style="display:flex;gap:6px">'
+      + '<button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="testSource(\'' + s.id + '\')">Tester</button>'
+      + (s.id === 'rp' ? '<button class="btn btn-primary" style="font-size:11px;padding:5px 10px" onclick="showScript()">Code</button>' : '')
+      + '</div></div>';
+  }).join('');
+}
+
+function renderApps() {
+  const el = document.getElementById('apps-list');
+  if (!el) return;
+  if (!paramApps.length) {
+    el.innerHTML = '<div style="color:#8a9ab0;font-style:italic;font-size:12px">Aucune application enregistrée.</div>';
+    return;
+  }
+  el.innerHTML = paramApps.map(function(a) {
+    return '<div style="display:grid;grid-template-columns:220px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #e8e3d9">'
+      + '<div><div style="font-size:12.5px;font-weight:500;color:#0c1a2e">' + esc(a.name) + '</div>'
+      + '<div style="font-size:10px;color:#8a9ab0">' + esc(a.desc) + '</div></div>'
+      + '<input class="field-input" style="font-size:11px" placeholder="https://…"'
+      + ' value="' + esc(a.url) + '" oninput="updateAppUrl(\'' + a.id + '\', this.value)">'
+      + '<div style="display:flex;gap:6px">'
+      + '<button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="openApp(\'' + a.id + '\')">Ouvrir</button>'
+      + '<button class="btn btn-ghost" style="font-size:11px;padding:5px 10px;color:#c0392b;border-color:#c0392b" onclick="removeApp(\'' + a.id + '\')">Retirer</button>'
+      + '</div></div>';
+  }).join('');
+}
+
+function updateSourceUrl(id, url) {
+  const s = paramSources.find(function(x){ return x.id === id; });
+  if (s) { s.url = url; s.status = 'non testé'; saveSources(); }
+}
+function updateAppUrl(id, url) {
+  const a = paramApps.find(function(x){ return x.id === id; });
+  if (a) { a.url = url; saveApps(); }
+}
+
+function testSource(id) {
+  const s = paramSources.find(function(x){ return x.id === id; });
+  if (!s || !s.url) { alert('Collez une URL Apps Script pour cette source.'); return; }
+  s.status = 'test en cours…';
+  renderSources();
+  fetch(s.url + '?action=read')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      s.status = data.count !== undefined ? ('connecté — ' + data.count + ' lignes') : 'connecté';
+      if (s.id === 'rp' && data.data) {
+        liveRPData = data.data;
+        localStorage.setItem('dsne_rp_live', JSON.stringify({data: data.data, retrieved: new Date().toISOString()}));
+        rpInited = false;
+        alert('Connexion réussie. ' + data.count + ' institutions chargées en direct. Allez dans Suivi Rapports pour voir les données live.');
+      } else {
+        alert('Connexion réussie.');
+      }
+    })
+    .catch(function(err) {
+      s.status = 'erreur';
+      alert('Erreur de connexion. Verifiez l\'URL et les permissions.\n\n' + err);
+    })
+    .finally(function() { saveSources(); renderSources(); });
+}
+
+function testAllSources() {
+  paramSources.filter(function(s){ return s.url; }).forEach(function(s){ testSource(s.id); });
+}
+
+function showScript() {
+  const el = document.getElementById('rp-script-code');
+  if (el) el.scrollIntoView({behavior:'smooth'});
+}
+
+function copyScript() {
+  const el = document.getElementById('rp-script-code');
+  if (el) navigator.clipboard.writeText(el.textContent).then(function(){ alert('Code copié.'); });
+}
+
+function addSource() {
+  const name = prompt('Nom de la source :');
+  if (!name) return;
+  const id = 'src_' + Date.now();
+  paramSources.push({id: id, name: name, sheet: '', url: '', status: 'non configuré'});
+  saveSources(); renderSources();
+}
+
+function addApp() {
+  const name = prompt('Nom de l\'application :');
+  if (!name) return;
+  const url  = prompt('URL de l\'application :') || '';
+  const desc = prompt('Description :') || '';
+  const id   = 'app_' + Date.now();
+  paramApps.push({id: id, name: name, url: url, desc: desc});
+  saveApps(); renderApps();
+}
+
+function removeApp(id) {
+  if (!confirm('Retirer cette application ?')) return;
+  paramApps = paramApps.filter(function(a){ return a.id !== id; });
+  saveApps(); renderApps();
+}
+
+function openApp(id) {
+  const a = paramApps.find(function(x){ return x.id === id; });
+  if (a && a.url) { window.open(a.url, '_blank'); }
+  else { alert('Ajoutez l\'URL de cette application d\'abord.'); }
+}
+
+function loadProfile() {
+  const saved = localStorage.getItem('dsne_profile');
+  if (!saved) return;
+  const p = JSON.parse(saved);
+  ['nom','titre','email','inst'].forEach(function(k) {
+    const el = document.getElementById('prof-' + k);
+    if (el && p[k]) el.value = p[k];
+  });
+}
+function saveProfile() {
+  const p = {};
+  ['nom','titre','email','inst'].forEach(function(k) {
+    const el = document.getElementById('prof-' + k);
+    if (el) p[k] = el.value;
+  });
+  localStorage.setItem('dsne_profile', JSON.stringify(p));
+}
+
+/* ── LIVE RP DATA ── */
+let liveRPData = null;
+(function() {
+  try {
+    const saved = localStorage.getItem('dsne_rp_live');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.data && parsed.data.length) {
+        liveRPData = parsed.data;
+      }
+    }
+  } catch(e) {}
+})();
+
+
+</script>
+
+<!-- ══ PARAMETRES ══ -->
+<div class="panel" id="p-parametres">
+  <div class="page-header">
+    <div>
+      <h1>Paramètres système</h1>
+      <div class="meta">Administration · Bureau de Direction DSNE</div>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="section-title">Sources de données connectées</div>
+    <div class="card" style="margin-bottom:24px">
+      <div class="card-header">
+        <h3>Google Sheets via Apps Script</h3>
+        <button class="btn btn-primary" onclick="testAllSources()">Tester toutes</button>
+      </div>
+      <div class="card-body">
+        <p style="font-size:12px;color:#5a6a80;margin-bottom:16px">
+          Collez l'URL de déploiement Apps Script pour chaque sheet. Les données resteront privées — seul votre Bureau y accède.
+        </p>
+        <div id="sources-list"></div>
+        <button class="btn btn-ghost" style="margin-top:12px" onclick="addSource()">+ Ajouter une source</button>
+      </div>
+    </div>
+
+    <div class="section-title">Applications connectées</div>
+    <div class="card" style="margin-bottom:24px">
+      <div class="card-header">
+        <h3>Portails et outils DSNE</h3>
+        <button class="btn btn-primary" onclick="addApp()">+ Connecter une app</button>
+      </div>
+      <div class="card-body">
+        <p style="font-size:12px;color:#5a6a80;margin-bottom:16px">
+          Enregistrez vos applications existantes pour les ouvrir directement depuis le Bureau.
+        </p>
+        <div id="apps-list"></div>
+      </div>
+    </div>
+
+    <div class="section-title">Profil</div>
+    <div class="card" style="margin-bottom:24px">
+      <div class="card-body">
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Nom complet</label>
+            <input class="field-input" id="prof-nom" value="Daïsha Dorsainvil" oninput="saveProfile()">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Titre</label>
+            <input class="field-input" id="prof-titre" value="Secrétaire de Direction" oninput="saveProfile()">
+          </div>
+        </div>
+        <div class="field-row" style="margin-top:10px">
+          <div class="field-group">
+            <label class="field-label">Email</label>
+            <input class="field-input" id="prof-email" value="sec.direction.dsne@gmail.com" oninput="saveProfile()">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Institution</label>
+            <input class="field-input" id="prof-inst" value="Direction Sanitaire du Nord-Est" oninput="saveProfile()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Guide — Connecter un Google Sheet</div>
+    <div class="card">
+      <div class="card-body">
+        <div style="font-size:13px;color:#2a3a50;line-height:2">
+          <strong>Étape 1</strong> — Ouvrez votre Google Sheet (ex. Suivi des Rapports)<br>
+          <strong>Étape 2</strong> — Cliquez <em>Extensions</em> dans le menu → <em>Apps Script</em><br>
+          <strong>Étape 3</strong> — Effacez tout le code existant, collez le code ci-dessous, cliquez <em>Enregistrer</em><br>
+          <strong>Étape 4</strong> — Cliquez <em>Déployer</em> → <em>Nouveau déploiement</em><br>
+          <strong>Étape 5</strong> — Type : <strong>Application Web</strong> · Qui a accès : <strong>Tout le monde</strong><br>
+          <strong>Étape 6</strong> — Cliquez <em>Déployer</em>, autorisez l'accès à votre compte Google<br>
+          <strong>Étape 7</strong> — Copiez l'URL générée et collez-la dans la source "Suivi des Rapports" ci-dessus<br>
+          <strong>Étape 8</strong> — Cliquez <strong>Tester</strong> — si tout est vert, vos données sont en direct
+        </div>
+        <div style="margin-top:20px">
+          <div class="section-title" style="margin-bottom:8px">Code Apps Script — Suivi des Rapports</div>
+          <pre id="rp-script-code" style="background:#0c1a2e;color:#a8d8a8;padding:16px;border-radius:6px;font-size:11px;font-family:'DM Mono',monospace;overflow-x:auto;line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto"></pre>
+          <button class="btn btn-ghost" style="margin-top:8px" onclick="copyScript('rp')">Copier le code</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</body>
+</html>
