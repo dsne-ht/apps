@@ -13,10 +13,12 @@
     "directories": {
       "output": "dist"
     },
+
     "win": {
       "target": "nsis",
       "icon": "assets/vs.png"
     },
+
     "nsis": {
       "oneClick": true,
       "perMachine": false

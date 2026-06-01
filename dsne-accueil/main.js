@@ -118,7 +118,17 @@ function createWindow() {
   mainWindow.once('ready-to-show', () => mainWindow.show())
 }
 
-app.whenReady().then(() => { initDB(); createWindow() })
+app.whenReady().then(() => {
+  initDB()
+  // Force insert users
+  try {
+    db.prepare("INSERT OR REPLACE INTO users (code, nom_complet, email, role) VALUES (?,?,?,?)").run('145056','Geralda Michel','reception.dsne@gmail.com','reception')
+    db.prepare("INSERT OR REPLACE INTO users (code, nom_complet, email, role) VALUES (?,?,?,?)").run('582005','Renande Destine','reception.dsne@gmail.com','reception')
+    db.prepare("INSERT OR REPLACE INTO users (code, nom_complet, email, role) VALUES (?,?,?,?)").run('789043','Vasna Pierre','reception.dsne@gmail.com','reception')
+    db.prepare("INSERT OR REPLACE INTO users (code, nom_complet, email, role) VALUES (?,?,?,?)").run('890340','Marie Liziane Garconville','reception.dsne@gmail.com','reception')
+  } catch(e) { console.error('Insert error:', e.message) }
+  createWindow()
+})
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit() })
 
 // ── AUTH (code à 6 chiffres)
