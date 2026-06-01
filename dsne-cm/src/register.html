@@ -41,23 +41,44 @@
   </div>
 </div>
 <script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzxjdMeyxhHS9eF4uW1Kg29IoGnVZKyJ1mkXEu3J99lxAOHJcyMxaqNjJG4eQiNhWT9/exec';
+
 async function doRegister() {
-  const nom_complet = document.getElementById('nom_complet').value.trim()
-  const username = document.getElementById('username').value.trim()
-  const password = document.getElementById('password').value.trim()
-  const email = document.getElementById('email').value.trim()
-  const alertEl = document.getElementById('alert')
-  const btn = document.getElementById('regBtn')
+  const nom_complet = document.getElementById('nom_complet').value.trim();
+  const username    = document.getElementById('username').value.trim();
+  const password    = document.getElementById('password').value.trim();
+  const email       = document.getElementById('email').value.trim();
+  const alertEl     = document.getElementById('alert');
+  const btn         = document.getElementById('regBtn');
+
   if (!nom_complet || !username || !password) {
-    alertEl.textContent = 'Tous les champs sont requis.'; alertEl.style.display = 'block'; return
+    alertEl.textContent = 'Tous les champs sont requis.';
+    alertEl.style.display = 'block';
+    return;
   }
-  btn.disabled = true; btn.textContent = 'Envoi en cours...'
-  const result = await window.dsne.register({ username, password, nom_complet, email })
-  if (result.ok) {
-    window.dsne.navigate('pending.html')
-  } else {
-    alertEl.textContent = result.message; alertEl.style.display = 'block'
-    btn.disabled = false; btn.textContent = 'Envoyer la demande'
+
+  btn.disabled = true;
+  btn.textContent = 'Envoi en cours...';
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ nom_complet, username, password, email })
+    });
+    const result = await res.json();
+    if (result.ok) {
+      window.location.href = 'pending.html';
+    } else {
+      alertEl.textContent = result.message;
+      alertEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Envoyer la demande';
+    }
+  } catch (err) {
+    alertEl.textContent = 'Erreur de connexion. Réessayez.';
+    alertEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Envoyer la demande';
   }
 }
 </script>
