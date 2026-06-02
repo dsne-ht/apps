@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>DSNE — Clinique Mobile</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+/* DATE-LIEU ROWS */
+.date-lieu-row { margin-bottom: 10px; }
+.date-lieu-inner { display: flex; gap: 12px; align-items: flex-start; }
+.btn-add-date { 
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; font-size: 12px; font-weight: 600;
+  color: var(--c600); background: var(--c50); 
+  border: 1.5px dashed var(--c200); 
+  cursor: pointer; margin-top: 8px; transition: all 0.15s;
+}
+.btn-add-date:hover { background: var(--c100); border-color: var(--c400); }
+.btn-remove-date {
+  flex-shrink: 0; margin-top: 28px; padding: 6px 10px;
+  font-size: 11px; font-weight: 600; color: var(--danger);
+  background: var(--danger-bg); border: 1px solid var(--danger);
+   cursor: pointer;
+}
+.btn-remove-date:hover { background: #f7c1c1; }
+input[type="date"] { font-family: var(--font); }
+</style>
+</head>
+<body>
+<style>:root{--app-color:#0F6E56;}</style>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <span class="topbar-dsne">DSNE</span>
+    <span class="topbar-sep"></span>
+    <span class="topbar-name">Enregistrement Clinique Mobile</span>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-sync">
+      <span class="sync-dot" id="syncDot"></span>
+      <span id="syncLabel">Vérification...</span>
+    </div>
+    <span class="topbar-user" id="topbarUser"></span>
+    <button class="btn-logout" onclick="doLogout()">Déconnexion</button>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab" onclick="switchTab('dsne', this)">DSNE</div>
+  <div class="tab active" onclick="switchTab('formulaire', this)">Formulaire de demande</div>
+  <div class="tab" onclick="switchTab('audit', this)">Journal d'audit</div>
+  <div class="tab" onclick="switchTab('journal', this)">Journal des demandes</div>
+</div>
+
+<!-- ══ ONGLET DSNE ══ -->
+
+
+<style>
+.dsne-section-h{background:var(--app-color,#888);color:#fff;padding:8px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:1rem}
+.dsne-card-block{background:var(--white,#fff);border:1px solid var(--g100,#ebebeb);border-top:none;padding:1rem}
+.dsne-person-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dsne-person{display:flex;align-items:center;gap:10px;padding:8px;background:var(--g50,#f8f7f4)}
+.dsne-avatar{width:34px;height:34px;background:var(--app-color,#888);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.dsne-pname{font-size:13px;font-weight:600;color:var(--g800,#2c2c2a)}
+.dsne-prole{font-size:11px;color:var(--g400,#888780);margin-top:1px}
+.dsne-uas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.dsne-uas-card{background:var(--g50,#f8f7f4);padding:12px;text-align:center}
+.dsne-uas-lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--g400,#888780);font-weight:600;margin-bottom:5px}
+.dsne-uas-name{font-size:13px;font-weight:600;color:var(--g800,#2c2c2a)}
+.dsne-inst-card{background:var(--white,#fff);border:1px solid var(--g100,#ebebeb);border-left:3px solid var(--app-color,#888);padding:0.875rem 1rem;margin-bottom:6px}
+.dsne-inst-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px}
+.dsne-iname{font-size:13px;font-weight:600;color:var(--g800,#2c2c2a)}
+.dsne-idm{font-size:11px;color:var(--g400,#888780);margin-top:1px}
+.dsne-icommune{font-size:11px;color:var(--g400,#888780);white-space:nowrap}
+.dsne-imeta{display:flex;gap:5px;flex-wrap:wrap}
+</style>
+
+<script>
+var DSNE_INST=[
+  {nom:"Hôpital Départemental de Fort-Liberté (HFL)",type:"Hôpital Départemental",uas:"Fort-Liberté",commune:"Fort-Liberté",dm:"Dr Henry Claude Etienne"},
+  {nom:"CDAI Fort-Liberté",type:"Centre Spécialisé",uas:"Fort-Liberté",commune:"Fort-Liberté",dm:"Dr Brunel Augustin"},
+  {nom:"CCS Dérac",type:"CCS",uas:"Fort-Liberté",commune:"Fort-Liberté",dm:"Dr Rivelino Joseph"},
+  {nom:"CCS Meillac",type:"CCS",uas:"Fort-Liberté",commune:"Meillac",dm:"Dr Francisque Severe"},
+  {nom:"CCS Mérande",type:"CCS",uas:"Fort-Liberté",commune:"Ferrier",dm:"Dr Magalie Surling Dasny"},
+  {nom:"CS Ferrier",type:"CS",uas:"Fort-Liberté",commune:"Ferrier",dm:"Dr Luckens Pierre"},
+  {nom:"CS Acul Samedi",type:"CS",uas:"Fort-Liberté",commune:"Fort-Liberté",dm:"Dr Anegard Joseph"},
+  {nom:"CS Perches",type:"CS",uas:"Fort-Liberté",commune:"Perches",dm:"Dr Vincent Mecejour"},
+  {nom:"CS Vallières",type:"CS",uas:"Fort-Liberté",commune:"Vallières",dm:"Dr Frantz-Elucien Joseph"},
+  {nom:"CMS Ouanaminthe (CMSO)",type:"CMS / Hôpital",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Jhon Cador Joseph"},
+  {nom:"CS Capotille",type:"CS",uas:"Ouanaminthe",commune:"Capotille",dm:"Dr Adrien Felix"},
+  {nom:"CMS Mont-Organisé (CMSMO)",type:"CMS",uas:"Ouanaminthe",commune:"Mont-Organisé",dm:"Dr Margarette Titus"},
+  {nom:"CCS Lamine",type:"CCS",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Enese Desanges"},
+  {nom:"CS Acul des Pins",type:"CS",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Ricardo Joseph"},
+  {nom:"CS Gens de Nantes",type:"CS",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Cloridor Joachim"},
+  {nom:"CS Savane au Lait",type:"CS",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Mikenly Philogene"},
+  {nom:"CCS Savane Longue",type:"CCS",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Andy Paul"},
+  {nom:"CS Dilaire",type:"CS",uas:"Ouanaminthe",commune:"Ouanaminthe",dm:"Dr Roselande Jules"},
+  {nom:"CS Rose Bonite",type:"CS",uas:"Ouanaminthe",commune:"Capotille",dm:"Dr Nachemy Mea"},
+  {nom:"CS Bois Poux",type:"CS",uas:"Ouanaminthe",commune:"Capotille",dm:"À compléter"},
+  {nom:"CS Carice",type:"CS",uas:"Ouanaminthe",commune:"Carice",dm:"Dr Lyonel Maxime"},
+  {nom:"CS Corosse (Capotille)",type:"CS",uas:"Ouanaminthe",commune:"Capotille",dm:"À compléter"},
+  {nom:"HCR Trou-du-Nord",type:"Hôpital Communautaire de Référence",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"Dr Jude Achille Dorsainvil"},
+  {nom:"CS Terrier Rouge",type:"CS",uas:"Trou-du-Nord",commune:"Terrier Rouge",dm:"Dr Abnel Benjamin"},
+  {nom:"CS Pilette",type:"CS",uas:"Trou-du-Nord",commune:"Terrier Rouge",dm:"Dr Gelande-Shamir Laroche"},
+  {nom:"CS Jacquezyl",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"Dr Fredo Dorvil"},
+  {nom:"CS NDL Grand Bassin",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"À compléter"},
+  {nom:"CS Leroux Cachiman",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"Dr Jacques-Antoine Jean-Louis"},
+  {nom:"CS Roche Plate",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"À compléter"},
+  {nom:"CCS Grosse Roche (TDN)",type:"CCS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"Dr Sam Edwige Valcimond"},
+  {nom:"CS Caracol",type:"CS",uas:"Trou-du-Nord",commune:"Caracol",dm:"Dr Samuel Jean-Baptiste"},
+  {nom:"CS Cahesse",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"Dr Romel Mentor"},
+  {nom:"CS Sainte-Suzanne",type:"CS",uas:"Trou-du-Nord",commune:"Sainte-Suzanne",dm:"Dr Suzanne Joseph"},
+  {nom:"CS Danda",type:"CS",uas:"Trou-du-Nord",commune:"Sainte-Suzanne",dm:"Dr Edwine Augustin"},
+  {nom:"CS Dupity",type:"CS",uas:"Trou-du-Nord",commune:"Sainte-Suzanne",dm:"Dr Julianie Dalusma"},
+  {nom:"CS Phaéton",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"Dr Jean Baptiste Desir"},
+  {nom:"CS Corosse (Trou-du-Nord)",type:"CS",uas:"Trou-du-Nord",commune:"Trou-du-Nord",dm:"À compléter"},
+  {nom:"CS Mombin-Crochu",type:"CS (niveau avancé)",uas:"Hors UAS",commune:"Mombin-Crochu",dm:"Dr Miles Cherenfant"},
+  {nom:"CS Bois de Laurence",type:"CS",uas:"Hors UAS",commune:"Mombin-Crochu",dm:"Dr Renaud Gerve"},
+  {nom:"CCS Grosse Roche (Hors UAS)",type:"CCS",uas:"Hors UAS",commune:"Mombin-Crochu",dm:"Dr Sam Edwige Valcimond"}
+];
+
+function filtrerInst(){
+  var q=(document.getElementById('dsne-search').value||'').toLowerCase();
+  var uas=document.getElementById('dsne-uas-f').value||'';
+  var type=document.getElementById('dsne-type-f').value||'';
+  var liste=DSNE_INST.filter(function(i){
+    var mq=!q||i.nom.toLowerCase().includes(q)||i.commune.toLowerCase().includes(q)||(i.dm&&i.dm.toLowerCase().includes(q));
+    var mu=!uas||i.uas===uas;
+    var mt=!type||i.type===type;
+    return mq&&mu&&mt;
+  });
+  var list=document.getElementById('dsne-inst-list');
+  if(!liste.length){list.innerHTML='<div class="empty">Aucune institution correspondante.</div>';return;}
+  var byUas={};
+  liste.forEach(function(i){if(!byUas[i.uas])byUas[i.uas]=[];byUas[i.uas].push(i);});
+  var html='';
+  Object.keys(byUas).forEach(function(uas){
+    var insts=byUas[uas];
+    html+='<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--g400);margin:1rem 0 0.5rem;padding-bottom:4px;border-bottom:1px solid var(--g100)">UAS '+uas+' — '+insts.length+' institution(s)</div>';
+    html+=insts.map(function(i){return'<div class="dsne-inst-card"><div class="dsne-inst-top"><div><div class="dsne-iname">'+i.nom+'</div><div class="dsne-idm">DM : '+i.dm+'</div></div><div class="dsne-icommune">'+i.commune+'</div></div><div class="dsne-imeta"><span class="badge badge-svc">'+i.type+'</span><span class="badge" style="background:var(--g100);color:var(--g600)">'+i.uas+'</span></div></div>';}).join('');
+  });
+  list.innerHTML=html;
+}
+</script>
+
+
+
+
+
+<!-- DSNE TAB -->
+<div id="tab-dsne" class="content pb-sync" style="display:none">
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<style>
+.dt-top{display:grid;grid-template-columns:1fr 200px;gap:12px;margin-bottom:1.5rem}
+.dt-hero{background:#0f1f3d;padding:1.25rem 1.5rem;display:flex;flex-direction:column;justify-content:space-between}
+.dt-eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#b8972a;font-weight:600;margin-bottom:6px}
+.dt-title{font-family:"Playfair Display",serif;font-size:18px;font-weight:600;color:#fff;line-height:1.2;margin-bottom:3px}
+.dt-sub{font-size:11px;color:rgba(255,255,255,.45)}
+.dt-rule{height:1px;background:rgba(255,255,255,.1);margin:12px 0}
+.dt-chips{display:flex;gap:5px;flex-wrap:wrap}
+.dt-chip{padding:4px 10px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:rgba(255,255,255,.6);transition:all .15s}
+.dt-chip.act{background:rgba(184,151,42,.15);border-color:#b8972a;color:#b8972a}
+.dt-chip .cn{font-size:14px;font-weight:600;display:block;color:#b8972a}
+.dt-map-box{overflow:hidden;border:1px solid rgba(255,255,255,.1)}
+#dt-map{height:100%;width:100%;min-height:190px}
+
+.dt-two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem}
+.dt-blk-lbl{font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#b8972a;margin-bottom:8px}
+.dt-prow{display:flex;align-items:flex-start;justify-content:space-between;padding:.75rem 1rem;background:#fff;border:1px solid #dde2ec}
+.dt-pname{font-family:"Playfair Display",serif;font-size:13px;font-weight:600;color:#0f1f3d}
+.dt-prole{font-size:11px;color:#8a97ad;margin-top:2px}
+.dt-ptag{font-size:10px;padding:2px 8px;background:#f0f4ff;color:#0f1f3d;border:1px solid #dde2ec;font-weight:500;white-space:nowrap;margin-left:8px;flex-shrink:0}
+
+.dt-uas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem}
+.dt-uas-card{padding:.875rem 1rem;background:#fff;border:1px solid #dde2ec;cursor:pointer;transition:all .15s;border-top:3px solid #dde2ec}
+.dt-uas-card:hover,.dt-uas-card.act{border-top-color:#b8972a;background:#fafbff}
+.dt-uas-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:#8a97ad;margin-bottom:4px}
+.dt-uas-name{font-family:"Playfair Display",serif;font-size:13px;font-weight:400;color:#0f1f3d}
+.dt-uas-ct{font-size:10px;color:#8a97ad;margin-top:3px}
+
+.dt-frow{display:flex;gap:6px;margin-bottom:.875rem}
+.dt-frow input,.dt-frow select{padding:6px 10px;border:1px solid #dde2ec;font-size:12px;background:#fff;color:#1a2235}
+.dt-frow input{flex:1}
+
+.dt-grp{margin-bottom:1rem}
+.dt-ghd{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#8a97ad;padding-bottom:6px;border-bottom:1px solid #dde2ec;margin-bottom:6px}
+.dt-inst{display:flex;align-items:center;justify-content:space-between;padding:.625rem 1rem;background:#fff;border:1px solid #dde2ec;border-left:3px solid #b8972a;margin-bottom:4px;cursor:pointer;transition:background .15s}
+.dt-inst:hover,.dt-inst.hl{background:#fafbff}
+.dt-iname{font-size:12px;font-weight:500;color:#0f1f3d}
+.dt-idm{font-size:10px;color:#8a97ad;margin-top:2px}
+.dt-ibadge{font-size:10px;padding:2px 8px;font-weight:500;white-space:nowrap;flex-shrink:0;margin-left:8px;border:1px solid #dde2ec;color:#4a5568;background:#f7f8fa}
+</style>
+
+<div class="dt-top">
+  <div class="dt-hero">
+    <div>
+      <div class="dt-eyebrow">Ministère de la Santé Publique et de la Population</div>
+      <div class="dt-title">Direction Sanitaire du Nord-Est</div>
+      <div class="dt-sub">Fort-Liberté, Nord-Est — Haïti</div>
+    </div>
+    <div>
+      <div class="dt-rule"></div>
+      <div class="dt-chips">
+        <div class="dt-chip act" id="dt-c-all" onclick="dtFUAS('')"><span class="cn">40</span>Toutes</div>
+        <div class="dt-chip" id="dt-c-fl" onclick="dtFUAS('Fort-Liberté')"><span class="cn">9</span>Fort-Liberté</div>
+        <div class="dt-chip" id="dt-c-ou" onclick="dtFUAS('Ouanaminthe')"><span class="cn">13</span>Ouanaminthe</div>
+        <div class="dt-chip" id="dt-c-tdn" onclick="dtFUAS('Trou-du-Nord')"><span class="cn">15</span>Trou-du-Nord</div>
+      </div>
+    </div>
+  </div>
+  <div class="dt-map-box"><div id="dt-map"></div></div>
+</div>
+
+<div class="dt-two">
+  <div>
+    <div class="dt-blk-lbl">Direction</div>
+    <div class="dt-prow">
+      <div><div class="dt-pname">Dr. Jean Clervain Dorsainvil</div><div class="dt-prole">Directeur Départemental</div></div>
+      <span class="dt-ptag">Direction</span>
+    </div>
+  </div>
+  <div>
+    <div class="dt-blk-lbl">Administration</div>
+    <div class="dt-prow">
+      <div><div class="dt-pname">Décius Pierre</div><div class="dt-prole">Administrateur Départemental</div></div>
+      <span class="dt-ptag">Administration</span>
+    </div>
+  </div>
+</div>
+
+<div class="dt-blk-lbl" style="margin-bottom:8px">Coordonnateurs UAS</div>
+<div class="dt-uas-grid">
+  <div class="dt-uas-card" id="dt-u-fl" onclick="dtFUAS('Fort-Liberté')">
+    <div class="dt-uas-lbl">Fort-Liberté</div>
+    <div class="dt-uas-name">Dr Yvesson John Milien</div>
+    <div class="dt-uas-ct">9 institutions</div>
+  </div>
+  <div class="dt-uas-card" id="dt-u-ou" onclick="dtFUAS('Ouanaminthe')">
+    <div class="dt-uas-lbl">Ouanaminthe</div>
+    <div class="dt-uas-name">Dr Dieulin Toussaint</div>
+    <div class="dt-uas-ct">13 institutions</div>
+  </div>
+  <div class="dt-uas-card" id="dt-u-tdn" onclick="dtFUAS('Trou-du-Nord')">
+    <div class="dt-uas-lbl">Trou-du-Nord</div>
+    <div class="dt-uas-name">Dr Jims Saint-Hilaire</div>
+    <div class="dt-uas-ct">15 institutions</div>
+  </div>
+</div>
+
+<div class="dt-blk-lbl" style="margin-bottom:8px">Institutions sanitaires</div>
+<div class="dt-frow">
+  <input id="dt-srch" placeholder="Rechercher institution, commune, médecin…" oninput="dtRender()">
+  <select id="dt-ftype" onchange="dtRender()">
+    <option value="">Tous types</option>
+    <option>Hôpital Départemental</option>
+    <option>Hôpital Communautaire de Référence</option>
+    <option>CMS / Hôpital</option><option>CMS</option>
+    <option>Centre Spécialisé</option><option>CCS</option><option>CS</option>
+  </select>
+</div>
+<div id="dt-ilist"></div>
+
+<script>
+var DT_C={"Fort-Liberté":"#0f1f3d","Ouanaminthe":"#0F6E56","Trou-du-Nord":"#185FA5","Hors UAS":"#8a97ad"};
+var DT_D=[
+  {n:"Hôpital Départemental de Fort-Liberté (HFL)",t:"Hôpital Départemental",u:"Fort-Liberté",c:"Fort-Liberté",dm:"Dr Henry Claude Etienne",la:19.668,lo:-71.836},
+  {n:"CDAI Fort-Liberté",t:"Centre Spécialisé",u:"Fort-Liberté",c:"Fort-Liberté",dm:"Dr Brunel Augustin",la:19.669,lo:-71.837},
+  {n:"CCS Dérac",t:"CCS",u:"Fort-Liberté",c:"Fort-Liberté",dm:"Dr Rivelino Joseph",la:19.651,lo:-71.879},
+  {n:"CCS Meillac",t:"CCS",u:"Fort-Liberté",c:"Meillac",dm:"Dr Francisque Severe",la:19.580,lo:-71.921},
+  {n:"CCS Mérande",t:"CCS",u:"Fort-Liberté",c:"Ferrier",dm:"Dr Magalie Surling Dasny",la:19.585,lo:-71.685},
+  {n:"CS Ferrier",t:"CS",u:"Fort-Liberté",c:"Ferrier",dm:"Dr Luckens Pierre",la:19.597,lo:-71.663},
+  {n:"CS Acul Samedi",t:"CS",u:"Fort-Liberté",c:"Fort-Liberté",dm:"Dr Anegard Joseph",la:19.691,lo:-71.862},
+  {n:"CS Perches",t:"CS",u:"Fort-Liberté",c:"Perches",dm:"Dr Vincent Mecejour",la:19.579,lo:-71.768},
+  {n:"CS Vallières",t:"CS",u:"Fort-Liberté",c:"Vallières",dm:"Dr Frantz-Elucien Joseph",la:19.488,lo:-71.882},
+  {n:"CMS Ouanaminthe (CMSO)",t:"CMS / Hôpital",u:"Ouanaminthe",c:"Ouanaminthe",dm:"Dr Jhon Cador Joseph",la:19.553,lo:-71.732},
+  {n:"CS Capotille",t:"CS",u:"Ouanaminthe",c:"Capotille",dm:"Dr Adrien Felix",la:19.617,lo:-71.596},
+  {n:"CMS Mont-Organisé (CMSMO)",t:"CMS",u:"Ouanaminthe",c:"Mont-Organisé",dm:"Dr Margarette Titus",la:19.420,lo:-71.786},
+  {n:"CCS Lamine",t:"CCS",u:"Ouanaminthe",c:"Ouanaminthe",dm:"Dr Enese Desanges",la:19.563,lo:-71.750},
+  {n:"CS Acul des Pins",t:"CS",u:"Ouanaminthe",c:"Ouanaminthe",dm:"Dr Ricardo Joseph",la:19.548,lo:-71.745},
+  {n:"CS Gens de Nantes",t:"CS",u:"Ouanaminthe",c:"Ouanaminthe",dm:"Dr Cloridor Joachim",la:19.570,lo:-71.720},
+  {n:"CS Savane au Lait",t:"CS",u:"Ouanaminthe",c:"Ouanaminthe",dm:"Dr Mikenly Philogene",la:19.540,lo:-71.760},
+  {n:"CCS Savane Longue",t:"CCS",u:"Ouanaminthe",c:"Ouanaminthe",dm:"Dr Andy Paul",la:19.535,lo:-71.748},
+  {n:"CS Dilaire",t:"CS",u:"Ouanaminthe",c:"Ouanaminthe",dm:"Dr Roselande Jules",la:19.558,lo:-71.738},
+  {n:"CS Rose Bonite",t:"CS",u:"Ouanaminthe",c:"Capotille",dm:"Dr Nachemy Mea",la:19.608,lo:-71.602},
+  {n:"CS Bois Poux",t:"CS",u:"Ouanaminthe",c:"Capotille",dm:"À compléter",la:19.621,lo:-71.589},
+  {n:"CS Carice",t:"CS",u:"Ouanaminthe",c:"Carice",dm:"Dr Lyonel Maxime",la:19.370,lo:-71.851},
+  {n:"CS Corosse (Capotille)",t:"CS",u:"Ouanaminthe",c:"Capotille",dm:"À compléter",la:19.630,lo:-71.580},
+  {n:"HCR Trou-du-Nord",t:"Hôpital Communautaire de Référence",u:"Trou-du-Nord",c:"Trou-du-Nord",dm:"Dr Jude Achille Dorsainvil",la:19.629,lo:-72.015},
+  {n:"CS Terrier Rouge",t:"CS",u:"Trou-du-Nord",c:"Terrier Rouge",dm:"Dr Abnel Benjamin",la:19.638,lo:-72.025},
+  {n:"CS Pilette",t:"CS",u:"Trou-du-Nord",c:"Terrier Rouge",dm:"Dr Gelande-Shamir Laroche",la:19.635,lo:-72.030},
+  {n:"CS Jacquezyl",t:"CS",u:"Trou-du-Nord",c:"Trou-du-Nord",dm:"Dr Fredo Dorvil",la:19.618,lo:-71.998},
+  {n:"CS NDL Grand Bassin",t:"CS",u:"Trou-du-Nord",c:"Trou-du-Nord",dm:"À compléter",la:19.610,lo:-72.010},
+  {n:"CS Leroux Cachiman",t:"CS",u:"Trou-du-Nord",c:"Trou-du-Nord",dm:"Dr Jacques-Antoine Jean-Louis",la:19.605,lo:-72.002},
+  {n:"CS Roche Plate",t:"CS",u:"Trou-du-Nord",c:"Trou-du-Nord",dm:"À compléter",la:19.623,lo:-71.993},
+  {n:"CCS Grosse Roche (TDN)",t:"CCS",u:"Trou-du-Nord",c:"Trou-du-Nord",dm:"Dr Sam Edwige Valcimond",la:19.615,lo:-71.988},
+  {n:"CS Caracol",t:"CS",u:"Trou-du-Nord",c:"Caracol",dm:"Dr Samuel Jean-Baptiste",la:19.695,lo:-71.986},
+  {n:"CS Cahesse",t:"CS",u:"Trou-du-Nord",c:"Trou-du-Nord",dm:"Dr Romel Mentor",la:19.601,lo:-72.021},
+  {n:"CS Sainte-Suzanne",t:"CS",u:"Trou-du-Nord",c:"Sainte-Suzanne",dm:"Dr Suzanne Joseph",la:19.651,lo:-72.091},
+  {n:"CS Danda",t:"CS",u:"Trou-du-Nord",c:"Sainte-Suzanne",dm:"Dr Edwine Augustin",la:19.645,lo:-72.085},
+  {n:"CS Dupity",t:"CS",u:"Trou-du-Nord",c:"Sainte-Suzanne",dm:"Dr Julianie Dalusma",la:19.658,lo:-72.098},
+  {n:"CS Phaéton",t:"CS",u:"Trou-du-Nord",c:"Trou-du-Nord",dm:"Dr Jean Baptiste Desir",la:19.612,lo:-72.018},
+  {n:"CS Corosse (Trou-du-Nord)",t:"CS",u:"Trou-du-Nord",c:"Trou-du-Nord",dm:"À compléter",la:19.619,lo:-72.008},
+  {n:"CS Mombin-Crochu",t:"CS (niveau avancé)",u:"Hors UAS",c:"Mombin-Crochu",dm:"Dr Miles Cherenfant",la:19.426,lo:-71.980},
+  {n:"CS Bois de Laurence",t:"CS",u:"Hors UAS",c:"Mombin-Crochu",dm:"Dr Renaud Gerve",la:19.418,lo:-71.972},
+  {n:"CCS Grosse Roche (Hors UAS)",t:"CCS",u:"Hors UAS",c:"Mombin-Crochu",dm:"Dr Sam Edwige Valcimond",la:19.430,lo:-71.965}
+];
+var dtMap=null,dtMK=[],dtAUAS="";
+function dtInitMap(){
+  if(dtMap)return;
+  dtMap=L.map("dt-map",{zoomControl:true,attributionControl:false}).setView([19.58,-71.83],9);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:14}).addTo(dtMap);
+  DT_D.forEach(function(d,i){
+    var col=DT_C[d.u]||"#888";
+    var ic=L.divIcon({html:"<div style=\"width:9px;height:9px;background:"+col+";border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.3)\"></div>",className:"",iconSize:[9,9],iconAnchor:[4,4]});
+    var m=L.marker([d.la,d.lo],{icon:ic}).addTo(dtMap);
+    m.bindPopup("<b style=\"font-size:11px\">"+d.n+"</b><br><span style=\"font-size:10px;color:#666\">"+d.dm+"</span>");
+    m.on("click",function(){dtHL(i);});
+    dtMK.push(m);
+  });
+}
+function dtHL(i){
+  document.querySelectorAll(".dt-inst").forEach(function(e){e.classList.remove("hl");});
+  var el=document.getElementById("dt-i"+i);
+  if(el){el.classList.add("hl");el.scrollIntoView({behavior:"smooth",block:"nearest"});}
+}
+function dtFUAS(u){
+  dtAUAS=u;
+  document.querySelectorAll(".dt-chip").forEach(function(e){e.classList.remove("act");});
+  document.querySelectorAll(".dt-uas-card").forEach(function(e){e.classList.remove("act");});
+  if(!u){document.getElementById("dt-c-all").classList.add("act");}
+  else{
+    var cm={"Fort-Liberté":"dt-c-fl","Ouanaminthe":"dt-c-ou","Trou-du-Nord":"dt-c-tdn"};
+    var um={"Fort-Liberté":"dt-u-fl","Ouanaminthe":"dt-u-ou","Trou-du-Nord":"dt-u-tdn"};
+    if(cm[u])document.getElementById(cm[u]).classList.add("act");
+    if(um[u])document.getElementById(um[u]).classList.add("act");
+    if(dtMap){var b=DT_D.filter(function(d){return d.u===u;}).map(function(d){return[d.la,d.lo];});if(b.length)dtMap.fitBounds(b,{padding:[20,20]});}
+  }
+  dtRender();
+}
+function dtRender(){
+  var q=(document.getElementById("dt-srch").value||"").toLowerCase();
+  var ft=document.getElementById("dt-ftype").value;
+  var l=DT_D.filter(function(d){return(!q||d.n.toLowerCase().includes(q)||d.c.toLowerCase().includes(q)||d.dm.toLowerCase().includes(q))&&(!dtAUAS||d.u===dtAUAS)&&(!ft||d.t===ft);});
+  var g={};l.forEach(function(d){if(!g[d.u])g[d.u]=[];g[d.u].push(d);});
+  var h="";
+  Object.keys(g).forEach(function(u){
+    h+="<div class=\"dt-grp\"><div class=\"dt-ghd\">UAS "+u+" — "+g[u].length+" institution(s)</div>";
+    h+=g[u].map(function(d){var i=DT_D.indexOf(d);return"<div class=\"dt-inst\" id=\"dt-i"+i+"\" onclick=\"dtClick("+i+")\"><div><div class=\"dt-iname\">"+d.n+"</div><div class=\"dt-idm\">"+d.dm+" · "+d.c+"</div></div><span class=\"dt-ibadge\">"+d.t+"</span></div>";}).join("");
+    h+="</div>";
+  });
+  document.getElementById("dt-ilist").innerHTML=h||"<div style=\"text-align:center;padding:2rem;color:#8a97ad;font-size:12px\">Aucun résultat.</div>";
+}
+function dtClick(i){
+  var d=DT_D[i];
+  if(dtMap&&d.la){dtMap.setView([d.la,d.lo],13);if(dtMK[i])dtMK[i].openPopup();}
+  dtHL(i);
+}
+function dsneActivate(){
+  dtRender();
+  setTimeout(function(){dtInitMap();if(dtMap)dtMap.invalidateSize();},150);
+}
+</script>
+</div>
+
+<!-- ══ TAB: FORMULAIRE ══ -->
+<div id="tab-formulaire" class="content pb-sync">
+
+  <div id="alertForm" class="alert alert-error" style="display:none"></div>
+
+  <div class="form-intro">
+    <h2>DEMANDE D'AUTORISATION DE CLINIQUE MOBILE — DSNE</h2>
+    <p>Ce formulaire est réservé aux Unités d'Arrondissement de Santé (UAS) du département du Nord-Est. Il permet de soumettre une demande officielle d'autorisation de clinique mobile à la Direction Sanitaire du Nord-Est (DSNE).</p>
+    <p><strong>Avant de remplir ce formulaire, les conditions suivantes doivent être réunies :</strong></p>
+    <ul>
+      <li>Le Directeur Médical de l'institution concernée a été informé et a donné son accord</li>
+      <li>Le responsable de clinique mobile a été consulté et confirmé la conformité de l'intervention</li>
+      <li>Tous les documents requis sont disponibles et prêts à être joints à la demande</li>
+    </ul>
+    <div class="warning">Ce formulaire ne doit être soumis que lorsque toutes ces conditions sont confirmées. Toute demande incomplète ou soumise sans les pièces justificatives nécessaires sera automatiquement rejetée.</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="section-header">Section 1 — Identification du répondant</div>
+  <div class="card">
+    <p style="font-size:13px;color:var(--g600);margin-bottom:1rem;line-height:1.6">Ce formulaire est réservé aux Unités d'Arrondissement de Santé (UAS) autorisées. Toute demande doit être soumise au moins 7 jours avant la date prévue de l'activité. Assurez-vous que le Directeur Médical de l'institution et le Responsable de Clinique Mobile ont été informés et ont donné leur accord avant de procéder.</p>
+
+    <div class="field">
+      <label>Vous soumettez ce formulaire en tant que <span class="required">*</span></label>
+      <span class="field-desc">Sélectionnez votre identité dans la liste. Seuls les répondants enregistrés auprès de la DSNE sont autorisés à soumettre ce formulaire.</span>
+      <div class="radio-group">
+        <label class="radio-option"><input type="radio" name="r_identite" value="UAS Ouanaminthe — Dieulin Toussaint"><span class="radio-option-label">UAS Ouanaminthe — Dieulin Toussaint</span></label>
+        <label class="radio-option"><input type="radio" name="r_identite" value="UAS Fort-Liberté — John Y. Milien"><span class="radio-option-label">UAS Fort-Liberté — John Y. Milien</span></label>
+        <label class="radio-option"><input type="radio" name="r_identite" value="Responsable Clinique Mobile — Jodlyn Etienne"><span class="radio-option-label">Responsable Clinique Mobile — Jodlyn Etienne</span></label>
+        <label class="radio-option"><input type="radio" name="r_identite" value="Secrétariat de Direction — DSNE"><span class="radio-option-label">Secrétariat de Direction — DSNE</span></label>
+      </div>
+      <div class="field-error" id="err_identite">Ce champ est obligatoire.</div>
+    </div>
+
+    <div class="field">
+      <label>Organisation demandeuse <span class="required">*</span></label>
+      <span class="field-desc">Indiquez le nom complet de l'institution ou de l'organisation qui sollicite l'autorisation.</span>
+      <input type="text" id="f_organisation" placeholder="Nom de l'organisation">
+      <div class="field-error" id="err_organisation">Ce champ est obligatoire.</div>
+    </div>
+
+    <div class="field">
+      <label>Adresse e-mail de contact</label>
+      <span class="field-desc">Adresse à laquelle les notifications relatives à cette demande seront envoyées.</span>
+      <input type="email" id="f_email" placeholder="exemple@organisation.ht">
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="section-header">Section 2 — Dates et lieux de l'intervention</div>
+  <div class="card">
+    <p style="font-size:13px;color:var(--g600);margin-bottom:1rem;line-height:1.6">
+      Indiquez la ou les dates prévues de l'intervention ainsi que le lieu correspondant. Si l'intervention se déroule sur plusieurs jours ou dans plusieurs localités, cliquez sur <strong>+ Ajouter une date</strong> pour chaque entrée supplémentaire. Chaque ligne correspond à une date et un lieu d'intervention distincts.
+    </p>
+    <div id="dates-container">
+      <div class="date-lieu-row" id="date-row-1">
+        <div class="date-lieu-inner">
+          <div class="field" style="flex:0 0 180px">
+            <label>Date <span class="required">*</span></label>
+            <span class="field-desc">Sélectionner la date dans le calendrier.</span>
+            <input type="date" id="f_date_1" class="date-field">
+          </div>
+          <div class="field" style="flex:1">
+            <label>Commune / Lieu <span class="required">*</span></label>
+            <span class="field-desc">Inscrire la commune, la section communale ou tout autre repère géographique pertinent.</span>
+            <input type="text" id="f_lieu_1" placeholder="Ex. : Ouanaminthe, Section communale de Savane au Lait…">
+          </div>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="btn-add-date" onclick="ajouterDate()">+ Ajouter une date</button>
+    <div class="field-error" id="err_modalites">Veuillez indiquer au moins une date et un lieu.</div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="section-header">Section 3 — Documents requis</div>
+  <div class="card">
+    <p style="font-size:13px;color:var(--g600);margin-bottom:1rem;line-height:1.6">Les quatre documents suivants sont obligatoires. Toute demande soumise sans l'un de ces documents sera automatiquement rejetée.</p>
+
+    <div class="field">
+      <label>Lettre de demande officielle <span class="required">*</span></label>
+      <span class="field-desc">Lettre signée par le Directeur Médical de l'institution, adressée à la Direction Sanitaire du Nord-Est.</span>
+      <div class="file-zone" id="zone_lettre" onclick="document.getElementById('f_lettre').click()">
+        <span class="file-zone-icon">📎</span>
+        <div><div class="file-zone-text">Ajouter un fichier</div><div class="file-zone-sub">PDF, Word ou image</div></div>
+        <input type="file" id="f_lettre" accept=".pdf,.doc,.docx,.jpg,.png" onchange="handleFile(this,'lettre')">
+      </div>
+      <div id="preview_lettre"></div>
+      <div class="field-error" id="err_lettre">Ce document est obligatoire.</div>
+    </div>
+
+    <div class="field">
+      <label>Liste du personnel et licences <span class="required">*</span></label>
+      <span class="field-desc">Liste complète du personnel médical et paramédical participant, avec leurs licences et accréditations en cours de validité.</span>
+      <div class="file-zone" id="zone_personnel" onclick="document.getElementById('f_personnel').click()">
+        <span class="file-zone-icon">📎</span>
+        <div><div class="file-zone-text">Ajouter un fichier</div><div class="file-zone-sub">PDF, Word ou image</div></div>
+        <input type="file" id="f_personnel" accept=".pdf,.doc,.docx,.jpg,.png" onchange="handleFile(this,'personnel')">
+      </div>
+      <div id="preview_personnel"></div>
+      <div class="field-error" id="err_personnel">Ce document est obligatoire.</div>
+    </div>
+
+    <div class="field">
+      <label>Liste des médicaments <span class="required">*</span></label>
+      <span class="field-desc">Liste complète des médicaments et fournitures médicales qui seront utilisés lors de l'intervention.</span>
+      <div class="file-zone" id="zone_medicaments" onclick="document.getElementById('f_medicaments').click()">
+        <span class="file-zone-icon">📎</span>
+        <div><div class="file-zone-text">Ajouter un fichier</div><div class="file-zone-sub">PDF, Word ou image</div></div>
+        <input type="file" id="f_medicaments" accept=".pdf,.doc,.docx,.jpg,.png" onchange="handleFile(this,'medicaments')">
+      </div>
+      <div id="preview_medicaments"></div>
+      <div class="field-error" id="err_medicaments">Ce document est obligatoire.</div>
+    </div>
+
+    <div class="field">
+      <label>Lettre de recommandation UAS <span class="required">*</span></label>
+      <span class="field-desc">Lettre de recommandation signée par le responsable de l'Unité d'Arrondissement de Santé concernée.</span>
+      <div class="file-zone" id="zone_recommandation" onclick="document.getElementById('f_recommandation').click()">
+        <span class="file-zone-icon">📎</span>
+        <div><div class="file-zone-text">Ajouter un fichier</div><div class="file-zone-sub">PDF, Word ou image</div></div>
+        <input type="file" id="f_recommandation" accept=".pdf,.doc,.docx,.jpg,.png" onchange="handleFile(this,'recommandation')">
+      </div>
+      <div id="preview_recommandation"></div>
+      <div class="field-error" id="err_recommandation">Ce document est obligatoire.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="section-header">Section 4 — Vérifications préalables</div>
+  <div class="card">
+    <div class="field">
+      <label>Le dossier médical des patients sera-t-il documenté ? <span class="required">*</span></label>
+      <span class="field-desc">Confirmez si un système de documentation des dossiers patients sera en place pendant l'intervention.</span>
+      <div class="radio-group">
+        <label class="radio-option"><input type="radio" name="r_dossier" value="Oui"><span class="radio-option-label">Oui</span></label>
+        <label class="radio-option"><input type="radio" name="r_dossier" value="Non"><span class="radio-option-label">Non</span></label>
+      </div>
+      <div class="field-error" id="err_dossier">Ce champ est obligatoire.</div>
+    </div>
+
+    <div class="field">
+      <label>L'intervention s'aligne-t-elle avec les axes prioritaires du MSPP ? <span class="required">*</span></label>
+      <span class="field-desc">Confirmez que les services offerts lors de la clinique mobile sont conformes aux axes prioritaires du Ministère de la Santé Publique et de la Population.</span>
+      <div class="radio-group">
+        <label class="radio-option"><input type="radio" name="r_axes" value="Oui"><span class="radio-option-label">Oui</span></label>
+        <label class="radio-option"><input type="radio" name="r_axes" value="Non"><span class="radio-option-label">Non</span></label>
+      </div>
+      <div class="field-error" id="err_axes">Ce champ est obligatoire.</div>
+    </div>
+
+    <div class="field">
+      <label>Une lettre de recommandation de l'UAS est-elle jointe ? <span class="required">*</span></label>
+      <div class="radio-group">
+        <label class="radio-option"><input type="radio" name="r_recommandation" value="Oui"><span class="radio-option-label">Oui</span></label>
+        <label class="radio-option"><input type="radio" name="r_recommandation" value="Non"><span class="radio-option-label">Non</span></label>
+      </div>
+      <div class="field-error" id="err_recommandation_q">Ce champ est obligatoire.</div>
+    </div>
+
+    <div class="field">
+      <label>La DSNE sera-t-elle notifiée des résultats post-intervention ? <span class="required">*</span></label>
+      <span class="field-desc">Confirmez que la DSNE recevra un rapport de résultats dans les 15 jours suivant la clinique mobile.</span>
+      <div class="radio-group">
+        <label class="radio-option"><input type="radio" name="r_notification" value="Oui"><span class="radio-option-label">Oui</span></label>
+        <label class="radio-option"><input type="radio" name="r_notification" value="Non"><span class="radio-option-label">Non</span></label>
+      </div>
+      <div class="field-error" id="err_notification">Ce champ est obligatoire.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="section-header">Section 5 — Commentaires</div>
+  <div class="card">
+    <div class="field">
+      <label>Commentaires ou informations complémentaires</label>
+      <span class="field-desc">Tout élément additionnel que vous jugez pertinent pour l'évaluation de cette demande.</span>
+      <textarea id="f_commentaires" placeholder="Commentaires optionnels..."></textarea>
+    </div>
+  </div>
+
+  <button class="btn btn-primary btn-full" id="btnSubmit" onclick="submitForm()" style="margin-top:1rem">
+    Soumettre la demande
+  </button>
+
+</div>
+
+<!-- ══ TAB: JOURNAL ══ -->
+<div id="tab-journal" class="content pb-sync" style="display:none">
+  <div class="stats-row" id="statsRow"></div>
+  <div class="log-list" id="logList"></div>
+</div>
+
+
+<!-- TAB AUDIT -->
+<div id="tab-audit" class="content pb-sync" style="display:none">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.75rem">
+    <input type="text" id="auditSearch" placeholder="Rechercher action, utilisateur…"
+      oninput="filtrerAudit()"
+      style="flex:1;padding:7px 10px;border:1px solid var(--g200);font-size:13px">
+  </div>
+  <div id="auditList"></div>
+</div>
+
+<!-- SYNC BAR -->
+<div class="sync-bar">
+  <div class="sync-info">
+    <span class="sync-dot" id="syncBarDot"></span>
+    <span id="syncBarLabel">Vérification...</span>
+  </div>
+  <button class="btn btn-sm btn-primary" onclick="doSync()">Synchroniser</button>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const DOPOST_URL = 'https://script.google.com/macros/s/AKfycbxHkfqS_Pj8sCNtGdEFdHFNxfLHmGR3dSzjdKE0qL5vVmXuPnzaSUOg_nY8J2pqIe0/exec'
+let files = { lettre: null, personnel: null, medicaments: null, recommandation: null }
+let syncing = false
+
+window.addEventListener('DOMContentLoaded', async () => {
+  const userData = sessionStorage.getItem('user')
+  if (!userData) { window.location.href = 'login.html'; return }
+  const user = JSON.parse(userData)
+  document.getElementById('topbarUser').textContent = 'Salut ' + user.nom_complet.split(' ')[0] + ' !'
+  await updateSyncStatus()
+  setInterval(updateSyncStatus, 30000)
+  window.addEventListener('online', () => { updateSyncStatus(); doSync() })
+  window.addEventListener('offline', updateSyncStatus)
+})
+
+function switchTab(name, el) {
+  ['dsne','formulaire','journal','audit'].forEach(t => {
+    const el2 = document.getElementById('tab-'+t)
+    if (el2) el2.style.display = t===name ? 'block' : 'none'
+  })
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
+  el.classList.add('active')
+  if (name === 'journal') loadJournal()
+  if (name === 'dsne') dsneActivate()
+  if (name === 'audit') loadAudit()
+}
+
+async function doLogout() {
+  sessionStorage.removeItem('user')
+  const result = await window.dsne.logout()
+  window.location.href = 'login.html'
+}
+
+function handleFile(input, key) {
+  const f = input.files[0]; if (!f) return
+  files[key] = f
+  const zone = document.getElementById('zone_' + key)
+  zone.classList.add('file-attached')
+  zone.querySelector('.file-zone-text').textContent = f.name
+  zone.querySelector('.file-zone-sub').textContent = (f.size/1024).toFixed(0) + ' Ko'
+  document.getElementById('preview_' + key).innerHTML =
+    `<div class="file-item"><span>${f.name}</span><button onclick="removeFile('${key}')">Retirer</button></div>`
+  document.getElementById('err_' + key).style.display = 'none'
+}
+
+function removeFile(key) {
+  files[key] = null
+  const zone = document.getElementById('zone_' + key)
+  zone.classList.remove('file-attached')
+  zone.querySelector('.file-zone-text').textContent = 'Ajouter un fichier'
+  zone.querySelector('.file-zone-sub').textContent = 'PDF, Word ou image'
+  document.getElementById('preview_' + key).innerHTML = ''
+  document.getElementById('f_' + key).value = ''
+}
+
+async function fileToBase64(f) {
+  return new Promise((res, rej) => {
+    const r = new FileReader()
+    r.onload = () => res({ name: f.name, type: f.type, data: r.result.split(',')[1] })
+    r.onerror = rej
+    r.readAsDataURL(f)
+  })
+}
+
+
+let dateCount = 1
+
+function ajouterDate() {
+  dateCount++
+  const container = document.getElementById('dates-container')
+  const div = document.createElement('div')
+  div.className = 'date-lieu-row'
+  div.id = 'date-row-' + dateCount
+  div.innerHTML = `
+    <div class="date-lieu-inner">
+      <div class="field" style="flex:0 0 180px">
+        <label>Date <span class="required">*</span></label>
+        <span class="field-desc">Sélectionner la date dans le calendrier.</span>
+        <input type="date" id="f_date_${dateCount}" class="date-field">
+      </div>
+      <div class="field" style="flex:1">
+        <label>Commune / Lieu <span class="required">*</span></label>
+        <span class="field-desc">Inscrire la commune ou le lieu de l'intervention.</span>
+        <input type="text" id="f_lieu_${dateCount}" placeholder="Ex. : Fort-Liberté, Trou-du-Nord…">
+      </div>
+      <button type="button" class="btn-remove-date" onclick="supprimerDate(${dateCount})">Retirer</button>
+    </div>
+  `
+  container.appendChild(div)
+}
+
+function supprimerDate(n) {
+  const el = document.getElementById('date-row-' + n)
+  if (el) el.remove()
+}
+
+function getDatesLieux() {
+  const rows = document.querySelectorAll('.date-lieu-row')
+  const result = []
+  rows.forEach((row, i) => {
+    const n = i + 1
+    const dateEl = row.querySelector('input[type="date"]')
+    const lieuEl = row.querySelector('input[type="text"]')
+    if (dateEl && lieuEl) {
+      result.push({ date: dateEl.value, lieu: lieuEl.value.trim() })
+    }
+  })
+  return result
+}
+
+function getVal(id) { return document.getElementById(id).value.trim() }
+function getRadio(name) { const el = document.querySelector(`input[name=${name}]:checked`); return el ? el.value : '' }
+function showErr(id) { document.getElementById(id).style.display = 'block' }
+function hideErr(id) { document.getElementById(id).style.display = 'none' }
+
+function validate() {
+  let ok = true
+  if (!getRadio('r_identite'))     { showErr('err_identite'); ok=false }     else hideErr('err_identite')
+  if (!getVal('f_organisation'))   { showErr('err_organisation'); ok=false } else hideErr('err_organisation')
+  const datesLieux = getDatesLieux()
+  const datesValides = datesLieux.every(d => d.date && d.lieu)
+  if (!datesLieux.length || !datesValides) { showErr('err_modalites'); ok=false } else hideErr('err_modalites')
+  if (!files.lettre)               { showErr('err_lettre'); ok=false }       else hideErr('err_lettre')
+  if (!files.personnel)            { showErr('err_personnel'); ok=false }    else hideErr('err_personnel')
+  if (!files.medicaments)          { showErr('err_medicaments'); ok=false }  else hideErr('err_medicaments')
+  if (!files.recommandation)       { showErr('err_recommandation'); ok=false } else hideErr('err_recommandation')
+  if (!getRadio('r_dossier'))      { showErr('err_dossier'); ok=false }      else hideErr('err_dossier')
+  if (!getRadio('r_axes'))         { showErr('err_axes'); ok=false }         else hideErr('err_axes')
+  if (!getRadio('r_recommandation')){ showErr('err_recommandation_q'); ok=false } else hideErr('err_recommandation_q')
+  if (!getRadio('r_notification')) { showErr('err_notification'); ok=false } else hideErr('err_notification')
+  return ok
+}
+
+async function submitForm() {
+  if (!validate()) { toast('Veuillez remplir tous les champs obligatoires et joindre les quatre documents requis.', 'error'); return }
+  const btn = document.getElementById('btnSubmit')
+  btn.disabled = true; btn.textContent = 'Enregistrement...'
+
+  const fichiers = await Promise.all([
+    fileToBase64(files.lettre),
+    fileToBase64(files.personnel),
+    fileToBase64(files.medicaments),
+    fileToBase64(files.recommandation)
+  ])
+  fichiers[0].label = 'Lettre de demande officielle'
+  fichiers[1].label = 'Liste du personnel et licences'
+  fichiers[2].label = 'Liste des médicaments'
+  fichiers[3].label = 'Lettre de recommandation UAS'
+
+  const user = JSON.parse(sessionStorage.getItem('user') || '{}')
+  const payload = {
+    timestamp: new Date().toISOString(),
+    soumis_par: user.nom_complet || '',
+    organisation: getVal('f_organisation'),
+    identite: getRadio('r_identite'),
+    email: getVal('f_email'),
+    dates_lieux: getDatesLieux(),
+    dossier: getRadio('r_dossier'),
+    axes: getRadio('r_axes'),
+    recommandation: getRadio('r_recommandation'),
+    notification: getRadio('r_notification'),
+    commentaires: getVal('f_commentaires'),
+    fichiers
+  }
+
+  await window.dsne.queueSave(payload)
+  if (navigator.onLine) await syncQueue()
+  else toast('Enregistré localement. Synchronisation automatique à la reconnexion.', 'info')
+  resetForm()
+  btn.disabled = false; btn.textContent = 'Soumettre la demande'
+  toast('Demande enregistrée avec succès.', 'success')
+  await updateSyncStatus()
+}
+
+async function syncQueue() {
+  if (syncing) return; syncing = true
+  const pending = await window.dsne.queuePending()
+  if (!pending.length) { syncing = false; return }
+  let errors = 0
+  for (const row of pending) {
+    try {
+      const res = await fetch(DOPOST_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: row.data })
+      if (res.ok) await window.dsne.queueMarkSynced(row.id); else errors++
+    } catch(e) { errors++ }
+  }
+  syncing = false
+  await updateSyncStatus()
+  if (!errors) toast('Synchronisation réussie.', 'success')
+  else toast(`${errors} entrée(s) non synchronisée(s).`, 'error')
+}
+
+async function doSync() {
+  if (!navigator.onLine) { toast('Aucune connexion disponible.', 'error'); return }
+  await syncQueue()
+}
+
+async function updateSyncStatus() {
+  const n = await window.dsne.queueCount()
+  const dot = document.getElementById('syncDot')
+  const label = document.getElementById('syncLabel')
+  const barDot = document.getElementById('syncBarDot')
+  const barLabel = document.getElementById('syncBarLabel')
+  const online = navigator.onLine
+  if (n > 0) {
+    dot.className = 'sync-dot pending'; barDot.className = 'sync-dot pending'
+    label.textContent = n + ' en attente'; barLabel.textContent = n + ' enregistrement(s) non synchronisé(s)'
+  } else {
+    dot.className = 'sync-dot'; barDot.className = 'sync-dot'
+    label.textContent = online ? 'Synchronisé' : 'Hors ligne'
+    barLabel.textContent = online ? 'Toutes les données sont synchronisées' : 'Hors ligne — données sauvegardées localement'
+  }
+}
+
+async function loadJournal() {
+  const pending = await window.dsne.queuePending()
+  const all = await window.dsne.queueAll()
+  const total = all.length
+  const enAttente = pending.length
+  const synced = total - enAttente
+
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-card"><div class="stat-n">${total}</div><div class="stat-l">Total des demandes</div></div>
+    <div class="stat-card"><div class="stat-n synced">${synced}</div><div class="stat-l">Synchronisées</div></div>
+    <div class="stat-card"><div class="stat-n pending">${enAttente}</div><div class="stat-l">En attente</div></div>
+  `
+
+  const list = document.getElementById('logList')
+  if (!all.length) { list.innerHTML = '<div class="empty">Aucune demande enregistrée.</div>'; return }
+
+  list.innerHTML = all.map(row => {
+    let d = {}; try { d = JSON.parse(row.data) } catch(e) {}
+    const date = new Date(d.timestamp || row.created_at)
+    const dateStr = date.toLocaleDateString('fr-HT', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    const heureStr = date.toLocaleTimeString('fr-HT', { hour: '2-digit', minute: '2-digit' })
+    const isSynced = row.status === 'synced'
+    return `
+      <div class="log-card ${isSynced ? 'synced' : ''}">
+        <div class="log-top">
+          <div>
+            <div class="log-name">${d.organisation || '—'}</div>
+            <div class="log-id">${d.identite || ''}</div>
+          </div>
+          <div class="log-time">${dateStr} · ${heureStr}</div>
+        </div>
+        <div class="log-meta">
+          <span class="badge ${isSynced ? 'badge-synced' : 'badge-pending'}">${isSynced ? 'Synchronisée' : 'En attente'}</span>
+          ${d.soumis_par ? `<span class="badge" style="background:var(--g100);color:var(--g600)">${d.soumis_par}</span>` : ''}
+        </div>
+      </div>
+    `
+  }).join('')
+}
+
+function resetForm() {
+  ['f_organisation','f_email','f_modalites','f_commentaires'].forEach(id => document.getElementById(id).value = '')
+  document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false)
+  ;['lettre','personnel','medicaments','recommandation'].forEach(k => removeFile(k))
+}
+
+
+var allAudit = []
+async function loadAudit() {
+  allAudit = await window.dsne.getAuditLog()
+  filtrerAudit()
+}
+function filtrerAudit() {
+  const q = (document.getElementById('auditSearch').value || '').toLowerCase()
+  const liste = allAudit.filter(a => !q || a.user.toLowerCase().includes(q) || a.action.toLowerCase().includes(q))
+  const list = document.getElementById('auditList')
+  if (!liste.length) { list.innerHTML = '<div class="empty">Aucune action enregistree.</div>'; return }
+  list.innerHTML = liste.map(function(a) {
+    const ts = new Date(a.timestamp)
+    const date = ts.toLocaleDateString('fr-HT', {day:'2-digit',month:'2-digit',year:'numeric'})
+    const heure = ts.toLocaleTimeString('fr-HT', {hour:'2-digit',minute:'2-digit'})
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#fff;border:1px solid var(--g100);border-left:3px solid var(--c600);margin-bottom:4px"><div><div style="font-size:13px;font-weight:600;color:var(--g800)">' + a.action + '</div><div style="font-size:11px;color:var(--g400);margin-top:1px">' + a.user + (a.details ? ' · ' + a.details : '') + '</div></div><div style="font-size:11px;color:var(--g400);text-align:right;white-space:nowrap;margin-left:12px">' + date + '<br>' + heure + '</div></div>'
+  }).join('')
+}
+
+function toast(msg, type='info') {
+  const t = document.getElementById('toast')
+  t.textContent = msg; t.className = `show ${type}`
+  setTimeout(() => t.className = '', 4000)
+}
+</script>
+</body>
+</html>

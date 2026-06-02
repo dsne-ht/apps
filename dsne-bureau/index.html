@@ -1742,24 +1742,24 @@ function initRapportage() {
     return {cls:'cell-na',label:'—'};
   };
 
-  let html = '<thead><tr><th class="inst-col">Institution</th>';
-  RP_MONTHS.forEach(m => html += `<th colspan="3">${m}</th>`);
-  html += '</tr><tr><th></th>';
-  RP_MONTHS.forEach(() => html += '<th>F</th><th>R</th><th>E</th>');
-  html += '</tr></thead><tbody>';
+  var heatHtml = '<thead><tr><th style="min-width:200px;text-align:left;padding:5px 12px;background:#f8f6f1;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8a9ab0;border-bottom:2px solid #ede9e0">Institution</th>';
+  RP_MONTHS.forEach(function(m) { heatHtml += '<th colspan="3" style="text-align:center;font-size:9px;font-weight:700;padding:4px 2px;background:#f8f6f1;border-bottom:2px solid #ede9e0;color:#8a9ab0">' + m + '</th>'; });
+  heatHtml += '</tr><tr><th style="background:#f8f6f1"></th>';
+  RP_MONTHS.forEach(function() { heatHtml += '<th style="font-size:9px;padding:3px;text-align:center;background:#f8f6f1;color:#8a9ab0">F</th><th style="font-size:9px;padding:3px;text-align:center;background:#f8f6f1;color:#8a9ab0">R</th><th style="font-size:9px;padding:3px;text-align:center;background:#f8f6f1;color:#8a9ab0">E</th>'; });
+  heatHtml += '</tr></thead><tbody>';
 
-  data.forEach(inst => {
-    html += `<tr><td class="inst-name">${esc(inst.inst)}</td>`;
-    RP_MONTHS.forEach(m => {
-      const mo = inst.months && inst.months[m] ? inst.months[m] : {FIN:'',RH:'',EPI:''};
-      ['FIN','RH','EPI'].forEach(p => {
-        const {cls,label} = cellVal(mo[p] || '');
-        html += `<td class="${cls}" title="${m} ${p}: ${mo[p]||'—'}">${label}</td>`;
+  data.forEach(function(inst) {
+    heatHtml += '<tr><td style="min-width:200px;white-space:nowrap;padding:5px 12px;font-size:11.5px;color:#2a3a50;border-bottom:1px solid #e8e3d9;background:#ffffff">' + esc(inst.inst) + '</td>';
+    RP_MONTHS.forEach(function(m) {
+      var mo = inst.months && inst.months[m] ? inst.months[m] : {FIN:'',RH:'',EPI:''};
+      ['FIN','RH','EPI'].forEach(function(p) {
+        var cv = cellVal(mo[p] || '');
+        heatHtml += '<td class="' + cv.cls + '" title="' + m + ' ' + p + ': ' + (mo[p]||'--') + '" style="width:22px;height:22px;text-align:center;font-size:10px;font-weight:700">' + cv.label + '</td>';
       });
     });
-    html += '</tr>';
+    heatHtml += '</tr>';
   });
-  html += '</tbody>';
+  var html = heatHtml + '</tbody>';
   document.getElementById('rp-heatmap').innerHTML = html;
 }
 
@@ -2097,12 +2097,29 @@ function setDocType(id, type) {
 }
 
 /* ── BOOT ── */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
   initDsne();
   // Update HYG badge
-  const p = HYG_DATA.filter(h=>h.statut==="En attente d'approbation").length;
+  const p = HYG_DATA.filter(function(h){ return h.statut === "En attente d'approbation"; }).length;
   const b = document.getElementById('badge-hyg');
   if(b) b.textContent = p;
+  // Auto-fetch live RP data in background on every load
+  const RP_URL = 'https://script.google.com/macros/s/AKfycbxSyzDmIpcy7fkZvcnXmuUMH1M_2411voRmSXQqIyw-3_qp88X2E7xgCNH7hHFNZKEJ/exec';
+  fetch(RP_URL + '?action=read')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if(data.data && data.data.length) {
+        liveRPData = data.data;
+        localStorage.setItem('dsne_rp_live', JSON.stringify({data: data.data, retrieved: new Date().toISOString()}));
+        console.log('RP live:', data.count, 'institutions');
+        // Refresh rapportage if already open
+        if(document.getElementById('p-rapportage').classList.contains('active')) {
+          rpInited = false;
+          initRapportage();
+        }
+      }
+    })
+    .catch(function(e){ console.log('RP auto-fetch (offline):', e.message); });
 });
 
 </script>
@@ -2242,11 +2259,12 @@ function readData(ss) {
 }`;
 
 const DEFAULT_SOURCES = [
-  {id:'rp',        name:'Suivi des Rapports',    sheet:'Suivi_des_rapports',    url:'', status:'non configuré'},
-  {id:'hyg',       name:'Certificats Hygiène',   sheet:'Suivi_Certificats_HYG', url:'', status:'non configuré'},
-  {id:'cm',        name:'Cliniques Mobiles',      sheet:'CM_Activites',          url:'', status:'non configuré'},
-  {id:'visites',   name:'Registre de Visites',    sheet:'Registre_Visites',      url:'', status:'non configuré'},
-  {id:'logistique',name:'Logistique',             sheet:'Feuille_Logistique',    url:'', status:'non configuré'},
+  {id:'rp',        name:'Suivi des Rapports',    sheet:'Suivi_des_rapports',    url:'https://script.google.com/macros/s/AKfycbxSyzDmIpcy7fkZvcnXmuUMH1M_2411voRmSXQqIyw-3_qp88X2E7xgCNH7hHFNZKEJ/exec', status:'configuré'},
+  {id:'hyg',       name:'Certificats Hygiène',   sheet:'Suivi_Certificats_HYG', url:'https://script.google.com/macros/s/AKfycbzH60zFGdC7lc38r0zuXiG5_FUZSbUM3rNq9_kZYvnubE0q781cLhowtnZWM7s7kxJxHQ/exec', status:'configuré'},
+  {id:'cm',        name:'Cliniques Mobiles',      sheet:'CM_Activites',          url:'https://script.google.com/macros/s/AKfycbxONixZLRyADT8fYULu_7uZ9E9sST67jPdTZdlXYULwK34EaJucmlYJ3_ukFfj4E2ze/exec', status:'configuré'},
+  {id:'visites',   name:'Registre de Visites',    sheet:'Registre_Visites',      url:'https://script.google.com/macros/s/AKfycbwNKa2FfXqVXp9hUmeQsIH11eFC3DjCIiBHCDR28UOso4281yiwSXxDUG2C-rZgI-Xq9w/exec', status:'configuré'},
+  {id:'logistique',name:'Logistique',             sheet:'Feuille_Logistique',    url:'https://script.google.com/macros/s/AKfycbzUmWFW-Ja4ToSJhu_SwoGSLi35dT6JEvlKfbw06iDhYWJqkYK26qCTDsPFUauhqBZL/exec', status:'configuré'},
+  {id:'compta',    name:'Comptabilité',           sheet:'Feuille_Generale_Compt',url:'https://script.google.com/macros/s/AKfycbz-WOAMQ5R0_CZZKyHCvXrliJvoZjn8InswH47N-XGir7XT9aNZ9iVxwsRQcJllsvcLpw/exec', status:'configuré'},
 ];
 
 const DEFAULT_APPS = [
@@ -2264,7 +2282,17 @@ function initParametres() {
   paramInited = true;
   const savedSources = localStorage.getItem('dsne_sources');
   const savedApps    = localStorage.getItem('dsne_apps');
-  paramSources = savedSources ? JSON.parse(savedSources) : JSON.parse(JSON.stringify(DEFAULT_SOURCES));
+  // Always start from DEFAULT_SOURCES to get hardcoded URLs, then merge any saved customizations
+  const base = JSON.parse(JSON.stringify(DEFAULT_SOURCES));
+  if (savedSources) {
+    const saved = JSON.parse(savedSources);
+    base.forEach(function(s) {
+      const match = saved.find(function(x){ return x.id === s.id; });
+      // Only use saved URL if default is empty
+      if (match && !s.url && match.url) s.url = match.url;
+    });
+  }
+  paramSources = base;
   paramApps    = savedApps    ? JSON.parse(savedApps)    : JSON.parse(JSON.stringify(DEFAULT_APPS));
   renderSources();
   renderApps();

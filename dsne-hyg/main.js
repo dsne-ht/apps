@@ -2,19 +2,19 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const https = require('https');
 const path = require('path');
 const Database = require('better-sqlite3');
-const fs = require('fs');
 
 let db;
 let win;
-const NOTIF_URL = 'https://script.google.com/macros/s/AKfycbwLRtjqWR-lKeTfrCL_qR9nLjmHMgFofEqksX9pWpE6u-e1NZxd1F1-xxiRNHWmQjB0pA/exec';
-const APP_NAME = 'Hygiène Publique';
+
+// ── CONFIGURATION ──
+// Same shared accounts script as CM — app_name differentiates entries in the Sheet
+const ACCOUNTS_URL = 'https://script.google.com/macros/s/AKfycbznu0Mf5PQsYK6mPz6YGA_afN7QTfO-N3lSW09PctNq98EErF-YjNVLIEpVSLIQeyL-/exec';
+const APP_NAME     = 'Hygiène Publique';
 
 const userDataPath = app.getPath('userData');
-const dbPath = path.join(userDataPath, 'dsne_hyg.db');
-const tokenPath = path.join(userDataPath, 'oauth_token.json');
-const SPREADSHEET_ID = '1VOkC7nMA4dkUneQ59711S9GdP3W176GmnqG93WIGI5A';
-const SHEET_COMPTES = 'DEMANDES_COMPTES_HYG';
+const dbPath       = path.join(userDataPath, 'dsne_hyg.db');
 
+// ── DATABASE ──
 function initDB() {
   db = new Database(dbPath);
   db.exec(`
@@ -23,6 +23,7 @@ function initDB() {
       username TEXT UNIQUE NOT NULL,
       password TEXT NOT NULL,
       nom_complet TEXT NOT NULL,
+      email TEXT DEFAULT '',
       role TEXT DEFAULT 'uas',
       statut TEXT DEFAULT 'en_attente',
       created_at TEXT DEFAULT (datetime('now'))
@@ -34,8 +35,6 @@ function initDB() {
       details TEXT,
       timestamp TEXT DEFAULT (datetime('now'))
     );
-    INSERT OR IGNORE INTO users (username, password, nom_complet, statut, role)
-    VALUES ('admin', 'dsne2026', 'Administrateur', 'approuve', 'admin');
     CREATE TABLE IF NOT EXISTS queue (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       data TEXT NOT NULL,
@@ -43,24 +42,28 @@ function initDB() {
       created_at TEXT DEFAULT (datetime('now')),
       synced_at TEXT
     );
+    INSERT OR IGNORE INTO users (username, password, nom_complet, statut, role)
+    VALUES ('admin', 'dsne2026', 'Administrateur', 'approuve', 'admin');
   `);
 }
 
 function getStartPage() {
   const approved = db.prepare("SELECT COUNT(*) as n FROM users WHERE statut='approuve'").get().n;
   const pending  = db.prepare("SELECT COUNT(*) as n FROM users WHERE statut='en_attente'").get().n;
-  if (approved > 0) return 'login.html';
+  if (approved > 1) return 'login.html';
   if (pending  > 0) return 'pending.html';
   return 'register.html';
 }
 
+// ── WINDOW ──
 function createWindow(page) {
   win = new BrowserWindow({
     width: 960, height: 760, minWidth: 800, minHeight: 600,
     title: 'DSNE - Enregistrement Hygiène Publique',
     webPreferences: {
       preload: path.join(__dirname, 'src', 'preload.js'),
-      contextIsolation: true, nodeIntegration: false
+      contextIsolation: true,
+      nodeIntegration: false
     },
     show: false
   });
@@ -68,80 +71,127 @@ function createWindow(page) {
   win.setMenuBarVisibility(false);
   win.once('ready-to-show', () => win.show());
   win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-    callback({ responseHeaders: { ...details.responseHeaders, 'Content-Security-Policy': ["default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:"] } })
-  })
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Content-Security-Policy': ["default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:"]
+      }
+    });
+  });
 }
 
 app.whenReady().then(() => { initDB(); createWindow(getStartPage()); });
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
 
+// ── IPC HANDLERS ──
+
 ipcMain.handle('login', (_, { username, password }) => {
-  const user = db.prepare("SELECT * FROM users WHERE username=? AND password=? AND statut='approuve'").get(username, password);
-  if (user) return { ok: true, user: { id: user.id, username: user.username, nom_complet: user.nom_complet } };
+  const user = db.prepare(
+    "SELECT * FROM users WHERE username=? AND password=? AND statut='approuve'"
+  ).get(username, password);
+
+  if (user) {
+    db.prepare('INSERT INTO audit_log (user, action) VALUES (?,?)').run(user.username, 'login');
+    return { ok: true, user: { id: user.id, username: user.username, nom_complet: user.nom_complet, role: user.role } };
+  }
+
   const pending = db.prepare("SELECT * FROM users WHERE username=?").get(username);
-  if (pending && pending.statut === 'en_attente') return { ok: false, pending: true, message: "Compte en attente d'approbation." };
+  if (pending) {
+    if (pending.statut === 'en_attente') return { ok: false, pending: true, message: "Compte en attente d'approbation." };
+    if (pending.password !== password)   return { ok: false, message: 'Mot de passe incorrect.' };
+  }
   return { ok: false, message: 'Identifiants incorrects.' };
 });
 
 ipcMain.handle('register', async (_, { username, password, nom_complet, email }) => {
   try {
-    db.prepare("INSERT INTO users (username,password,nom_complet,statut) VALUES (?,?,?,'en_attente')").run(username, password, nom_complet);
-    await syncDemandeCompte({ username, nom_complet, app_name: APP_NAME, email: email || '', created_at: new Date().toISOString() });
+    db.prepare(
+      "INSERT INTO users (username, password, nom_complet, email, statut) VALUES (?,?,?,?,'en_attente')"
+    ).run(username, password, nom_complet, email || '');
+
+    await httpsPost(ACCOUNTS_URL, {
+      action:     'new-account',
+      username,
+      nom_complet,
+      email:      email || '',
+      app_name:   APP_NAME,
+      created_at: new Date().toISOString()
+    });
+
     return { ok: true };
-  } catch(e) {
+  } catch (e) {
     if (e.message.includes('UNIQUE')) return { ok: false, message: "Ce nom d'utilisateur existe déjà." };
     return { ok: false, message: e.message };
   }
 });
 
 ipcMain.handle('sync-approval', async () => {
-  // Vérification d'approbation — nécessite configuration OAuth
-  return { ok: true, approved: false };
+  try {
+    const pendingUsers = db.prepare("SELECT * FROM users WHERE statut='en_attente'").all();
+    if (pendingUsers.length === 0) return { ok: true, approved: false };
+
+    const response = await httpsPost(ACCOUNTS_URL, {
+      action:    'check-approvals',
+      usernames: pendingUsers.map(u => u.username)
+    });
+
+    if (response.approved && response.approved.length > 0) {
+      const stmt = db.prepare("UPDATE users SET statut='approuve' WHERE username=?");
+      response.approved.forEach(username => stmt.run(username));
+      return { ok: true, approved: true, count: response.approved.length };
+    }
+
+    return { ok: true, approved: false };
+  } catch (e) {
+    console.error('sync-approval error:', e.message);
+    return { ok: true, approved: false };
+  }
 });
 
-ipcMain.handle('logout', () => { win.loadFile(path.join(__dirname, 'src', 'login.html')); return { ok: true }; });
+ipcMain.handle('logout',   () => { win.loadFile(path.join(__dirname, 'src', 'login.html')); return { ok: true }; });
 ipcMain.handle('navigate', (_, page) => { win.loadFile(path.join(__dirname, 'src', page)); });
 
 ipcMain.handle('log-action', (_, { user, action, details }) => {
-  db.prepare('INSERT INTO audit_log (user, action, details) VALUES (?,?,?)').run(user, action, details || '')
-  return { ok: true }
-})
+  db.prepare('INSERT INTO audit_log (user, action, details) VALUES (?,?,?)').run(user, action, details || '');
+  return { ok: true };
+});
 ipcMain.handle('get-audit-log', () => {
-  return db.prepare('SELECT * FROM audit_log ORDER BY timestamp DESC LIMIT 500').all()
-})
+  return db.prepare('SELECT * FROM audit_log ORDER BY timestamp DESC LIMIT 500').all();
+});
 
-ipcMain.handle('queue-save',        (_, data) => { const r = db.prepare('INSERT INTO queue (data) VALUES (?)').run(JSON.stringify(data)); return { id: r.lastInsertRowid }; });
-ipcMain.handle('queue-pending',     ()        => db.prepare("SELECT * FROM queue WHERE status='pending' ORDER BY id DESC").all());
-ipcMain.handle('queue-all',         ()        => db.prepare("SELECT * FROM queue ORDER BY id DESC").all());
-ipcMain.handle('queue-mark-synced', (_, id)   => { db.prepare("UPDATE queue SET status='synced', synced_at=datetime('now') WHERE id=?").run(id); return true; });
-ipcMain.handle('queue-count',       ()        => db.prepare("SELECT COUNT(*) as n FROM queue WHERE status='pending'").get().n);
+ipcMain.handle('queue-save',        (_, data) => {
+  const r = db.prepare('INSERT INTO queue (data) VALUES (?)').run(JSON.stringify(data));
+  return { id: r.lastInsertRowid };
+});
+ipcMain.handle('queue-pending',     () => db.prepare("SELECT * FROM queue WHERE status='pending' ORDER BY id DESC").all());
+ipcMain.handle('queue-all',         () => db.prepare('SELECT * FROM queue ORDER BY id DESC').all());
+ipcMain.handle('queue-mark-synced', (_, id) => {
+  db.prepare("UPDATE queue SET status='synced', synced_at=datetime('now') WHERE id=?").run(id);
+  return true;
+});
+ipcMain.handle('queue-count', () => db.prepare("SELECT COUNT(*) as n FROM queue WHERE status='pending'").get().n);
 
-async function syncDemandeCompte(data) {
-  try {
-    if (!NOTIF_URL || NOTIF_URL === 'https://script.google.com/macros/s/AKfycbwLRtjqWR-lKeTfrCL_qR9nLjmHMgFofEqksX9pWpE6u-e1NZxd1F1-xxiRNHWmQjB0pA/exec') {
-      console.log('NOTIF_URL non configuré — notification ignorée');
-      return;
-    }
+// ── HELPERS ──
+function httpsPost(url, data) {
+  return new Promise((resolve, reject) => {
     const payload = JSON.stringify(data);
-    const url = new URL(NOTIF_URL);
+    const urlObj  = new URL(url);
     const options = {
-      hostname: url.hostname,
-      path: url.pathname + url.search,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) }
+      hostname: urlObj.hostname,
+      path:     urlObj.pathname + urlObj.search,
+      method:   'POST',
+      headers:  { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) }
     };
-    await new Promise((resolve, reject) => {
-      const req = https.request(options, (res) => {
-        let body = '';
-        res.on('data', (chunk) => body += chunk);
-        res.on('end', () => resolve(body));
+    const req = https.request(options, (res) => {
+      let body = '';
+      res.on('data', chunk => body += chunk);
+      res.on('end', () => {
+        try { resolve(JSON.parse(body)); }
+        catch (e) { resolve({ ok: false, raw: body }); }
       });
-      req.on('error', reject);
-      req.write(payload);
-      req.end();
     });
-    console.log('Notification envoyée pour:', data.nom_complet);
-  } catch(e) {
-    console.error('Notification échouée:', e.message);
-  }
+    req.on('error', reject);
+    req.write(payload);
+    req.end();
+  });
 }
