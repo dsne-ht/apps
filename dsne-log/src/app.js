@@ -709,3 +709,855 @@ function saveReception() {
   if (saved) invGenItems = JSON.parse(saved);
 })();
 
+
+/* ══════════════════════════════════════════════════════════
+   INSTITUTIONS NORD-EST (shared dropdown list)
+══════════════════════════════════════════════════════════ */
+const INSTITUTIONS_NE = [
+  "Hôpital Départemental de Fort-Liberté (HFL)",
+  "CDAI Fort-Liberté",
+  "CCS Dérac","CCS Meillac","CCS Mérande",
+  "CS Ferrier","CS Acul Samedi","CS Perches","CS Vallières",
+  "CMS Ouanaminthe (CMSO)",
+  "CS Capotille","CMS Mont-Organisé (CMSMO)","CCS Lamine",
+  "CS Acul des Pins","CS Gens de Nantes","CS Savane au Lait",
+  "CCS Savane Longue","CS Dilaire","CS Rose Bonite",
+  "CS Bois Poux","CS Carice","CS Corosse (Capotille)",
+  "HCR Trou-du-Nord",
+  "CS Terrier Rouge","CS Pilette","CS Jacquezyl",
+  "CS NDL Grand Bassin","CS Leroux Cachiman","CS Roche Plate",
+  "CCS Grosse Roche (TDN)","CS Caracol","CS Cahesse",
+  "CS Sainte-Suzanne","CS Danda","CS Dupity",
+  "CS Phaéton","CS Corosse (Trou-du-Nord)",
+  "CS Mombin-Crochu","CS Bois de Laurence","CCS Grosse Roche (Hors UAS)"
+];
+
+function populateInstDropdowns() {
+  ['tr-dest-inst','invd-inst','la-dest-inst'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = INSTITUTIONS_NE.map(i =>
+      `<option value="${esc(i)}">${esc(i)}</option>`
+    ).join('');
+  });
+  // Inventaire départemental filter
+  const f = document.getElementById('invd-inst-filter');
+  if (f) {
+    f.innerHTML = '<option value="">Toutes institutions</option>' +
+      INSTITUTIONS_NE.map(i => `<option value="${esc(i)}">${esc(i)}</option>`).join('');
+  }
+}
+
+/* ── UID generator ── DSNE-LOG-JJMMAAAA-NNNN */
+function genUID(prefix, list) {
+  const d = new Date();
+  const jj = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const aa = String(d.getFullYear()).slice(-2);
+  const dayStr = jj + mm + aa;
+  const sameDay = list.filter(x => x.uid && x.uid.includes(dayStr));
+  const seq = String(sameDay.length + 1).padStart(4,'0');
+  return `DSNE-${prefix}-${dayStr}-${seq}`;
+}
+
+/* ══════════════════════════════════════════════════════════
+   INVENTAIRE DÉPARTEMENTAL
+══════════════════════════════════════════════════════════ */
+function loadInvD() {
+  const s = localStorage.getItem('dsne_inv_depart');
+  return s ? JSON.parse(s) : [];
+}
+function saveInvD_data(arr) { localStorage.setItem('dsne_inv_depart', JSON.stringify(arr)); }
+let invDItems = loadInvD();
+
+function renderInvD() {
+  populateInstDropdowns();
+  const q   = '';
+  const ins = document.getElementById('invd-inst-filter') ? document.getElementById('invd-inst-filter').value : '';
+  const et  = document.getElementById('invd-etat-filter') ? document.getElementById('invd-etat-filter').value : '';
+  const filtered = invDItems.filter(i =>
+    (!ins || i.institution === ins) &&
+    (!et  || i.etat === et)
+  );
+  document.getElementById('invd-count').textContent = filtered.length + ' bien' + (filtered.length !== 1 ? 's' : '');
+  document.getElementById('invd-kpis').innerHTML =
+    kpiCard('Total biens', invDItems.length, 'dép. Nord-Est', 'purple') +
+    kpiCard('Fonctionnels', invDItems.filter(i=>i.etat==='F').length, '', 'green') +
+    kpiCard('Non fonctionnels', invDItems.filter(i=>i.etat==='NF').length, '', 'red') +
+    kpiCard('Institutions couvertes', [...new Set(invDItems.map(i=>i.institution))].length, '', 'blue');
+  document.getElementById('invd-tbody').innerHTML = filtered.map(item =>
+    '<tr>' +
+    `<td style="color:var(--g800)">${esc(item.desc)}</td>` +
+    `<td style="font-size:11px">${esc(item.marque)}</td>` +
+    `<td style="font-family:monospace;font-size:10px">${esc(item.code)}</td>` +
+    `<td>${etatBadge(item.etat)}</td>` +
+    `<td style="font-weight:600;text-align:center">${item.qte}</td>` +
+    `<td style="font-size:12px;color:var(--c600)">${esc(item.institution)}</td>` +
+    `<td style="display:flex;gap:4px">` +
+    `<button class="btn btn-secondary btn-sm" onclick="editInvD('${item.id}')">Modifier</button>` +
+    `<button class="btn btn-primary btn-sm" onclick="openTransfertModal('invd','${item.id}')">Transférer</button>` +
+    `</td></tr>`
+  ).join('') || '<tr><td colspan="7" class="empty">Aucun bien enregistré.</td></tr>';
+}
+
+function filterInvD(q, inst, etat) {
+  renderInvD();
+}
+
+function editInvD(id) {
+  populateInstDropdowns();
+  const item = invDItems.find(x => x.id === id);
+  if (!item) return;
+  document.getElementById('invd-modal-title').textContent = 'Modifier le bien';
+  document.getElementById('invd-edit-id').value   = id;
+  document.getElementById('invd-desc').value      = item.desc;
+  document.getElementById('invd-marque').value    = item.marque;
+  document.getElementById('invd-code').value      = item.code;
+  document.getElementById('invd-serie').value     = item.serie;
+  document.getElementById('invd-fin').value       = item.fin;
+  document.getElementById('invd-etat').value      = item.etat;
+  document.getElementById('invd-qte').value       = item.qte;
+  document.getElementById('invd-is-veh').value    = item.isVehicule ? '1' : '0';
+  document.getElementById('invd-inst').value      = item.institution;
+  openModal('modal-invd-add');
+}
+
+function saveInvD() {
+  const editId = document.getElementById('invd-edit-id').value;
+  const obj = {
+    desc:        document.getElementById('invd-desc').value.trim(),
+    marque:      document.getElementById('invd-marque').value.trim(),
+    code:        document.getElementById('invd-code').value.trim(),
+    serie:       document.getElementById('invd-serie').value.trim(),
+    fin:         document.getElementById('invd-fin').value,
+    etat:        document.getElementById('invd-etat').value,
+    qte:         parseInt(document.getElementById('invd-qte').value)||1,
+    isVehicule:  document.getElementById('invd-is-veh').value === '1',
+    institution: document.getElementById('invd-inst').value,
+  };
+  if (!obj.desc) { alert('Description requise.'); return; }
+  if (editId) {
+    const item = invDItems.find(x => x.id === editId);
+    if (item) Object.assign(item, obj);
+  } else {
+    obj.id = 'id-' + Date.now();
+    invDItems.push(obj);
+  }
+  saveInvD_data(invDItems);
+  closeModal('modal-invd-add');
+  document.getElementById('invd-edit-id').value = '';
+  document.getElementById('invd-modal-title').textContent = 'Nouveau bien — Inventaire Départemental';
+  renderInvD();
+  updateInvDXlsx();
+}
+
+function etatBadge(e) {
+  if (e === 'F')  return '<span class="badge badge-green">Fonctionnel</span>';
+  if (e === 'NF') return '<span class="badge badge-red">Non fonctionnel</span>';
+  if (e === 'MÉ') return '<span class="badge badge-amber">Mauvais état</span>';
+  return '<span class="badge badge-gray">' + esc(e) + '</span>';
+}
+
+/* ══════════════════════════════════════════════════════════
+   TRANSFERTS
+══════════════════════════════════════════════════════════ */
+function loadTransferts() {
+  const s = localStorage.getItem('dsne_transferts');
+  return s ? JSON.parse(s) : [];
+}
+function saveTransferts_data(arr) { localStorage.setItem('dsne_transferts', JSON.stringify(arr)); }
+let transferts = loadTransferts();
+
+function openTransfertModal(source, itemId) {
+  populateInstDropdowns();
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('tr-date').value   = today;
+  document.getElementById('tr-item-id').value     = itemId;
+  document.getElementById('tr-item-source').value = source; // 'hq' or 'invd'
+  document.getElementById('tr-scan-path').value   = '';
+  document.getElementById('tr-scan-name').textContent = 'Aucun fichier';
+  document.getElementById('tr-obs').value = '';
+
+  let item, isVeh = false, label = '';
+  if (source === 'hq') {
+    item = invGenItems.find(x => String(x.no) === String(itemId));
+    label = item ? item.description : itemId;
+  } else {
+    item = invDItems.find(x => x.id === itemId);
+    if (item) { label = item.desc; isVeh = !!item.isVehicule; }
+  }
+  document.getElementById('tr-is-vehicule').value = isVeh ? '1' : '0';
+  document.getElementById('tr-item-info').textContent = 'Bien : ' + label;
+  document.getElementById('tr-title').textContent = 'Transférer — ' + label;
+
+  const note = document.getElementById('tr-vehicule-note');
+  note.style.display = isVeh ? 'block' : 'none';
+
+  toggleTransfertDest();
+  openModal('modal-transfert');
+}
+
+function toggleTransfertDest() {
+  const type = document.getElementById('tr-dest-type').value;
+  document.getElementById('tr-dest-service-group').style.display = type === 'service' ? '' : 'none';
+  document.getElementById('tr-dest-inst-group').style.display    = type === 'institution' ? '' : 'none';
+}
+
+async function pickScanTransfert() {
+  if (!window.dsneLog) { alert('Disponible uniquement dans l\'app Electron.'); return; }
+  const f = await window.dsneLog.pickFile();
+  if (!f) return;
+  document.getElementById('tr-scan-path').value = f.src;
+  document.getElementById('tr-scan-name').textContent = f.name;
+}
+
+async function saveTransfert() {
+  const itemId  = document.getElementById('tr-item-id').value;
+  const source  = document.getElementById('tr-item-source').value;
+  const isVeh   = document.getElementById('tr-is-vehicule').value === '1';
+  const destType = document.getElementById('tr-dest-type').value;
+  const destVal  = destType === 'service'
+    ? document.getElementById('tr-dest-service').value
+    : document.getElementById('tr-dest-inst').value;
+
+  let fromLabel = '';
+  if (source === 'hq') {
+    const item = invGenItems.find(x => String(x.no) === String(itemId));
+    fromLabel = item ? item.service : 'HQ';
+  } else {
+    const item = invDItems.find(x => x.id === itemId);
+    fromLabel = item ? item.institution : '—';
+  }
+
+  const uid = genUID('TRF', transferts);
+  const tr = {
+    uid,
+    date:      document.getElementById('tr-date').value,
+    itemId, source, isVehicule: isVeh,
+    fromLabel, destType, destVal,
+    obs:       document.getElementById('tr-obs').value.trim(),
+    scanPath:  document.getElementById('tr-scan-path').value,
+    scanName:  document.getElementById('tr-scan-name').textContent,
+    lettrePath: '',
+  };
+
+  // Copy scan if provided
+  if (tr.scanPath && window.dsneLog) {
+    const ext = tr.scanPath.split('.').pop();
+    const res = await window.dsneLog.copyScan({
+      src: tr.scanPath,
+      destSubfolder: 'BonsLivraisonReception',
+      destName: uid + '-bon.' + ext
+    });
+    if (res.ok) tr.scanPath = res.path;
+  }
+
+  transferts.push(tr);
+  saveTransferts_data(transferts);
+
+  // Update item location
+  if (source === 'invd') {
+    const item = invDItems.find(x => x.id === itemId);
+    if (item && destType === 'institution') item.institution = destVal;
+    else if (item && destType === 'service') item.institution = 'HQ — ' + destVal;
+    saveInvD_data(invDItems);
+  } else if (source === 'hq') {
+    const item = invGenItems.find(x => String(x.no) === String(itemId));
+    if (item && destType === 'service') item.service = destVal;
+    localStorage.setItem('dsne_inv_general', JSON.stringify(invGenItems));
+  }
+
+  closeModal('modal-transfert');
+  renderTransferts();
+  updateTransfertsXlsx();
+  toast('Transfert ' + uid + ' enregistré.', 'success');
+
+  if (isVeh) {
+    setTimeout(() => {
+      if (confirm('Véhicule transféré. Générer la lettre d\'affectation maintenant?')) {
+        prefillAffectation(tr);
+        openModal('modal-lettre-affectation');
+      }
+    }, 300);
+  }
+}
+
+function prefillAffectation(tr) {
+  populateInstDropdowns();
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('la-date').value = tr.date || today;
+  if (tr.destType === 'institution') {
+    document.getElementById('la-dest-inst').value = tr.destVal;
+  }
+  // Try to prefill vehicle specs from fleet
+  let veh = null;
+  if (tr.source === 'hq') {
+    veh = invGenItems.find(x => String(x.no) === String(tr.itemId));
+    if (veh) {
+      document.getElementById('la-marque').value = veh.marque || '';
+      document.getElementById('la-serie').value  = veh.serie  || '';
+    }
+  } else {
+    veh = invDItems.find(x => x.id === tr.itemId);
+    if (veh) {
+      document.getElementById('la-marque').value = veh.marque || '';
+      document.getElementById('la-serie').value  = veh.serie  || '';
+    }
+  }
+}
+
+function renderTransferts() {
+  document.getElementById('transferts-kpis').innerHTML =
+    kpiCard('Total transferts', transferts.length, '', 'purple') +
+    kpiCard('Véhicules', transferts.filter(t=>t.isVehicule).length, '', 'blue') +
+    kpiCard('Avec scan', transferts.filter(t=>t.scanPath && !t.scanPath.includes('Aucun')).length, '', 'green');
+
+  document.getElementById('transferts-tbody').innerHTML = transferts.slice().reverse().map(t =>
+    '<tr>' +
+    `<td style="font-family:monospace;font-size:10px;color:var(--c600)">${esc(t.uid)}</td>` +
+    `<td>${esc(fmtDate(t.date))}</td>` +
+    `<td style="color:var(--g800)">${esc(getItemLabel(t))}</td>` +
+    `<td>${t.destType === 'institution' ? '<span class="badge badge-purple">Institution</span>' : '<span class="badge badge-gray">Interne</span>'}</td>` +
+    `<td style="font-size:11px">${esc(t.fromLabel)}</td>` +
+    `<td style="font-size:11px;color:var(--c600)">${esc(t.destVal)}</td>` +
+    `<td>${t.isVehicule ? '<span class="badge badge-blue">Oui</span>' : '—'}</td>` +
+    `<td>${t.lettrePath ? `<button class="btn btn-secondary btn-sm" onclick="window.dsneLog&&window.dsneLog.showFile('${t.lettrePath.replace(/'/g,"\\'")}')">📄 Voir</button>` : '—'}</td>` +
+    `<td>${t.scanPath && t.scanPath !== '' && t.scanName !== 'Aucun fichier' ? `<button class="btn btn-secondary btn-sm" onclick="window.dsneLog&&window.dsneLog.showFile('${t.scanPath.replace(/'/g,"\\'")}')">🖼 Voir</button>` : '—'}</td>` +
+    '</tr>'
+  ).join('') || '<tr><td colspan="9" class="empty">Aucun transfert enregistré.</td></tr>';
+}
+
+function getItemLabel(t) {
+  if (t.source === 'hq') {
+    const item = invGenItems.find(x => String(x.no) === String(t.itemId));
+    return item ? item.description : t.itemId;
+  } else {
+    const item = invDItems.find(x => x.id === t.itemId);
+    return item ? item.desc : t.itemId;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   RÉQUISITIONS
+══════════════════════════════════════════════════════════ */
+function loadRequisitions() {
+  const s = localStorage.getItem('dsne_requisitions');
+  return s ? JSON.parse(s) : [];
+}
+function saveRequisitions_data(arr) { localStorage.setItem('dsne_requisitions', JSON.stringify(arr)); }
+let requisitions = loadRequisitions();
+
+function renderRequisitions() {
+  const total    = requisitions.length;
+  const attente  = requisitions.filter(r=>r.statut==='En attente').length;
+  const approuv  = requisitions.filter(r=>r.statut==='Approuvée').length;
+  const totalHTG = requisitions.reduce((s,r)=>s+(parseFloat(r.prix)||0)*(parseFloat(r.dureeN)||1),0);
+  document.getElementById('req-kpis').innerHTML =
+    kpiCard('Total réquisitions', total, '', 'purple') +
+    kpiCard('En attente', attente, '', 'amber') +
+    kpiCard('Approuvées', approuv, '', 'green') +
+    kpiCard('Valeur totale HTG', fmtNum(totalHTG), '', 'blue');
+
+  document.getElementById('req-tbody').innerHTML = requisitions.slice().reverse().map(r =>
+    '<tr>' +
+    `<td style="font-family:monospace;font-size:10px;color:var(--c600)">${esc(r.uid)}</td>` +
+    `<td>${esc(fmtDate(r.date))}</td>` +
+    `<td style="font-size:11px">${esc(r.demandeur)}</td>` +
+    `<td style="font-size:11px">${esc(r.fournisseur)}</td>` +
+    `<td style="color:var(--g800)">${esc(r.desc)}</td>` +
+    `<td style="font-size:11px">${esc(r.duree)}</td>` +
+    `<td style="font-family:monospace">${fmtNum(r.prix)}</td>` +
+    `<td style="font-family:monospace;font-weight:600">${fmtNum(r.total)}</td>` +
+    `<td>${statutBadgeReq(r.statut)}</td>` +
+    `<td style="display:flex;gap:4px">
+       <button class="btn btn-secondary btn-sm" onclick="editRequisition('${r.uid}')">Modifier</button>
+       <button class="btn btn-primary btn-sm" onclick="genRequisitionDocxById('${r.uid}')">⬇ .docx</button>
+     </td>` +
+    '</tr>'
+  ).join('') || '<tr><td colspan="10" class="empty">Aucune réquisition.</td></tr>';
+}
+
+function statutBadgeReq(s) {
+  const map = {'En attente':'badge-amber','Approuvée':'badge-green','Rejetée':'badge-red','Exécutée':'badge-gray'};
+  return `<span class="badge ${map[s]||'badge-gray'}">${esc(s)}</span>`;
+}
+
+function editRequisition(uid) {
+  const r = requisitions.find(x => x.uid === uid);
+  if (!r) return;
+  document.getElementById('req-modal-title').textContent = 'Modifier réquisition ' + uid;
+  document.getElementById('req-edit-id').value   = uid;
+  document.getElementById('req-date').value      = r.date;
+  document.getElementById('req-demandeur').value = r.demandeur;
+  document.getElementById('req-fournisseur').value = r.fournisseur;
+  document.getElementById('req-desc').value      = r.desc;
+  document.getElementById('req-duree').value     = r.duree;
+  document.getElementById('req-prix').value      = r.prix;
+  document.getElementById('req-justif').value    = r.justif;
+  document.getElementById('req-paiement').value  = r.paiement;
+  document.getElementById('req-statut').value    = r.statut;
+  openModal('modal-req-add');
+}
+
+function saveRequisition() {
+  const editUid = document.getElementById('req-edit-id').value;
+  const prix    = parseFloat(document.getElementById('req-prix').value)||0;
+  const dureeRaw = document.getElementById('req-duree').value.trim();
+  const dureeN  = parseFloat(dureeRaw) || 1;
+  const obj = {
+    date:        document.getElementById('req-date').value,
+    demandeur:   document.getElementById('req-demandeur').value.trim(),
+    fournisseur: document.getElementById('req-fournisseur').value.trim(),
+    desc:        document.getElementById('req-desc').value.trim(),
+    duree:       dureeRaw,
+    dureeN,
+    prix,
+    total:       prix * dureeN,
+    justif:      document.getElementById('req-justif').value.trim(),
+    paiement:    document.getElementById('req-paiement').value,
+    statut:      document.getElementById('req-statut').value,
+  };
+  if (!obj.desc) { alert('Description requise.'); return; }
+  if (editUid) {
+    const r = requisitions.find(x => x.uid === editUid);
+    if (r) Object.assign(r, obj);
+  } else {
+    obj.uid = genUID('REQ', requisitions);
+    requisitions.push(obj);
+  }
+  saveRequisitions_data(requisitions);
+  closeModal('modal-req-add');
+  document.getElementById('req-edit-id').value = '';
+  document.getElementById('req-modal-title').textContent = 'Nouvelle réquisition';
+  renderRequisitions();
+  updateRequisitionsXlsx();
+  toast('Réquisition enregistrée.', 'success');
+}
+
+/* ══════════════════════════════════════════════════════════
+   COURRIER / LETTRES (log only — docx generated separately)
+══════════════════════════════════════════════════════════ */
+function loadCourrier() {
+  const s = localStorage.getItem('dsne_courrier');
+  return s ? JSON.parse(s) : [];
+}
+function saveCourrier_data(arr) { localStorage.setItem('dsne_courrier', JSON.stringify(arr)); }
+let courrier = loadCourrier();
+
+function logLettre(type, destinataire, objet, lettrePath) {
+  const uid = genUID('LTR', courrier);
+  courrier.push({
+    uid,
+    date: new Date().toISOString().split('T')[0],
+    type, destinataire, objet, lettrePath
+  });
+  saveCourrier_data(courrier);
+  renderCourrier();
+  updateCourrierXlsx();
+  return uid;
+}
+
+function renderCourrier() {
+  document.getElementById('courrier-tbody').innerHTML = courrier.slice().reverse().map(l =>
+    '<tr>' +
+    `<td style="font-family:monospace;font-size:10px;color:var(--c600)">${esc(l.uid)}</td>` +
+    `<td>${esc(fmtDate(l.date))}</td>` +
+    `<td><span class="badge badge-purple">${esc(l.type)}</span></td>` +
+    `<td style="color:var(--g800)">${esc(l.destinataire)}</td>` +
+    `<td style="font-size:11px">${esc(l.objet)}</td>` +
+    `<td>${l.lettrePath ? `<button class="btn btn-secondary btn-sm" onclick="window.dsneLog&&window.dsneLog.showFile('${l.lettrePath.replace(/'/g,"\\'")}')">📄 Voir</button>` : '—'}</td>` +
+    '</tr>'
+  ).join('') || '<tr><td colspan="6" class="empty">Aucune lettre générée.</td></tr>';
+}
+
+/* ══════════════════════════════════════════════════════════
+   ACCUSÉS DE RÉCEPTION
+══════════════════════════════════════════════════════════ */
+function loadAccuses() {
+  const s = localStorage.getItem('dsne_accuses');
+  return s ? JSON.parse(s) : [];
+}
+function saveAccuses_data(arr) { localStorage.setItem('dsne_accuses', JSON.stringify(arr)); }
+let accuses = loadAccuses();
+
+let accuseDocRows = [];
+
+function addAccuseDocRow() {
+  accuseDocRows.push({ qte:'', doc:'', remarques:'' });
+  renderAccuseDocRows();
+}
+
+function renderAccuseDocRows() {
+  document.getElementById('ac-docs-list').innerHTML = accuseDocRows.map((row, i) =>
+    `<div style="display:grid;grid-template-columns:60px 1fr 1fr auto;gap:6px;margin-bottom:6px;align-items:center">
+      <input class="form-input" placeholder="Qté" value="${esc(row.qte)}" oninput="accuseDocRows[${i}].qte=this.value" style="padding:6px 8px">
+      <input class="form-input" placeholder="Document" value="${esc(row.doc)}" oninput="accuseDocRows[${i}].doc=this.value" style="padding:6px 8px">
+      <input class="form-input" placeholder="Remarques" value="${esc(row.remarques)}" oninput="accuseDocRows[${i}].remarques=this.value" style="padding:6px 8px">
+      <button class="btn btn-secondary btn-sm" onclick="accuseDocRows.splice(${i},1);renderAccuseDocRows()">✕</button>
+    </div>`
+  ).join('');
+}
+
+function openAccuseModal() {
+  accuseDocRows = [{ qte:'', doc:'', remarques:'' }];
+  renderAccuseDocRows();
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('ac-date').value = today;
+  openModal('modal-accuse-add');
+}
+
+async function saveAccuse() {
+  const acc = {
+    uid:         genUID('ARD', accuses),
+    date:        document.getElementById('ac-date').value,
+    nom:         document.getElementById('ac-nom').value.trim(),
+    qualite:     document.getElementById('ac-qualite').value.trim(),
+    institution: document.getElementById('ac-institution').value.trim(),
+    mode:        document.getElementById('ac-mode').value,
+    docs:        accuseDocRows.filter(r => r.doc.trim()),
+    lettrePath:  '',
+  };
+  if (!acc.nom || !acc.docs.length) { alert('Nom et au moins un document requis.'); return; }
+
+  accuses.push(acc);
+  saveAccuses_data(accuses);
+  closeModal('modal-accuse-add');
+  renderAccuses();
+  updateAccusesXlsx();
+  toast('Accusé ' + acc.uid + ' enregistré.', 'success');
+
+  // Generate docx
+  if (window.dsneLog) {
+    await genAccuseDocx(acc);
+  }
+}
+
+function renderAccuses() {
+  document.getElementById('accuses-kpis').innerHTML =
+    kpiCard('Total accusés', accuses.length, '', 'purple') +
+    kpiCard('Ce mois', accuses.filter(a => {
+      const m = new Date().toISOString().slice(0,7);
+      return a.date && a.date.startsWith(m);
+    }).length, '', 'blue');
+
+  document.getElementById('accuses-tbody').innerHTML = accuses.slice().reverse().map(a =>
+    '<tr>' +
+    `<td style="font-family:monospace;font-size:10px;color:var(--c600)">${esc(a.uid)}</td>` +
+    `<td>${esc(fmtDate(a.date))}</td>` +
+    `<td style="color:var(--g800)">${esc(a.nom)}</td>` +
+    `<td style="font-size:11px">${esc(a.qualite)}</td>` +
+    `<td style="font-size:11px">${esc(a.institution)}</td>` +
+    `<td style="font-size:11px">${a.docs.map(d => esc(d.doc)).join(', ')}</td>` +
+    `<td><span class="badge badge-gray">${esc(a.mode)}</span></td>` +
+    `<td>${a.lettrePath ? `<button class="btn btn-secondary btn-sm" onclick="window.dsneLog&&window.dsneLog.showFile('${a.lettrePath.replace(/'/g,"\\'")}')">📄 Voir</button>` : '—'}</td>` +
+    '</tr>'
+  ).join('') || '<tr><td colspan="8" class="empty">Aucun accusé enregistré.</td></tr>';
+}
+
+/* ══════════════════════════════════════════════════════════
+   DOCX GENERATION (uses docx npm via dynamic import in Electron)
+   In browser preview: shows alert. In Electron: writes file.
+══════════════════════════════════════════════════════════ */
+
+const SIGNATAIRES = `
+Elin BEAUVIN                    Decius PIERRE                    Dr Jean Clervain DORSAINVIL
+Chef Service Logistique         ADM Départemental                Directeur Départemental`;
+
+function enteteLines() {
+  return [
+    'REPUBLIQUE D\'HAÏTI',
+    'MINISTERE DE LA SANTE PUBLIQUE ET DE LA POPULATION',
+    'DIRECTION SANITAIRE NORD-EST · DSNE',
+  ];
+}
+
+function fmtDateLong(d) {
+  if (!d) d = new Date().toISOString().split('T')[0];
+  const dt = new Date(d + 'T00:00:00');
+  return dt.toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+/* All docx generation calls window.dsneLog.saveFile with base64 encoded content.
+   The actual docx is built using the `docx` npm package loaded via require() in a
+   sandboxed script tag injected at runtime in Electron. For browser preview we skip. */
+
+async function buildAndSaveDocx(subfolder, filename, builderFn) {
+  if (!window.dsneLog) {
+    alert('Génération .docx disponible uniquement dans l\'app Electron Desktop.\n\nFichier prévu : ' + filename);
+    return null;
+  }
+  try {
+    const b64 = await builderFn();
+    const res = await window.dsneLog.saveFile({ subfolder, filename, data: b64, encoding: 'base64' });
+    if (res.ok) {
+      toast('Fichier sauvegardé : ' + filename, 'success');
+      await window.dsneLog.showFile(res.path);
+      return res.path;
+    } else {
+      toast('Erreur sauvegarde : ' + res.error, 'error');
+      return null;
+    }
+  } catch(e) {
+    toast('Erreur génération : ' + e.message, 'error');
+    return null;
+  }
+}
+
+/* ── Réquisition docx ── */
+async function genRequisitionDocxById(uid) {
+  const r = requisitions.find(x => x.uid === uid);
+  if (r) {
+    document.getElementById('req-date').value        = r.date;
+    document.getElementById('req-demandeur').value   = r.demandeur;
+    document.getElementById('req-fournisseur').value = r.fournisseur;
+    document.getElementById('req-desc').value        = r.desc;
+    document.getElementById('req-duree').value       = r.duree;
+    document.getElementById('req-prix').value        = r.prix;
+    document.getElementById('req-justif').value      = r.justif;
+    document.getElementById('req-paiement').value    = r.paiement;
+    document.getElementById('req-statut').value      = r.statut;
+  }
+  await genRequisitionDocx();
+}
+
+async function genRequisitionDocx() {
+  const data = {
+    date:        document.getElementById('req-date').value,
+    demandeur:   document.getElementById('req-demandeur').value.trim(),
+    fournisseur: document.getElementById('req-fournisseur').value.trim(),
+    desc:        document.getElementById('req-desc').value.trim(),
+    duree:       document.getElementById('req-duree').value.trim(),
+    prix:        parseFloat(document.getElementById('req-prix').value)||0,
+    justif:      document.getElementById('req-justif').value.trim(),
+    paiement:    document.getElementById('req-paiement').value,
+  };
+  data.total = data.prix * (parseFloat(data.duree)||1);
+  const filename = 'REQ-' + (data.date||'').replace(/-/g,'').slice(2) + '-' + data.fournisseur.slice(0,8).replace(/\s/g,'') + '.docx';
+  await buildAndSaveDocx('Requisitions', filename, () => buildRequisitionDocxB64(data));
+}
+
+async function buildRequisitionDocxB64(d) {
+  return await window.electronDocx.buildRequisition(d, SIGNATAIRES, enteteLines(), fmtDateLong(d.date));
+}
+
+/* ── Lettre Déplacement ── */
+async function genLettreDeplacement() {
+  const d = {
+    date:      document.getElementById('ld-date').value,
+    destNom:   document.getElementById('ld-dest-nom').value.trim(),
+    destTitre: document.getElementById('ld-dest-titre').value.trim(),
+    marque:    document.getElementById('ld-marque').value.trim(),
+    serie:     document.getElementById('ld-serie').value.trim(),
+    moteur:    document.getElementById('ld-moteur').value.trim(),
+    model:     document.getElementById('ld-model').value.trim(),
+    puissance: document.getElementById('ld-puissance').value.trim(),
+    couleur:   document.getElementById('ld-couleur').value.trim(),
+    plaque:    document.getElementById('ld-plaque').value.trim(),
+    annee:     document.getElementById('ld-annee').value.trim(),
+    etat:      document.getElementById('ld-etat').value.trim(),
+    usage:     document.getElementById('ld-usage').value,
+  };
+  const filename = 'DEPL-' + (d.date||'').replace(/-/g,'').slice(2) + '-' + d.destNom.split(' ').pop() + '.docx';
+  const path = await buildAndSaveDocx('Courrier/Lettres-Deplacement', filename,
+    () => window.electronDocx.buildDeplacement(d, SIGNATAIRES, enteteLines(), fmtDateLong(d.date)));
+  if (path) {
+    logLettre('Déplacement', d.destNom, 'Mise à disposition ' + d.marque + ' ' + d.plaque, path);
+    closeModal('modal-lettre-deplacement');
+  }
+}
+
+/* ── Lettre Engagement ── */
+async function genLettreEngagement() {
+  const d = {
+    date:        document.getElementById('le-date').value,
+    prestataire: document.getElementById('le-prestataire').value.trim(),
+    objet:       document.getElementById('le-objet').value.trim(),
+    details:     document.getElementById('le-details').value.trim(),
+  };
+  const filename = 'ENG-' + (d.date||'').replace(/-/g,'').slice(2) + '-' + d.prestataire.split(' ').pop() + '.docx';
+  const path = await buildAndSaveDocx('Courrier/Lettres-Engagement', filename,
+    () => window.electronDocx.buildEngagement(d, SIGNATAIRES, enteteLines(), fmtDateLong(d.date)));
+  if (path) {
+    logLettre('Engagement', d.prestataire, d.objet, path);
+    closeModal('modal-lettre-engagement');
+  }
+}
+
+/* ── Lettre Restitution ── */
+async function genLettreRestitution() {
+  const d = {
+    date:       document.getElementById('lr-date').value,
+    nom:        document.getElementById('lr-nom').value.trim(),
+    titre:      document.getElementById('lr-titre').value.trim(),
+    marque:     document.getElementById('lr-marque').value.trim(),
+    serie:      document.getElementById('lr-serie').value.trim(),
+    moteur:     document.getElementById('lr-moteur').value.trim(),
+    model:      document.getElementById('lr-model').value.trim(),
+    puissance:  document.getElementById('lr-puissance').value.trim(),
+    couleur:    document.getElementById('lr-couleur').value.trim(),
+    plaque:     document.getElementById('lr-plaque').value.trim(),
+    dateRest:   document.getElementById('lr-date-rest').value,
+    etat:       document.getElementById('lr-etat').value.trim(),
+    accessoires:document.getElementById('lr-accessoires').value.trim(),
+  };
+  const filename = 'REST-' + (d.date||'').replace(/-/g,'').slice(2) + '-' + d.nom.split(' ').pop() + '.docx';
+  const path = await buildAndSaveDocx('Courrier/Lettres-Restitution', filename,
+    () => window.electronDocx.buildRestitution(d, SIGNATAIRES, enteteLines(), fmtDateLong(d.date)));
+  if (path) {
+    logLettre('Restitution', d.nom, 'Restitution ' + d.marque + ' ' + d.plaque, path);
+    closeModal('modal-lettre-restitution');
+  }
+}
+
+/* ── Lettre Affectation ── */
+async function genLettreAffectation() {
+  populateInstDropdowns();
+  const d = {
+    date:       document.getElementById('la-date').value,
+    destInst:   document.getElementById('la-dest-inst').value,
+    resp:       document.getElementById('la-resp').value.trim(),
+    respTitre:  document.getElementById('la-resp-titre').value.trim(),
+    marque:     document.getElementById('la-marque').value.trim(),
+    serie:      document.getElementById('la-serie').value.trim(),
+    model:      document.getElementById('la-model').value.trim(),
+    moteur:     document.getElementById('la-moteur').value.trim(),
+    puissance:  document.getElementById('la-puissance').value.trim(),
+    couleur:    document.getElementById('la-couleur').value.trim(),
+    plaque:     document.getElementById('la-plaque').value.trim(),
+    annee:      document.getElementById('la-annee').value.trim(),
+    etat:       document.getElementById('la-etat').value.trim(),
+    motif:      document.getElementById('la-motif').value.trim(),
+  };
+  const filename = 'AFF-' + (d.date||'').replace(/-/g,'').slice(2) + '-' + d.destInst.split(' ').pop().replace(/[()]/g,'') + '.docx';
+  const path = await buildAndSaveDocx('Courrier/Lettres-Affectation', filename,
+    () => window.electronDocx.buildAffectation(d, SIGNATAIRES, enteteLines(), fmtDateLong(d.date)));
+  if (path) {
+    logLettre('Affectation', d.destInst, 'Affectation ' + d.marque + ' ' + d.plaque, path);
+    // Update transfert lettrePath if last transfert matches
+    const lastTr = transferts[transferts.length - 1];
+    if (lastTr && lastTr.isVehicule && !lastTr.lettrePath) {
+      lastTr.lettrePath = path;
+      saveTransferts_data(transferts);
+      renderTransferts();
+    }
+    closeModal('modal-lettre-affectation');
+  }
+}
+
+/* ── Accusé de réception docx ── */
+async function genAccuseDocx(acc) {
+  const filename = acc.uid + '.docx';
+  const path = await buildAndSaveDocx('Accuses-Reception', filename,
+    () => window.electronDocx.buildAccuse(acc, enteteLines(), fmtDateLong(acc.date)));
+  if (path) {
+    const a = accuses.find(x => x.uid === acc.uid);
+    if (a) { a.lettrePath = path; saveAccuses_data(accuses); renderAccuses(); }
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   EXCEL EXPORT (progressive local .xlsx)
+   Called after every save. Uses ExcelJS via Electron IPC.
+══════════════════════════════════════════════════════════ */
+
+async function updateRequisitionsXlsx() {
+  if (!window.dsneLog) return;
+  try {
+    await window.dsneLog.saveFile({
+      subfolder: 'Inventaire',
+      filename:  'Requisitions.json',
+      data:      JSON.stringify(requisitions, null, 2),
+      encoding:  'utf8'
+    });
+  } catch(e) {}
+  if (window.electronXlsx) {
+    await window.electronXlsx.updateRequisitions(requisitions);
+  }
+}
+
+async function updateTransfertsXlsx() {
+  if (!window.dsneLog) return;
+  if (window.electronXlsx) {
+    const rows = transferts.map(t => ({
+      uid: t.uid, date: t.date, bien: getItemLabel(t),
+      de: t.fromLabel, vers: t.destVal, type: t.destType,
+      vehicule: t.isVehicule ? 'Oui' : 'Non', obs: t.obs
+    }));
+    await window.electronXlsx.updateSheet('Transferts', rows);
+  }
+}
+
+async function updateInvDXlsx() {
+  if (!window.dsneLog) return;
+  if (window.electronXlsx) {
+    await window.electronXlsx.updateSheet('InvDepartemental', invDItems);
+  }
+}
+
+async function updateCourrierXlsx() {
+  if (!window.dsneLog) return;
+  if (window.electronXlsx) {
+    await window.electronXlsx.updateSheet('Courrier', courrier);
+  }
+}
+
+async function updateAccusesXlsx() {
+  if (!window.dsneLog) return;
+  if (window.electronXlsx) {
+    const rows = accuses.map(a => ({
+      uid: a.uid, date: a.date, nom: a.nom, qualite: a.qualite,
+      institution: a.institution, mode: a.mode,
+      documents: a.docs.map(d => d.doc).join(' | ')
+    }));
+    await window.electronXlsx.updateSheet('AccusesReception', rows);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   INVENTAIRE GÉNÉRAL — patch render to add Transférer button
+══════════════════════════════════════════════════════════ */
+const _origRenderInvGen = typeof renderInvGen !== 'undefined' ? renderInvGen : null;
+function renderInvGen() {
+  if (_origRenderInvGen) _origRenderInvGen();
+  // Patch tbody rows to add Transférer button
+  const tbody = document.getElementById('inv-gen-tbody');
+  if (!tbody) return;
+  // Re-render with transfer button
+  const q   = '';
+  const svc = document.getElementById('inv-service-filter') ? document.getElementById('inv-service-filter').value : '';
+  const et  = document.getElementById('inv-etat-filter') ? document.getElementById('inv-etat-filter').value : '';
+  const filtered = invGenItems.filter(function(i) {
+    const matchQ   = !q   || i.description.toLowerCase().includes(q);
+    const matchSvc = !svc || i.service === svc;
+    const matchEt  = !et  || i.etat === et;
+    return matchQ && matchSvc && matchEt;
+  });
+  tbody.innerHTML = filtered.map(function(item) {
+    return '<tr>' +
+      '<td style="font-family:monospace;font-size:10px;color:var(--g400)">' + esc(item.no) + '</td>' +
+      '<td style="color:var(--g800)">' + esc(item.description) + '</td>' +
+      '<td style="font-size:11px">' + esc(item.couleur) + '</td>' +
+      '<td style="font-family:monospace;font-size:10px">' + esc(item.codification) + '</td>' +
+      '<td style="font-size:11px">' + esc(item.marque) + '</td>' +
+      '<td style="font-size:11px">' + esc(item.financement) + '</td>' +
+      '<td>' + etatBadge(item.etat) + '</td>' +
+      '<td style="text-align:center;font-weight:600">' + esc(String(item.qte)) + '</td>' +
+      '<td style="font-size:11px;color:var(--g400)">' + esc(item.service) + '</td>' +
+      '<td style="display:flex;gap:4px">' +
+        '<button class="btn btn-secondary btn-sm" style="padding:3px 8px;font-size:10px" onclick="editInvGen(\'' + String(item.no).replace(/'/g,"\\'") + '\')">Modifier</button>' +
+        '<button class="btn btn-primary btn-sm" style="padding:3px 8px;font-size:10px" onclick="openTransfertModal(\'hq\',\'' + String(item.no).replace(/'/g,"\\'") + '\')">Transférer</button>' +
+      '</td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="10" class="empty">Aucun résultat.</td></tr>';
+}
+
+/* ── Init new modules on boot ── */
+document.addEventListener('DOMContentLoaded', function() {
+  populateInstDropdowns();
+  // Pre-fill today's date on letter modals
+  const today = new Date().toISOString().split('T')[0];
+  ['ld-date','le-date','lr-date','lr-date-rest','la-date','req-date','ac-date'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = today;
+  });
+});
