@@ -30,16 +30,16 @@
 <div class="sidebar">
   <div class="sidebar-section">
     <div class="sidebar-label">Navigation</div>
-    <div class="sidebar-item active" onclick="switchTab('formulaire',this)"><span class="si-icon">📋</span>Formulaire certificat</div>
-    <div class="sidebar-item" onclick="switchTab('journal',this)"><span class="si-icon">📒</span>Journal certificats</div>
-    <div class="sidebar-item" onclick="switchTab('audit',this)"><span class="si-icon">🔍</span>Journal d'audit</div>
+    <div class="sidebar-item active" onclick="switchTab('formulaire',this)"><span class="si-icon"></span>Formulaire certificat</div>
+    <div class="sidebar-item" onclick="switchTab('journal',this)"><span class="si-icon"></span>Journal certificats</div>
+    <div class="sidebar-item" onclick="switchTab('audit',this)"><span class="si-icon"></span>Journal d'audit</div>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-label">Institution</div>
-    <div class="sidebar-item" onclick="switchTab('dsne',this)"><span class="si-icon">🏥</span>DSNE</div>
+    <div class="sidebar-item" onclick="switchTab('dsne',this)"><span class="si-icon"></span>DSNE</div>
   </div>
   <div class="sidebar-footer">
-    <div class="sidebar-item" onclick="doLogout()"><span class="si-icon">↩</span>Déconnexion</div>
+    <div class="sidebar-item" onclick="doLogout()"><span class="si-icon"></span>Déconnexion</div>
   </div>
 </div>
 <div class="main-area">
@@ -454,7 +454,7 @@ function dsneActivate(){
       <label>Rapport d'inspection <span class="required">*</span></label>
       <span class="field-desc">Rapport officiel établi suite à l'inspection de l'établissement, signé par l'inspecteur responsable.</span>
       <div class="file-zone" id="zone_rapport" onclick="document.getElementById('f_rapport').click()">
-        <span class="file-zone-icon">📎</span>
+        <span class="file-zone-icon"></span>
         <div><div class="file-zone-text">Ajouter un fichier</div><div class="file-zone-sub">PDF ou Word</div></div>
         <input type="file" id="f_rapport" accept=".pdf,.doc,.docx" onchange="handleFile(this)">
       </div>
