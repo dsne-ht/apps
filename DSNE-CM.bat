@@ -1,7 +1,8 @@
 @echo off
-title DSNE - Clinique Mobile
+title DSNE - CM
 cd /d "%~dp0"
-git pull --quiet
+git fetch --quiet
+git reset --hard origin/master --quiet
 cd dsne-cm
 if not exist node_modules (
     echo Installation en cours...
