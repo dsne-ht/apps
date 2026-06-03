@@ -1,17 +1,18 @@
 {
   "name": "dsne-logistique",
-  "version": "1.1.0",
+  "version": "2.0.1",
   "description": "DSNE — Logistique",
   "main": "main.js",
   "author": "DSNE",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --win --x64"
+    "dist": "electron-builder --win --x64 --publish always"
   },
   "build": {
     "appId": "ht.gouv.mspp.dsne.log",
     "productName": "DSNE Logistique",
     "directories": { "output": "dist" },
+    "publish": [{ "provider": "github", "owner": "dsne-ht", "repo": "apps" }],
     "win": {
       "target": "nsis",
       "icon": "assets/log.png"
@@ -21,14 +22,18 @@
       "perMachine": false,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true
-    }
+    },
+    "files": ["main.js", "src/**/*", "assets/**/*", "node_modules/**/*"]
   },
   "dependencies": {
+    "better-sqlite3": "^9.6.0",
     "docx": "^8.5.0",
+    "electron-updater": "^6.3.9",
     "exceljs": "^4.4.0"
   },
   "devDependencies": {
     "electron": "^28.0.0",
-    "electron-builder": "^24.0.0"
+    "electron-builder": "^24.0.0",
+    "@electron/rebuild": "^3.6.0"
   }
 }
