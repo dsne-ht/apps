@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DSNE — Logistique</title>
 <link rel="stylesheet" href="styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 <style>:root{--app-color:#5A1FA5;}</style>
@@ -21,9 +22,7 @@
   </div>
 </div>
 
-<!-- TABS -->
-<div class="tabs">
-  <div class="tab active"  onclick="switchTab('tableau',this)">Tableau de bord</div>
+
   <div class="tab"         onclick="switchTab('flotte',this)">Flotte</div>
   <div class="tab"         onclick="switchTab('journal',this)">Journal de bord</div>
   <div class="tab"         onclick="switchTab('entretien',this)">Entretien</div>
@@ -36,6 +35,35 @@
   <div class="tab"         onclick="switchTab('courrier',this)">Courrier / Lettres</div>
   <div class="tab"         onclick="switchTab('accuses',this)">Accusés réception</div>
 </div>
+
+<div class="app-layout">
+<div class="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-label">Tableau de bord</div>
+    <div class="sidebar-item active" onclick="switchTab('tableau',this)"><span class="si-icon">📊</span>Tableau de bord</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Flotte</div>
+    <div class="sidebar-item" onclick="switchTab('flotte',this)"><span class="si-icon">🚗</span>Véhicules</div>
+    <div class="sidebar-item" onclick="switchTab('journal',this)"><span class="si-icon">📍</span>Journal de bord</div>
+    <div class="sidebar-item" onclick="switchTab('entretien',this)"><span class="si-icon">🔧</span>Entretien</div>
+    <div class="sidebar-item" onclick="switchTab('chauffeurs',this)"><span class="si-icon">👤</span>Chauffeurs</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Inventaire</div>
+    <div class="sidebar-item" onclick="switchTab('inv-general',this)"><span class="si-icon">🗄</span>Inv. Général (HQ)</div>
+    <div class="sidebar-item" onclick="switchTab('inv-activites',this)"><span class="si-icon">📦</span>Inv. Activités</div>
+    <div class="sidebar-item" onclick="switchTab('inv-depart',this)"><span class="si-icon">🏥</span>Inv. Départemental</div>
+    <div class="sidebar-item" onclick="switchTab('transferts',this)"><span class="si-icon">↔</span>Transferts</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Documents</div>
+    <div class="sidebar-item" onclick="switchTab('requisition',this)"><span class="si-icon">📝</span>Réquisitions</div>
+    <div class="sidebar-item" onclick="switchTab('courrier',this)"><span class="si-icon">✉</span>Courrier / Lettres</div>
+    <div class="sidebar-item" onclick="switchTab('accuses',this)"><span class="si-icon">📨</span>Accusés réception</div>
+  </div>
+</div>
+<div class="main-area">
 
 <!-- ══ TABLEAU DE BORD ══ -->
 <div id="tab-tableau" class="content">
@@ -154,22 +182,35 @@
 <!-- ══ INVENTAIRE GÉNÉRAL ══ -->
 <div id="tab-inv-general" class="content" style="display:none">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-    <div style="font-size:13px;color:var(--g600)">RAPPORT D'INVENTAIRE DES BIENS PAR SERVICES · Juin 2025</div>
+    <div style="font-size:13px;color:var(--g600)">Inventaire des biens DSNE par pièce · Juin 2025</div>
     <button class="btn btn-primary btn-sm" onclick="openModal('modal-inv-add')">+ Ajouter un bien</button>
   </div>
   <div class="kpi-row" id="inv-gen-kpis"></div>
-  <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap">
-    <input class="form-input" style="flex:1;max-width:300px" placeholder="Rechercher un bien…" oninput="filterInvGen(this.value,'','')">
-    <select class="form-select" id="inv-service-filter" onchange="filterInvGen('',this.value,'')">
-      <option value="">Tous les services</option>
+  <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
+    <input class="form-input" style="flex:1;max-width:280px" placeholder="Rechercher un bien…" id="inv-search" oninput="filterInvGen(this.value,'','')">
+    <select class="form-select" id="inv-piece-filter" onchange="filterInvGen('',this.value,'')">
+      <option value="">Toutes les pièces</option>
       <option>Administration</option>
+      <option>Assistant ADM</option>
       <option>Comptabilité</option>
-      <option>Ressources Humaines</option>
-      <option>Épidémiologie</option>
-      <option>UAS</option>
-      <option>SES</option>
-      <option>Réception / Compt / ADM</option>
       <option>Conseiller Technique</option>
+      <option>Épidémiologie</option>
+      <option>Intendante</option>
+      <option>Laboratoire</option>
+      <option>Logistique</option>
+      <option>Pharmacie</option>
+      <option>Ressources Humaines</option>
+      <option>Réception / Direction</option>
+      <option>SES</option>
+      <option>SOS 1</option>
+      <option>SOS S</option>
+      <option>Salle d'Attente</option>
+      <option>Salle de Réception</option>
+      <option>Salle de Situation</option>
+      <option>Secrétariat</option>
+      <option>Service Juridique</option>
+      <option>Sous-Marche Escalier</option>
+      <option>UAS</option>
     </select>
     <select class="form-select" id="inv-etat-filter" onchange="filterInvGen('','',this.value)">
       <option value="">Tous états</option>
@@ -177,6 +218,10 @@
       <option value="NF">Non fonctionnel</option>
       <option value="MÉ">Mauvais état</option>
     </select>
+    <label class="btn btn-secondary btn-sm" style="cursor:pointer;margin-left:auto" title="Importer un fichier Excel (.xlsx)">
+      ⬆ Importer Excel
+      <input type="file" accept=".xlsx,.xls" style="display:none" onchange="importInventaireGeneral(this)">
+    </label>
   </div>
   <div class="section-header" style="display:flex;align-items:center;justify-content:space-between">
     <span id="inv-gen-count">279 biens</span>
@@ -186,7 +231,7 @@
       <thead>
         <tr>
           <th>No</th><th>Description</th><th>Couleur</th><th>Codification</th>
-          <th>Marque</th><th>Financement</th><th>État</th><th>Qté</th><th>Service</th><th>Actions</th>
+          <th>Marque</th><th>Financement</th><th>État</th><th>Qté</th><th>Pièce / Local</th><th>Actions</th>
         </tr>
       </thead>
       <tbody id="inv-gen-tbody"></tbody>
@@ -231,7 +276,13 @@
 <div id="tab-inv-depart" class="content" style="display:none">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
     <div style="font-size:13px;color:var(--g600)">Biens affectés aux 40 institutions sanitaires du Nord-Est</div>
-    <button class="btn btn-primary btn-sm" onclick="openModal('modal-invd-add')">+ Ajouter un bien</button>
+    <div style="display:flex;gap:8px">
+      <label class="btn btn-secondary btn-sm" style="cursor:pointer" title="Importer un fichier Excel (.xlsx)">
+        ⬆ Importer Excel
+        <input type="file" accept=".xlsx,.xls" style="display:none" onchange="importInventaireDept(this)">
+      </label>
+      <button class="btn btn-primary btn-sm" onclick="openModal('modal-invd-add')">+ Ajouter un bien</button>
+    </div>
   </div>
   <div class="kpi-row" id="invd-kpis"></div>
   <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap">
@@ -286,17 +337,101 @@
 <!-- ══ RÉQUISITIONS ══ -->
 <div id="tab-requisition" class="content" style="display:none">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-    <div style="font-size:13px;color:var(--g600)">Réquisitions de transport et services · DSNE</div>
-    <button class="btn btn-primary btn-sm" onclick="openModal('modal-req-add')">+ Nouvelle réquisition</button>
+    <div style="font-size:13px;color:var(--g600)">Réquisitions MSPP/DSNE · Fournitures et matériels</div>
+    <button class="btn btn-primary btn-sm" onclick="openReqForm()">+ Nouvelle réquisition</button>
   </div>
   <div class="kpi-row" id="req-kpis"></div>
-  <div class="section-header">Toutes les réquisitions</div>
+
+  <!-- Inline form (hidden by default, shown when creating/editing) -->
+  <div id="req-form-panel" style="display:none;margin-bottom:1.5rem">
+    <div class="section-header" style="display:flex;align-items:center;justify-content:space-between">
+      <span id="req-form-title">Nouvelle réquisition</span>
+      <button class="btn btn-secondary btn-sm" onclick="closeReqForm()" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)">✕ Annuler</button>
+    </div>
+    <div class="card">
+      <input type="hidden" id="req-edit-id">
+
+      <!-- Header info -->
+      <div style="display:flex;gap:1.5rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--g100)">
+        <div class="field" style="flex:1">
+          <label>No de référence</label>
+          <input class="form-input" id="req-ref" placeholder="Auto-généré" readonly style="background:var(--g50);color:var(--g400)">
+        </div>
+        <div class="field" style="flex:1">
+          <label>Date</label>
+          <input class="form-input" id="req-date" type="date">
+        </div>
+        <div class="field" style="flex:1">
+          <label>Statut</label>
+          <select class="form-select" id="req-statut">
+            <option>En attente</option>
+            <option>Approuvée</option>
+            <option>Rejetée</option>
+            <option>Exécutée</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Section 1: Requérant -->
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--c600);margin-bottom:.75rem">1 — Information sur le Requérant</div>
+      <div class="form-grid" style="margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--g100)">
+        <div class="form-group">
+          <label class="form-label">Nom / Prénom</label>
+          <input class="form-input" id="req-nom" placeholder="ex. Pierre DÉCIUS">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Programme / Service</label>
+          <input class="form-input" id="req-service" placeholder="ex. Administration">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Poste Occupé</label>
+          <input class="form-input" id="req-poste" placeholder="ex. Administrateur Départemental">
+        </div>
+      </div>
+
+      <!-- Section 2: Items table -->
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--c600);margin-bottom:.75rem">2 — Liste des produits / Matériels / Fournitures demandées</div>
+      <table class="data-table" style="margin-bottom:.75rem">
+        <thead>
+          <tr>
+            <th style="width:80px">Quantité</th>
+            <th>Désignation des produits / Matériels / Fournitures de bureau</th>
+            <th style="width:200px">Observation</th>
+            <th style="width:40px"></th>
+          </tr>
+        </thead>
+        <tbody id="req-items-tbody"></tbody>
+      </table>
+      <button class="btn btn-secondary btn-sm" onclick="addReqItem()" style="margin-bottom:1.25rem">+ Ajouter une ligne</button>
+
+      <!-- Attachment -->
+      <div style="padding-top:1rem;border-top:1px solid var(--g100);margin-bottom:1rem">
+        <label class="form-label" style="margin-bottom:6px;display:block">Pièce jointe (scan formulaire signé, optionnel)</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <label class="btn btn-secondary btn-sm" style="cursor:pointer">
+            📎 Joindre fichier
+            <input type="file" accept=".pdf,.png,.jpg,.jpeg" style="display:none" onchange="attachReqFile(this)">
+          </label>
+          <span style="font-size:12px;color:var(--g400)" id="req-attach-name">Aucun fichier</span>
+          <input type="hidden" id="req-attach-path">
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="saveRequisition()">Enregistrer</button>
+        <button class="btn btn-secondary" onclick="genRequisitionDocx()">⬇ Générer .docx</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Journal -->
+  <div class="section-header">Journal des réquisitions</div>
   <div class="card">
     <table class="data-table">
       <thead>
         <tr>
-          <th>Réf.</th><th>Date</th><th>Demandeur</th><th>Fournisseur</th>
-          <th>Description</th><th>Durée</th><th>Prix/dépl.</th><th>Total HTG</th><th>Statut</th><th></th>
+          <th>Réf.</th><th>Date</th><th>Requérant</th><th>Service</th>
+          <th>Nb articles</th><th>Statut</th><th>Pièce jointe</th><th></th>
         </tr>
       </thead>
       <tbody id="req-tbody"></tbody>
@@ -626,12 +761,30 @@
           <input class="form-input" id="inv-qte" type="number" value="1" min="1">
         </div>
         <div class="form-group">
-          <label class="form-label">Service</label>
-          <select class="form-select" id="inv-service">
-            <option>Administration</option><option>Comptabilité</option>
-            <option>Ressources Humaines</option><option>Épidémiologie</option>
-            <option>UAS</option><option>SES</option><option>Réception / Compt / ADM</option>
-            <option>Conseiller Technique</option><option>Logistique</option><option>Autre</option>
+          <label class="form-label">Pièce / Local</label>
+          <select class="form-select" id="inv-piece">
+            <option>Administration</option>
+            <option>Assistant ADM</option>
+            <option>Comptabilité</option>
+            <option>Conseiller Technique</option>
+            <option>Épidémiologie</option>
+            <option>Intendante</option>
+            <option>Laboratoire</option>
+            <option>Logistique</option>
+            <option>Pharmacie</option>
+            <option>Ressources Humaines</option>
+            <option>Réception / Direction</option>
+            <option>SES</option>
+            <option>SOS 1</option>
+            <option>SOS S</option>
+            <option>Salle d'Attente</option>
+            <option>Salle de Réception</option>
+            <option>Salle de Situation</option>
+            <option>Secrétariat</option>
+            <option>Service Juridique</option>
+            <option>Sous-Marche Escalier</option>
+            <option>UAS</option>
+            <option>Autre</option>
           </select>
         </div>
       </div>
@@ -859,71 +1012,6 @@
   </div>
 </div>
 
-<!-- Modal Réquisition -->
-<div class="modal-overlay" id="modal-req-add">
-  <div class="modal" style="width:660px">
-    <div class="modal-header">
-      <h2 id="req-modal-title">Nouvelle réquisition</h2>
-      <button class="modal-close" onclick="closeModal('modal-req-add')">✕</button>
-    </div>
-    <div class="modal-body">
-      <input type="hidden" id="req-edit-id">
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">Date</label>
-          <input class="form-input" id="req-date" type="date">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Demandeur</label>
-          <input class="form-input" id="req-demandeur" value="Service logistique DSNE">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Fournisseur</label>
-          <input class="form-input" id="req-fournisseur" placeholder="ex. Ti Pa Service Location">
-        </div>
-        <div class="form-group full">
-          <label class="form-label">Description du service</label>
-          <input class="form-input" id="req-desc" placeholder="ex. Transport de matériels et fournitures">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Durée / Quantité</label>
-          <input class="form-input" id="req-duree" placeholder="ex. 2 Jours">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Prix / déplacement (HTG)</label>
-          <input class="form-input" id="req-prix" type="number" placeholder="0">
-        </div>
-        <div class="form-group full">
-          <label class="form-label">Justification</label>
-          <textarea class="form-textarea" id="req-justif" placeholder="Motif de la réquisition…"></textarea>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Mode de paiement</label>
-          <select class="form-select" id="req-paiement">
-            <option>Virement bancaire / Chèque</option>
-            <option>Cash</option>
-            <option>Mobile Money</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Statut</label>
-          <select class="form-select" id="req-statut">
-            <option>En attente</option>
-            <option>Approuvée</option>
-            <option>Rejetée</option>
-            <option>Exécutée</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-actions">
-        <button class="btn btn-primary" onclick="saveRequisition()">Enregistrer</button>
-        <button class="btn btn-secondary btn-sm" onclick="genRequisitionDocx()" style="margin-left:auto">⬇ Télécharger .docx</button>
-        <button class="btn btn-secondary" onclick="closeModal('modal-req-add')">Annuler</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- Modal Lettre Déplacement -->
 <div class="modal-overlay" id="modal-lettre-deplacement">
   <div class="modal" style="width:660px">
@@ -1100,7 +1188,7 @@
 /* ── TAB NAVIGATION ── */
 function switchTab(id, el) {
   document.querySelectorAll('.content').forEach(c => c.style.display = 'none');
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + id).style.display = 'block';
   if (el) el.classList.add('active');
   const renders = {
@@ -1156,5 +1244,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('rec-date').value = today;
 });
 </script>
+</div><!-- /main-area -->
+</div><!-- /app-layout -->
 </body>
 </html>
