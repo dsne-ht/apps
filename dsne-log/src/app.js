@@ -1717,18 +1717,6 @@ async function updateAccusesXlsx() {
 /* ══════════════════════════════════════════════════════════
    INVENTAIRE GÉNÉRAL — patch render to add Transférer button
 ══════════════════════════════════════════════════════════ */
-function renderInvGen() {
-  if (_origRenderInvGen) _origRenderInvGen();
-  // Patch tbunction() {
-  populateInstDropdowns();
-  // Pre-fill today's date on letter modals
-  const today = new Date().toISOString().split('T')[0];
-  ['ld-date','le-date','lr-date','lr-date-rest','la-date','req-date','ac-date'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = today;
-  });
-});
-
 /* ══════════════════════════════════════════════════════════
    VISUAL EXCEL IMPORT
    Uses SheetJS (xlsx) loaded via CDN in index.html
