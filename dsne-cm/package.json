@@ -1,6 +1,6 @@
 {
   "name": "dsne-clinique-mobile",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "DSNE — Enregistrement Clinique Mobile",
   "main": "main.js",
   "scripts": {
