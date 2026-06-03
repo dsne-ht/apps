@@ -394,3 +394,78 @@ ipcMain.handle('build-accuse', async (_, { acc, entete, dateStr }) => {
   ]}]});
   return await toBase64(doc);
 });
+
+ipcMain.handle('build-requisition-mspp', async (_, { d, entete, dateStr }) => {
+  const { Document, Paragraph, TextRun, Table, TableRow, TableCell,
+          BorderStyle, AlignmentType, WidthType, ShadingType, VerticalAlign } = getDocx();
+  const b  = { style: BorderStyle.SINGLE, size: 8, color: '000000' };
+  const bx = { top: b, bottom: b, left: b, right: b };
+  const hcell = (txt, w) => new TableCell({
+    borders: bx, width: { size: w, type: WidthType.DXA },
+    shading: { fill: 'DDDDDD', type: ShadingType.CLEAR },
+    margins: { top: 80, bottom: 80, left: 120, right: 120 },
+    verticalAlign: VerticalAlign.CENTER,
+    children: [new Paragraph({ alignment: AlignmentType.CENTER,
+      children: [new TextRun({ text: txt, bold: true, size: 20, font: 'Times New Roman' })] })]
+  });
+  const dcell = (txt, w, center=false) => new TableCell({
+    borders: bx, width: { size: w, type: WidthType.DXA },
+    margins: { top: 80, bottom: 80, left: 120, right: 120 },
+    children: [new Paragraph({
+      alignment: center ? AlignmentType.CENTER : AlignmentType.LEFT,
+      children: [new TextRun({ text: String(txt||''), size: 20, font: 'Times New Roman' })] })]
+  });
+  // Empty rows to pad to at least 15 lines
+  const itemRows = [...(d.items || [])];
+  while (itemRows.length < 15) itemRows.push({ qte: '', designation: '', observation: '' });
+
+  const doc = new Document({ sections: [{ properties: {}, children: [
+    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 60 },
+      children: [new TextRun({ text: 'REPUBLIQUE D\'HAÏTI', bold: true, size: 24, font: 'Times New Roman' })] }),
+    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 60 },
+      children: [new TextRun({ text: 'MINISTERE DE LA SANTE PUBLIQUE ET DE LA POPULATION', bold: true, size: 22, font: 'Times New Roman' })] }),
+    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 200 },
+      children: [new TextRun({ text: 'MSPP/DSNE', bold: true, size: 22, font: 'Times New Roman' })] }),
+    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 240 },
+      children: [new TextRun({ text: 'REQUISITION', bold: true, underline: {}, size: 28, font: 'Times New Roman' })] }),
+    // Ref + Date
+    new Paragraph({ spacing: { after: 80 },
+      children: [new TextRun({ text: 'No de référence : ' + (d.uid||''), bold: true, size: 22, font: 'Times New Roman' })] }),
+    new Paragraph({ spacing: { after: 240 },
+      children: [new TextRun({ text: 'Date : ' + dateStr, bold: true, size: 22, font: 'Times New Roman' })] }),
+    // Section 1
+    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 160 },
+      children: [new TextRun({ text: '1- Information sur le Requérant', bold: true, underline: {}, size: 22, font: 'Times New Roman' })] }),
+    new Paragraph({ spacing: { after: 120 },
+      children: [new TextRun({ text: 'Nom / Prénom : ', bold: true, size: 22, font: 'Times New Roman' }),
+                 new TextRun({ text: d.nom, size: 22, font: 'Times New Roman' })] }),
+    new Paragraph({ spacing: { after: 120 },
+      children: [new TextRun({ text: 'Programme / Service : ', bold: true, size: 22, font: 'Times New Roman' }),
+                 new TextRun({ text: d.service, size: 22, font: 'Times New Roman' })] }),
+    new Paragraph({ spacing: { after: 120 },
+      children: [new TextRun({ text: 'Poste Occupé : ', bold: true, size: 22, font: 'Times New Roman' }),
+                 new TextRun({ text: d.poste, size: 22, font: 'Times New Roman' })] }),
+    new Paragraph({ spacing: { after: 80 },
+      children: [new TextRun({ text: 'Signature : _______________________________', size: 22, font: 'Times New Roman' })] }),
+    new Paragraph({ children: [] }),
+    // Section 2
+    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 160 },
+      children: [new TextRun({ text: '2- Liste des produits/ Matériels/ Fournitures de bureau demandées par le service', bold: true, underline: {}, size: 22, font: 'Times New Roman' })] }),
+    new Table({ width: { size: 9000, type: WidthType.DXA }, rows: [
+      new TableRow({ tableHeader: true, children: [
+        hcell('Quantité', 1200),
+        hcell('Désignation des produits/ Matériels/ Fournitures de bureau', 5800),
+        hcell('Observation', 2000),
+      ]}),
+      ...itemRows.map(item => new TableRow({ children: [
+        dcell(item.qte||'', 1200, true),
+        dcell(item.designation||'', 5800),
+        dcell(item.observation||'', 2000),
+      ]})),
+    ]}),
+    new Paragraph({ children: [] }),
+    new Paragraph({ spacing: { after: 80 },
+      children: [new TextRun({ text: 'Signature du responsable : _______________________________', size: 20, font: 'Times New Roman' })] }),
+  ]}]});
+  return await toBase64(doc);
+});
