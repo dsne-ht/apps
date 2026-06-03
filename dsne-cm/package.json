@@ -1,11 +1,11 @@
 {
   "name": "dsne-clinique-mobile",
-  "version": "1.9.0",
+  "version": "2.0.0",
   "description": "DSNE — Enregistrement Clinique Mobile",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --win --x64"
+    "dist": "electron-builder --win --x64 --publish always"
   },
   "build": {
     "appId": "ht.dsne.cm",
@@ -13,6 +13,13 @@
     "directories": {
       "output": "dist"
     },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "dsne-ht",
+        "repo": "apps"
+      }
+    ],
     "win": {
       "target": "nsis",
       "icon": "assets/cm.png"
@@ -29,10 +36,12 @@
     ]
   },
   "dependencies": {
-    "better-sqlite3": "^9.6.0"
+    "better-sqlite3": "^9.6.0",
+    "electron-updater": "^6.3.9"
   },
   "devDependencies": {
     "electron": "^28.3.3",
-    "electron-builder": "^24.13.3"
+    "electron-builder": "^24.13.3",
+    "@electron/rebuild": "^3.6.0"
   }
 }
