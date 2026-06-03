@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const Database = require('better-sqlite3');
 const https = require('https');
@@ -74,7 +75,7 @@ function createWindow(page) {
   win.once('ready-to-show', () => win.show());
 }
 
-app.whenReady().then(() => { initDB(); createWindow(getStartPage()); });
+app.whenReady().then(() => { initDB(); createWindow(getStartPage()); autoUpdater.checkForUpdatesAndNotify(); });
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
 
 // ── CHECK CODE ──
