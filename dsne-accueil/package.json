@@ -1,6 +1,6 @@
 {
   "name": "dsne-accueil",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "DSNE — Enregistrement des Visiteurs (PROC-004)",
   "main": "src/main.js",
   "scripts": {
