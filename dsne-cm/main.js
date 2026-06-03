@@ -8,7 +8,7 @@ let db;
 let win;
 
 // ── CONFIGURATION ──
-const SHEET_URL = 'https://script.google.com/macros/s/AKfycbznu0Mf5PQsYK6mPz6YGA_afN7QTfO-N3lSW09PctNq98EErF-YjNVLIEpVSLIQeyL-/exec';
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzTAOg78o7iWchNoqxsqR81vS6pxGGq5cEsbfyJd5u5agA9rOKfRgR_bg3hmzb81yIP/exec';
 const APP_NAME  = 'Clinique Mobile';
 
 const userDataPath = app.getPath('userData');
