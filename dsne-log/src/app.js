@@ -751,8 +751,60 @@ let invGenItems = [];
 })();
 let invNextId = INVENTAIRE_GENERAL.length + 1;
 
-function nav_inv_general() { renderInvGen(); }
+function renderInvGen() {
+  const q     = (invGenFilter.q || '').toLowerCase();
+  const piece = document.getElementById('inv-piece-filter') ? document.getElementById('inv-piece-filter').value : '';
+  const et    = document.getElementById('inv-etat-filter')  ? document.getElementById('inv-etat-filter').value  : '';
+
+  const filtered = invGenItems.filter(function(i) {
+    const matchQ     = !q     || (i.description||'').toLowerCase().includes(q) || (i.codification||'').toLowerCase().includes(q) || (i.marque||'').toLowerCase().includes(q);
+    const matchPiece = !piece || i.piece === piece;
+    const matchEt    = !et    || i.etat === et;
+    return matchQ && matchPiece && matchEt;
+  });
+
+  const total       = filtered.length;
+  const fonctionnel = filtered.filter(function(i){ return i.etat === 'F';  }).length;
+  const nf          = filtered.filter(function(i){ return i.etat === 'NF'; }).length;
+  const me          = filtered.filter(function(i){ return i.etat === 'ME' || i.etat === 'M\u00C9'; }).length;
+
+  var kpisEl = document.getElementById('inv-gen-kpis');
+  if (kpisEl) kpisEl.innerHTML =
+    kpiCard('Total biens',      invGenItems.length, "dans l'inventaire", 'purple') +
+    kpiCard('Fonctionnels',     fonctionnel, '', 'green') +
+    kpiCard('Non fonctionnels', nf,          '', 'red')   +
+    kpiCard('Mauvais \u00e9tat', me,         '', 'amber');
+
+  var countEl = document.getElementById('inv-gen-count');
+  if (countEl) countEl.textContent = total + ' bien' + (total !== 1 ? 's' : '');
+
+  var tbody = document.getElementById('inv-gen-tbody');
+  if (!tbody) return;
+
+  tbody.innerHTML = filtered.map(function(item) {
+    var noSafe = String(item.no).replace(/'/g, "\\'");
+    return '<tr>' +
+      '<td style="font-family:monospace;font-size:10px;color:var(--g400)">'  + esc(item.no)           + '</td>' +
+      '<td style="color:var(--g800)">'                                        + esc(item.description)   + '</td>' +
+      '<td style="font-size:11px">'                                           + esc(item.couleur)       + '</td>' +
+      '<td style="font-family:monospace;font-size:10px">'                     + esc(item.codification)  + '</td>' +
+      '<td style="font-size:11px">'                                           + esc(item.marque)        + '</td>' +
+      '<td style="font-size:11px">'                                           + esc(item.financement)   + '</td>' +
+      '<td>'                                                                   + etatBadge(item.etat)    + '</td>' +
+      '<td style="text-align:center;font-weight:600">'                        + esc(String(item.qte))   + '</td>' +
+      '<td style="font-size:11px;color:var(--c600)">'                         + esc(item.piece)         + '</td>' +
+      '<td style="display:flex;gap:4px">' +
+        '<button class="btn btn-secondary btn-sm" style="padding:3px 8px;font-size:10px" onclick="editInvGen(\'' + noSafe + '\')">Modifier</button>' +
+        '<button class="btn btn-primary btn-sm"   style="padding:3px 8px;font-size:10px" onclick="openTransfertModal(\'hq\',\'' + noSafe + '\')">Transferer</button>' +
+      '</td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="10" class="empty">Aucun r\u00e9sultat.</td></tr>';
+}
+
+function nav_inv_general()   { renderInvGen(); }
 function nav_inv_activites() { renderInvAct(); }
+
+
 
 function filterInvGen(q, piece, etat) {
   if (q !== '') invGenFilter.q = q;
@@ -761,53 +813,6 @@ function filterInvGen(q, piece, etat) {
   renderInvGen();
 }
 
-function renderInvGen() {
-  const q = (invGenFilter.q || '').toLowerCase();
-  const piece = document.getElementById('inv-piece-filter') ? document.getElementById('inv-piece-filter').value : '';
-  const et  = document.getElementById('inv-etat-filter') ? document.getElementById('inv-etat-filter').value : '';
-
-  const filtered = invGenItems.filter(function(i) {
-    const matchQ   = !q   || i.description.toLowerCase().includes(q) || i.codification.toLowerCase().includes(q) || i.marque.toLowerCase().includes(q);
-    const matchPiece = !piece || i.piece === piece;
-    const matchEt  = !et  || i.etat === et;
-    return matchQ && matchPiece && matchEt;
-  });
-
-  const total = filtered.length;
-  const fonctionnel = filtered.filter(function(i){ return i.etat === 'F'; }).length;
-  const nf = filtered.filter(function(i){ return i.etat === 'NF'; }).length;
-  const me = filtered.filter(function(i){ return i.etat === 'MÉ'; }).length;
-
-  document.getElementById('inv-gen-kpis').innerHTML =
-    kpiCard('Total biens', invGenItems.length, "dans l'inventaire", 'gold') +
-    kpiCard('Fonctionnels', fonctionnel, '', 'green') +
-    kpiCard('Non fonctionnels', nf, '', 'red') +
-    kpiCard('Mauvais état', me, '', 'amber');
-
-  document.getElementById('inv-gen-count').textContent = total + ' bien' + (total > 1 ? 's' : '');
-
-  function etatBadge(e) {
-    if (e === 'F')  return '<span class="badge badge-green">Fonctionnel</span>';
-    if (e === 'NF') return '<span class="badge badge-red">Non fonctionnel</span>';
-    if (e === 'MÉ') return '<span class="badge badge-amber">Mauvais état</span>';
-    return '<span class="badge badge-gray">' + esc(e) + '</span>';
-  }
-
-  document.getElementById('inv-gen-tbody').innerHTML = filtered.map(function(item) {
-    return '<tr>' +
-      '<td style="font-family:DM Mono,monospace;font-size:10px;color:var(--text3)">' + esc(item.no) + '</td>' +
-      '<td style="color:var(--text)">' + esc(item.description) + '</td>' +
-      '<td style="font-size:11px">' + esc(item.couleur) + '</td>' +
-      '<td style="font-family:DM Mono,monospace;font-size:10px">' + esc(item.codification) + '</td>' +
-      '<td style="font-size:11px">' + esc(item.marque) + '</td>' +
-      '<td style="font-size:11px">' + esc(item.financement) + '</td>' +
-      '<td>' + etatBadge(item.etat) + '</td>' +
-      '<td style="text-align:center;font-weight:600">' + esc(String(item.qte)) + '</td>' +
-      '<td style="font-size:11px;color:var(--text3)">' + esc(item.piece) + '</td>' +
-      '<td><button class="btn btn-ghost" style="padding:3px 8px;font-size:10px" onclick="editInvGen(' + JSON.stringify(item.no) + ')">Modifier</button></td>' +
-      '</tr>';
-  }).join('') || '<tr><td colspan="10" class="empty">Aucun résultat.</td></tr>';
-}
 
 function editInvGen(no) {
   const item = invGenItems.find(function(x){ return x.no === no; });
@@ -1712,43 +1717,9 @@ async function updateAccusesXlsx() {
 /* ══════════════════════════════════════════════════════════
    INVENTAIRE GÉNÉRAL — patch render to add Transférer button
 ══════════════════════════════════════════════════════════ */
-const _origRenderInvGen = typeof renderInvGen !== 'undefined' ? renderInvGen : null;
 function renderInvGen() {
   if (_origRenderInvGen) _origRenderInvGen();
-  // Patch tbody rows to add Transférer button
-  const tbody = document.getElementById('inv-gen-tbody');
-  if (!tbody) return;
-  // Re-render with transfer button
-  const q   = '';
-  const piece = document.getElementById('inv-piece-filter') ? document.getElementById('inv-piece-filter').value : '';
-  const et  = document.getElementById('inv-etat-filter') ? document.getElementById('inv-etat-filter').value : '';
-  const filtered = invGenItems.filter(function(i) {
-    const matchQ   = !q   || i.description.toLowerCase().includes(q);
-    const matchPiece = !piece || i.piece === piece;
-    const matchEt  = !et  || i.etat === et;
-    return matchQ && matchPiece && matchEt;
-  });
-  tbody.innerHTML = filtered.map(function(item) {
-    return '<tr>' +
-      '<td style="font-family:monospace;font-size:10px;color:var(--g400)">' + esc(item.no) + '</td>' +
-      '<td style="color:var(--g800)">' + esc(item.description) + '</td>' +
-      '<td style="font-size:11px">' + esc(item.couleur) + '</td>' +
-      '<td style="font-family:monospace;font-size:10px">' + esc(item.codification) + '</td>' +
-      '<td style="font-size:11px">' + esc(item.marque) + '</td>' +
-      '<td style="font-size:11px">' + esc(item.financement) + '</td>' +
-      '<td>' + etatBadge(item.etat) + '</td>' +
-      '<td style="text-align:center;font-weight:600">' + esc(String(item.qte)) + '</td>' +
-      '<td style="font-size:11px;color:var(--g400)">' + esc(item.piece) + '</td>' +
-      '<td style="display:flex;gap:4px">' +
-        '<button class="btn btn-secondary btn-sm" style="padding:3px 8px;font-size:10px" onclick="editInvGen(\'' + String(item.no).replace(/'/g,"\\'") + '\')">Modifier</button>' +
-        '<button class="btn btn-primary btn-sm" style="padding:3px 8px;font-size:10px" onclick="openTransfertModal(\'hq\',\'' + String(item.no).replace(/'/g,"\\'") + '\')">Transférer</button>' +
-      '</td>' +
-      '</tr>';
-  }).join('') || '<tr><td colspan="10" class="empty">Aucun résultat.</td></tr>';
-}
-
-/* ── Init new modules on boot ── */
-document.addEventListener('DOMContentLoaded', function() {
+  // Patch tbunction() {
   populateInstDropdowns();
   // Pre-fill today's date on letter modals
   const today = new Date().toISOString().split('T')[0];
