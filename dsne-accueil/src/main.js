@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
+const { autoUpdater } = require('electron-updater')
 const path = require('path')
 const Database = require('better-sqlite3')
 const { google } = require('googleapis')
@@ -142,6 +143,7 @@ function createWindow() {
 }
 
 app.whenReady().then(() => { initDB(); createWindow() })
+  autoUpdater.checkForUpdatesAndNotify();
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit() })
 
 // ── AUTH (code à 6 chiffres)
