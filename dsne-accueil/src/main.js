@@ -97,16 +97,28 @@ function initDB() {
       ('789043', 'Vasna Pierre', 'reception.dsne@gmail.com', 'reception'),
       ('890340', 'Marie Liziane Garconville', 'reception.dsne@gmail.com', 'reception');
 
-    -- UIDs par défaut
+    -- UIDs DSNE v2.0
     INSERT OR IGNORE INTO uid_cartes (uid, service, description) VALUES
-      ('DIR-001','DIR','Carte Direction 001'),
-      ('DIR-002','DIR','Carte Direction 002'),
-      ('ADM-001','ADM','Carte Administration 001'),
-      ('ADM-002','ADM','Carte Administration 002'),
-      ('COMP-001','COMP','Carte Comptabilité 001'),
-      ('RH-001','RH','Carte Ressources Humaines 001'),
-      ('PROG-001','PROG','Carte Programmes 001'),
-      ('PROG-002','PROG','Carte Programmes 002');
+      ('DIR-ME349-1','DIR','Carte Direction 1'),
+      ('DIR-ME349-2','DIR','Carte Direction 2'),
+      ('DIR-ME349-3','DIR','Carte Direction 3'),
+      ('DIR-ME349-4','DIR','Carte Direction 4'),
+      ('DIR-ME349-5','DIR','Carte Direction 5'),
+      ('DIR-ME349-6','DIR','Carte Direction 6'),
+      ('DIR-ME349-7','DIR','Carte Direction 7'),
+      ('DIR-ME349-8','DIR','Carte Direction 8'),
+      ('DIR-ME349-9','DIR','Carte Direction 9'),
+      ('DIR-ME349-10','DIR','Carte Direction 10'),
+      ('COMP-RA903-1','COMP','Carte Comptabilité 1'),
+      ('COMP-RA903-2','COMP','Carte Comptabilité 2'),
+      ('COMP-RA903-3','COMP','Carte Comptabilité 3'),
+      ('COMP-RA903-4','COMP','Carte Comptabilité 4'),
+      ('RH-SU463-1','RH','Carte Ressources Humaines 1'),
+      ('RH-SU463-2','RH','Carte Ressources Humaines 2'),
+      ('RH-SU463-3','RH','Carte Ressources Humaines 3'),
+      ('RH-SU463-4','RH','Carte Ressources Humaines 4'),
+      ('RH-SU463-5','RH','Carte Ressources Humaines 5'),
+      ('RH-SU463-6','RH','Carte Ressources Humaines 6');
   `)
 }
 
