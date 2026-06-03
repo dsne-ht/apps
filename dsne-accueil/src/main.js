@@ -92,7 +92,7 @@ function initDB() {
 
     -- Réceptionnistes préchargées
     INSERT OR IGNORE INTO users (code, nom_complet, email, role) VALUES
-      ('000000', 'Administrateur', 'sec.direction.dsne@gmail.com', 'admin'),
+      ('174839', 'Daisha Dorsainvil', 'sec.direction.dsne@gmail.com', 'admin'),
       ('145056', 'Geralda Michel', 'reception.dsne@gmail.com', 'reception'),
       ('582005', 'Renande Destiné', 'reception.dsne@gmail.com', 'reception'),
       ('789043', 'Vasna Pierre', 'reception.dsne@gmail.com', 'reception'),
