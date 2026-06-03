@@ -1,7 +1,8 @@
 @echo off
-title DSNE - Logistique
+title DSNE - LOG
 cd /d "%~dp0"
-git pull --quiet
+git fetch --quiet
+git reset --hard origin/master --quiet
 cd dsne-log
 if not exist node_modules (
     echo Installation en cours...
