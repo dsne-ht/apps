@@ -1327,92 +1327,6 @@ function loadRequisitions() {
 function saveRequisitions_data(arr) { localStorage.setItem('dsne_requisitions', JSON.stringify(arr)); }
 let requisitions = loadRequisitions();
 
-function renderRequisitions() {
-  const total    = requisitions.length;
-  const attente  = requisitions.filter(r=>r.statut==='En attente').length;
-  const approuv  = requisitions.filter(r=>r.statut==='Approuvée').length;
-  const totalHTG = requisitions.reduce((s,r)=>s+(parseFloat(r.prix)||0)*(parseFloat(r.dureeN)||1),0);
-  document.getElementById('req-kpis').innerHTML =
-    kpiCard('Total réquisitions', total, '', 'purple') +
-    kpiCard('En attente', attente, '', 'amber') +
-    kpiCard('Approuvées', approuv, '', 'green') +
-    kpiCard('Valeur totale HTG', fmtNum(totalHTG), '', 'blue');
-
-  document.getElementById('req-tbody').innerHTML = requisitions.slice().reverse().map(r =>
-    '<tr>' +
-    `<td style="font-family:monospace;font-size:10px;color:var(--c600)">${esc(r.uid)}</td>` +
-    `<td>${esc(fmtDate(r.date))}</td>` +
-    `<td style="font-size:11px">${esc(r.demandeur)}</td>` +
-    `<td style="font-size:11px">${esc(r.fournisseur)}</td>` +
-    `<td style="color:var(--g800)">${esc(r.desc)}</td>` +
-    `<td style="font-size:11px">${esc(r.duree)}</td>` +
-    `<td style="font-family:monospace">${fmtNum(r.prix)}</td>` +
-    `<td style="font-family:monospace;font-weight:600">${fmtNum(r.total)}</td>` +
-    `<td>${statutBadgeReq(r.statut)}</td>` +
-    `<td style="display:flex;gap:4px">
-       <button class="btn btn-secondary btn-sm" onclick="editRequisition('${r.uid}')">Modifier</button>
-       <button class="btn btn-primary btn-sm" onclick="genRequisitionDocxById('${r.uid}')">⬇ .docx</button>
-     </td>` +
-    '</tr>'
-  ).join('') || '<tr><td colspan="10" class="empty">Aucune réquisition.</td></tr>';
-}
-
-function statutBadgeReq(s) {
-  const map = {'En attente':'badge-amber','Approuvée':'badge-green','Rejetée':'badge-red','Exécutée':'badge-gray'};
-  return `<span class="badge ${map[s]||'badge-gray'}">${esc(s)}</span>`;
-}
-
-function editRequisition(uid) {
-  const r = requisitions.find(x => x.uid === uid);
-  if (!r) return;
-  document.getElementById('req-modal-title').textContent = 'Modifier réquisition ' + uid;
-  document.getElementById('req-edit-id').value   = uid;
-  document.getElementById('req-date').value      = r.date;
-  document.getElementById('req-demandeur').value = r.demandeur;
-  document.getElementById('req-fournisseur').value = r.fournisseur;
-  document.getElementById('req-desc').value      = r.desc;
-  document.getElementById('req-duree').value     = r.duree;
-  document.getElementById('req-prix').value      = r.prix;
-  document.getElementById('req-justif').value    = r.justif;
-  document.getElementById('req-paiement').value  = r.paiement;
-  document.getElementById('req-statut').value    = r.statut;
-  openModal('modal-req-add');
-}
-
-function saveRequisition() {
-  const editUid = document.getElementById('req-edit-id').value;
-  const prix    = parseFloat(document.getElementById('req-prix').value)||0;
-  const dureeRaw = document.getElementById('req-duree').value.trim();
-  const dureeN  = parseFloat(dureeRaw) || 1;
-  const obj = {
-    date:        document.getElementById('req-date').value,
-    demandeur:   document.getElementById('req-demandeur').value.trim(),
-    fournisseur: document.getElementById('req-fournisseur').value.trim(),
-    desc:        document.getElementById('req-desc').value.trim(),
-    duree:       dureeRaw,
-    dureeN,
-    prix,
-    total:       prix * dureeN,
-    justif:      document.getElementById('req-justif').value.trim(),
-    paiement:    document.getElementById('req-paiement').value,
-    statut:      document.getElementById('req-statut').value,
-  };
-  if (!obj.desc) { alert('Description requise.'); return; }
-  if (editUid) {
-    const r = requisitions.find(x => x.uid === editUid);
-    if (r) Object.assign(r, obj);
-  } else {
-    obj.uid = genUID('REQ', requisitions);
-    requisitions.push(obj);
-  }
-  saveRequisitions_data(requisitions);
-  closeModal('modal-req-add');
-  document.getElementById('req-edit-id').value = '';
-  document.getElementById('req-modal-title').textContent = 'Nouvelle réquisition';
-  renderRequisitions();
-  updateRequisitionsXlsx();
-  toast('Réquisition enregistrée.', 'success');
-}
 
 /* ══════════════════════════════════════════════════════════
    COURRIER / LETTRES (log only — docx generated separately)
@@ -1601,24 +1515,25 @@ async function genRequisitionDocxById(uid) {
 }
 
 async function genRequisitionDocx() {
+  const uid  = document.getElementById('req-ref').value || genUID('REQ', requisitions);
   const data = {
-    date:        document.getElementById('req-date').value,
-    demandeur:   document.getElementById('req-demandeur').value.trim(),
-    fournisseur: document.getElementById('req-fournisseur').value.trim(),
-    desc:        document.getElementById('req-desc').value.trim(),
-    duree:       document.getElementById('req-duree').value.trim(),
-    prix:        parseFloat(document.getElementById('req-prix').value)||0,
-    justif:      document.getElementById('req-justif').value.trim(),
-    paiement:    document.getElementById('req-paiement').value,
+    uid,
+    date:      document.getElementById('req-date').value,
+    nom:       document.getElementById('req-nom').value.trim(),
+    service:   document.getElementById('req-service').value.trim(),
+    poste:     document.getElementById('req-poste').value.trim(),
+    items:     (reqItems||[]).filter(i => i.designation.trim()),
   };
-  data.total = data.prix * (parseFloat(data.duree)||1);
-  const filename = 'REQ-' + (data.date||'').replace(/-/g,'').slice(2) + '-' + data.fournisseur.slice(0,8).replace(/\s/g,'') + '.docx';
-  await buildAndSaveDocx('Requisitions', filename, () => buildRequisitionDocxB64(data));
+  const safeName = data.nom.split(' ').pop() || 'req';
+  const filename = uid + '-' + safeName + '.docx';
+  await buildAndSaveDocx('Requisitions', filename, () => buildRequisitionMSPPDocxB64(data));
 }
 
-async function buildRequisitionDocxB64(d) {
-  return await window.electronDocx.buildRequisition(d, SIGNATAIRES, enteteLines(), fmtDateLong(d.date));
+
+async function buildRequisitionMSPPDocxB64(d) {
+  return await window.electronDocx.buildRequisitionMSPP(d, enteteLines(), fmtDateLong(d.date));
 }
+
 
 /* ── Lettre Déplacement ── */
 async function genLettreDeplacement() {
