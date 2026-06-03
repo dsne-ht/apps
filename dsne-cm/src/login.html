@@ -47,11 +47,7 @@ async function doLogin() {
   btn.textContent = 'Connexion...';
 
   try {
-    const res = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'login', username, password })
-    });
-    const result = await res.json();
+    const result = await window.dsne.login({ username, password });
 
     if (result.ok) {
       sessionStorage.setItem('user', JSON.stringify(result.user));
