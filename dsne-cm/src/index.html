@@ -51,16 +51,16 @@ input[type="date"] { font-family: var(--font); }
 <div class="sidebar">
   <div class="sidebar-section">
     <div class="sidebar-label">Navigation</div>
-    <div class="sidebar-item active" onclick="switchTab('formulaire',this)"><span class="si-icon">📋</span>Formulaire demande</div>
-    <div class="sidebar-item" onclick="switchTab('journal',this)"><span class="si-icon">📒</span>Journal des demandes</div>
-    <div class="sidebar-item" onclick="switchTab('audit',this)"><span class="si-icon">🔍</span>Journal d'audit</div>
+    <div class="sidebar-item active" onclick="switchTab('formulaire',this)"><span class="si-icon"></span>Formulaire demande</div>
+    <div class="sidebar-item" onclick="switchTab('journal',this)"><span class="si-icon"></span>Journal des demandes</div>
+    <div class="sidebar-item" onclick="switchTab('audit',this)"><span class="si-icon"></span>Journal d'audit</div>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-label">Institution</div>
-    <div class="sidebar-item" onclick="switchTab('dsne',this)"><span class="si-icon">🏥</span>DSNE</div>
+    <div class="sidebar-item" onclick="switchTab('dsne',this)"><span class="si-icon"></span>DSNE</div>
   </div>
   <div class="sidebar-footer">
-    <div class="sidebar-item" onclick="doLogout()"><span class="si-icon">↩</span>Déconnexion</div>
+    <div class="sidebar-item" onclick="doLogout()"><span class="si-icon"></span>Déconnexion</div>
   </div>
 </div>
 <div class="main-area">
@@ -462,7 +462,7 @@ function dsneActivate(){
       <label>Lettre de demande officielle <span class="required">*</span></label>
       <span class="field-desc">Lettre signée par le Directeur Médical de l'institution, adressée à la Direction Sanitaire du Nord-Est.</span>
       <div class="file-zone" id="zone_lettre" onclick="document.getElementById('f_lettre').click()">
-        <span class="file-zone-icon">📎</span>
+        <span class="file-zone-icon"></span>
         <div><div class="file-zone-text">Ajouter un fichier</div><div class="file-zone-sub">PDF, Word ou image</div></div>
         <input type="file" id="f_lettre" accept=".pdf,.doc,.docx,.jpg,.png" onchange="handleFile(this,'lettre')">
       </div>
@@ -474,7 +474,7 @@ function dsneActivate(){
       <label>Liste du personnel et licences <span class="required">*</span></label>
       <span class="field-desc">Liste complète du personnel médical et paramédical participant, avec leurs licences et accréditations en cours de validité.</span>
       <div class="file-zone" id="zone_personnel" onclick="document.getElementById('f_personnel').click()">
-        <span class="file-zone-icon">📎</span>
+        <span class="file-zone-icon"></span>
         <div><div class="file-zone-text">Ajouter un fichier</div><div class="file-zone-sub">PDF, Word ou image</div></div>
         <input type="file" id="f_personnel" accept=".pdf,.doc,.docx,.jpg,.png" onchange="handleFile(this,'personnel')">
       </div>
@@ -486,7 +486,7 @@ function dsneActivate(){
       <label>Liste des médicaments <span class="required">*</span></label>
       <span class="field-desc">Liste complète des médicaments et fournitures médicales qui seront utilisés lors de l'intervention.</span>
       <div class="file-zone" id="zone_medicaments" onclick="document.getElementById('f_medicaments').click()">
-        <span class="file-zone-icon">📎</span>
+        <span class="file-zone-icon"></span>
         <div><div class="file-zone-text">Ajouter un fichier</div><div class="file-zone-sub">PDF, Word ou image</div></div>
         <input type="file" id="f_medicaments" accept=".pdf,.doc,.docx,.jpg,.png" onchange="handleFile(this,'medicaments')">
       </div>
@@ -498,7 +498,7 @@ function dsneActivate(){
       <label>Lettre de recommandation UAS <span class="required">*</span></label>
       <span class="field-desc">Lettre de recommandation signée par le responsable de l'Unité d'Arrondissement de Santé concernée.</span>
       <div class="file-zone" id="zone_recommandation" onclick="document.getElementById('f_recommandation').click()">
-        <span class="file-zone-icon">📎</span>
+        <span class="file-zone-icon"></span>
         <div><div class="file-zone-text">Ajouter un fichier</div><div class="file-zone-sub">PDF, Word ou image</div></div>
         <input type="file" id="f_recommandation" accept=".pdf,.doc,.docx,.jpg,.png" onchange="handleFile(this,'recommandation')">
       </div>
