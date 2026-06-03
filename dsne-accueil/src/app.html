@@ -26,15 +26,29 @@
 </div>
 
 <!-- TABS -->
-<div class="tabs">
-  <div class="tab" onclick="switchTab('dsne', this)">DSNE</div>
-  <div class="tab active" onclick="switchTab('entree', this)">Enregistrement d'entrée</div>
-  <div class="tab" onclick="switchTab('sortie', this)">Enregistrement de sortie</div>
-  <div class="tab" onclick="switchTab('visites', this)">Registre des visites</div>
-  <div class="tab" onclick="switchTab('documents', this)">Registre des documents</div>
-  <div class="tab" onclick="switchTab('uids', this)">Gestion des UIDs</div>
-  <div class="tab" onclick="switchTab('audit', this)">Journal d'audit</div>
+<div class="app-layout">
+<div class="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-label">Navigation</div>
+    <div class="sidebar-item active" onclick="switchTab('entree',this)">Enregistrement d'entrée</div>
+    <div class="sidebar-item" onclick="switchTab('sortie',this)">Enregistrement de sortie</div>
+    <div class="sidebar-item" onclick="switchTab('visites',this)">Registre des visites</div>
+    <div class="sidebar-item" onclick="switchTab('documents',this)">Registre des documents</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Administration</div>
+    <div class="sidebar-item" onclick="switchTab('uids',this)">Gestion des UIDs</div>
+    <div class="sidebar-item" onclick="switchTab('audit',this)">Journal d'audit</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Institution</div>
+    <div class="sidebar-item" onclick="switchTab('dsne',this)">DSNE</div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="sidebar-item" onclick="doLogout()">Déconnexion</div>
+  </div>
 </div>
+<div class="main-area">
 
 <!-- ══ ONGLET DSNE ══ -->
 
@@ -1040,5 +1054,7 @@ function filtrerAudit() {
 }
 
 </script>
+</div><!-- /main-area -->
+</div><!-- /app-layout -->
 </body>
 </html>
