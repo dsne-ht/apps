@@ -1,12 +1,12 @@
 {
   "name": "dsne-hygiene-publique",
-  "version": "1.9.0",
-  "description": "DSNE — Certificats Hygiene Publique",
+  "version": "2.0.0",
+  "description": "DSNE — Certificats Hygiène Publique",
   "main": "main.js",
   "author": "DSNE",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --win --x64"
+    "dist": "electron-builder --win --x64 --publish always"
   },
   "build": {
     "appId": "ht.gouv.mspp.dsne.hyg",
@@ -14,6 +14,13 @@
     "directories": {
       "output": "dist"
     },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "dsne-ht",
+        "repo": "apps"
+      }
+    ],
     "win": {
       "target": "nsis",
       "icon": "assets/hp.png"
@@ -31,11 +38,13 @@
       "package.json"
     ]
   },
+  "dependencies": {
+    "better-sqlite3": "^9.6.0",
+    "electron-updater": "^6.3.9"
+  },
   "devDependencies": {
     "electron": "^28.3.3",
-    "electron-builder": "^24.13.3"
-  },
-  "dependencies": {
-    "better-sqlite3": "^9.4.3"
+    "electron-builder": "^24.13.3",
+    "@electron/rebuild": "^3.6.0"
   }
 }
