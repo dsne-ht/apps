@@ -455,11 +455,291 @@ function syncAll() {
    INVENTAIRE
 ══════════════════════════════════════════ */
 
-const INVENTAIRE_GENERAL = [{"no": "1", "description": "Destructeur de document", "couleur": "noir", "codification": "ADM-Ch-001 à 006", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "2", "description": "ventillateur", "couleur": "blanc", "codification": "ADM-FT-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "3", "description": "Television Samsung", "couleur": "noir", "codification": "ADM-CL-001", "marque": "", "model": "", "serie": "", "financement": "Padess", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "4", "description": "canl+receiver", "couleur": "noir", "codification": "ADM-H-001", "marque": "Mercury", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "5", "description": "Satar Link", "couleur": "balnc", "codification": "ADM-CL-001002-003", "marque": "Mercury/Hon", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "6", "description": "Table en bois et en metal", "couleur": "marron", "codification": "ADM-REF-001", "marque": "Marbe", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "7", "description": "Calculatrice a ruban", "couleur": "Noir et gris", "codification": "ADM-PB-001", "marque": "Fellowes", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "14", "description": "Poubelle", "couleur": "crème", "codification": "ADM-Imp-001", "marque": "HP", "model": "", "serie": "CNB9G814M8", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "15", "description": "Panneaux d'installation des clefs", "couleur": "gris et amrron", "codification": "ADM-FT-014", "marque": "", "model": "", "serie": "", "financement": "CDS", "etat": "F", "qte": 2, "service": "Administration"}, {"no": "16", "description": "Bloc chequier", "couleur": "", "codification": "ADM-blo.ch-002", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 2, "service": "Administration"}, {"no": "17", "description": "Radio", "couleur": "noir", "codification": "ADM-Rd-001S", "marque": "", "model": "", "serie": "", "financement": "MSH/USAID", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "18", "description": "Griotine", "couleur": "gris et noir", "codification": "ADM-Ag-001", "marque": "Swingline", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "19", "description": "Risographe Gris", "couleur": "", "codification": "ADM-RZ-001", "marque": "", "model": "", "serie": "390UI", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "20", "description": "Cloche metalique", "couleur": "", "codification": "ADM-C-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "21", "description": "Radio Noire ancienne", "couleur": "", "codification": "ADM-Ra-001", "marque": "RCA", "model": "", "serie": "", "financement": "Mspp", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "22", "description": "Stetoscope Noire", "couleur": "", "codification": "ADM-Ste-001-002", "marque": "", "model": "81-131", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "23", "description": "Gallon bleu ciel", "couleur": "", "codification": "ADM-Gl-001", "marque": "", "model": "", "serie": "IKTMO26232EW", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "24", "description": "Sceau en Bois Payé Livré", "couleur": "", "codification": "ADM-sc-001", "marque": "", "model": "431K01", "serie": "E5500", "financement": "MSH/USAID", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "25", "description": "Boitier noire", "couleur": "", "codification": "ADM-PC-001", "marque": "HP", "model": "", "serie": "DUAO24116G", "financement": "PEPFAR", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "26", "description": "Retroprojecteur Gris/noire", "couleur": "", "codification": "ADM-Rp-001-002", "marque": "Dell/Focus", "model": "", "serie": "AZMB92101457/C62Y4M1", "financement": "PEPFAR", "etat": "F", "qte": 2, "service": "Administration"}, {"no": "27", "description": "Cartouche Toner", "couleur": "", "codification": "ADM-Cat-001-002", "marque": "", "model": "", "serie": "", "financement": "MSH/USAID", "etat": "F", "qte": 2, "service": "Administration"}, {"no": "28", "description": "Xerox Drum", "couleur": "", "codification": "ADM-XD-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "29", "description": "3 Boites de 5 Master", "couleur": "", "codification": "ADM-Mas-001-002-003", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 15, "service": "Administration"}, {"no": "30", "description": "Encre HP deja Utilisé", "couleur": "", "codification": "ADM-EN-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "31", "description": "Cable reseau Catégorie 5", "couleur": "", "codification": "ADM-cab-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "32", "description": "Multi prises Cremes", "couleur": "", "codification": "ADM-MP-001-002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "33", "description": "Router Natcom bLanche 4G", "couleur": "", "codification": "ADM-Rt-001", "marque": "4GLTE", "model": "", "serie": "321265101105", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "34", "description": "Digital Video Recorder", "couleur": "", "codification": "ADM-DV-001", "marque": "", "model": "", "serie": "MNAHDR3116", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "35", "description": "Sceau en Bois Payé Livré", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "36", "description": "Porte clef des vehicules", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "37", "description": "projecteur EPSON", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 3, "service": "Administration"}, {"no": "38", "description": "Enveloppe jaune", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "39", "description": "Sacehet Glisseur pourPotre", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "40", "description": "Classeur Metallique", "couleur": "", "codification": "", "marque": "HON ( ferme)", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "41", "description": "Classeur Metallique", "couleur": "", "codification": "", "marque": "mercury", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 2, "service": "Administration"}, {"no": "42", "description": "Classeur Metallique", "couleur": "", "codification": "", "marque": "Mercury", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "43", "description": "Climatiseur", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "44", "description": "Agrapheuse", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 2, "service": "Administration"}, {"no": "45", "description": "Water cooler", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "46", "description": "Corbeille a document", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "47", "description": "Certains document", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "48", "description": "Pompe", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "49", "description": "Enseigne d'Identification", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 2, "service": "Administration"}, {"no": "2", "description": "Bureau metalique à7T", "couleur": "Marron et gris", "codification": "UAS-Br-001", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 3, "service": "UAS"}, {"no": "3", "description": "Classeur metalique 4T", "couleur": "Gris", "codification": "UAS-Cl-001", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 2, "service": "UAS"}, {"no": "4", "description": "Porte papier ( Personnel)", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "9QMPSW1", "financement": "USAID", "etat": "F", "qte": 1, "service": "UAS"}, {"no": "5", "description": "Ventilateur ( Personnel)", "couleur": "Blanc", "codification": "UAS-V-001", "marque": "WESTPOINT", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "UAS"}, {"no": "2", "description": "Classeurs metaliques a 4T", "couleur": "Gris", "codification": "Compt-Cl-005", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 5, "service": "Comptabilité"}, {"no": "3", "description": "Bureau  a 7T", "couleur": "gris et Marron", "codification": "Compt-Br-002", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 3, "service": "Comptabilité"}, {"no": "4", "description": "Bureau gris et marron a 4T", "couleur": "gris et Marron", "codification": "Compt-Br-002", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 2, "service": "Comptabilité"}, {"no": "5", "description": "Bureau  m en formica", "couleur": "marrron", "codification": "Compt-Br-002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 3, "service": "Comptabilité"}, {"no": "6", "description": "Bureau  marron  3T", "couleur": "marron en En", "codification": "Compt-Br-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Comptabilité"}, {"no": "7", "description": "Ventilateurs gris, crème, noire", "couleur": "grisinnnrs gris, crème", "codification": "Compt-V-003", "marque": "LASCO", "model": "", "serie": "", "financement": "MSPP/ USAID", "etat": "F", "qte": 3, "service": "Comptabilité"}, {"no": "8", "description": "Dekstop", "couleur": "noire", "codification": "Compt-PC-002", "marque": "HP", "model": "", "serie": "MXL7091HX3", "financement": "MSPP", "etat": "F", "qte": 3, "service": "Comptabilité"}, {"no": "9", "description": "Perforateur", "couleur": "", "codification": "Compt-perfor-001", "marque": "", "model": "", "serie": "WQG35581", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Comptabilité"}, {"no": "10", "description": "Grillotine", "couleur": "", "codification": "Compt-gr-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Comptabilité"}, {"no": "11", "description": "Classeur 1/2 marron en bois 2T", "couleur": "marron en En", "codification": "Compt-Cl-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Comptabilité"}, {"no": "12", "description": "Agrapheuse", "couleur": "noir", "codification": "Compt-agrap-001", "marque": "", "model": "", "serie": "MXL4171NDT", "financement": "PEPFAR", "etat": "F", "qte": 4, "service": "Comptabilité"}, {"no": "13", "description": "Backup 5 Tous", "couleur": "", "codification": "Compt-Bc-001", "marque": "", "model": "", "serie": "43FKDF", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Comptabilité"}, {"no": "14", "description": "Imprimante noire", "couleur": "noire", "codification": "Compt-Imp-001", "marque": "HP", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Comptabilité"}, {"no": "15", "description": "Imprimante noire", "couleur": "noire", "codification": "Compt-Imp-002", "marque": "HP", "model": "", "serie": "CND9D7DCPG", "financement": "BRESIL", "etat": "F", "qte": 1, "service": "Comptabilité"}, {"no": "16", "description": "Dekstop noire", "couleur": "noire", "codification": "Compt-PC-001", "marque": "DELL ViSTRO", "model": "", "serie": "9QMQSW1", "financement": "BRESIL", "etat": "F", "qte": 1, "service": "Comptabilité"}, {"no": "17", "description": "Radio noire", "couleur": "noire", "codification": "Compt-RD-001", "marque": "", "model": "", "serie": "RCD109", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Comptabilité"}, {"no": "18", "description": "Fauteuil noire", "couleur": "noire", "codification": "Compt-Ft-004", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 9, "service": "Comptabilité"}, {"no": "19", "description": "Poubelle Crème plastique", "couleur": "Crème", "codification": "Compt-Pb-001", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Comptabilité"}, {"no": "20", "description": "Poubelle noire electrique", "couleur": "noire", "codification": "Compt-Pb-002", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Comptabilité"}, {"no": "21", "description": "Poubelle plastique noire", "couleur": "noire", "codification": "Compt-Pb-003", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Comptabilité"}, {"no": "22", "description": "Frigidaire", "couleur": "blanc", "codification": "Compt-Frig-001", "marque": "Wespointe", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Comptabilité"}, {"no": "23", "description": "Chaise bureau", "couleur": "noir", "codification": "Compt-ch.b.001", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Comptabilité"}, {"no": "24", "description": "Classeur Metallique", "couleur": "", "codification": "Compt-Cl-009", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 9, "service": "Comptabilité"}, {"no": "2", "description": "Bureau metalique noire a 7T", "couleur": "", "codification": "SES-Br-001", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "SES"}, {"no": "3", "description": "Bureau metalique noire a 7T", "couleur": "", "codification": "SES-Br-002", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "SES"}, {"no": "4", "description": "Bureau metalique noire a 7T", "couleur": "", "codification": "SES-Br-003", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "SES"}, {"no": "5", "description": "Bureau metalique noire a 7T", "couleur": "", "codification": "SES-Br-004", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "SES"}, {"no": "6", "description": "Bureau metalique noire a 7T", "couleur": "", "codification": "SES-Br-005", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "SES"}, {"no": "7", "description": "Bureau metalique noire a 7T", "couleur": "", "codification": "SES-Br-006", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "SES"}, {"no": "8", "description": "Bureau metalique noire a 4T", "couleur": "", "codification": "SES-Br-001", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "SES"}, {"no": "9", "description": "Bureau metalique noire a 4T", "couleur": "", "codification": "SES-Br-002", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "SES"}, {"no": "10", "description": "Bureau en formica a 3T", "couleur": "", "codification": "SES-Br-001", "marque": "MERCURY", "model": "", "serie": "", "financement": "CANADA", "etat": "F", "qte": 1, "service": "SES"}, {"no": "11", "description": "Bureau Metalique marron a 3T", "couleur": "", "codification": "SES-Br-002", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "SES"}, {"no": "12", "description": "Bureau Metalique marron En Bois", "couleur": "", "codification": "SES-Br-001", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "SES"}, {"no": "13", "description": "Bureau Metalique marron En Bois", "couleur": "", "codification": "SES-Br-002", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "SES"}, {"no": "14", "description": "Classeur metalique 4T gris", "couleur": "", "codification": "SES-Cl-004", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "SES"}, {"no": "15", "description": "Classeur metalique 4T gris", "couleur": "", "codification": "SES-Cl-003", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "SES"}, {"no": "16", "description": "Harmoire metalique", "couleur": "", "codification": "SES-Ha-001", "marque": "MERCURY", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "SES"}, {"no": "17", "description": "Harmoire metalique", "couleur": "", "codification": "SES-Ha-002", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "SES"}, {"no": "18", "description": "Imprimante Crème", "couleur": "", "codification": "SES-Imp-001", "marque": "HP", "model": "", "serie": "MFP4303FDW", "financement": "MSPP", "etat": "F", "qte": 1, "service": "SES"}, {"no": "19", "description": "Ventilateur blanc", "couleur": "", "codification": "SES-V-001", "marque": "WESTPOINT", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "SES"}, {"no": "20", "description": "Ventilateur blanc", "couleur": "", "codification": "SES-V-002", "marque": "WESTPOINT", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "SES"}, {"no": "21", "description": "Fauteuils noire et gris", "couleur": "", "codification": "SES-Ft-005", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "SES"}, {"no": "2", "description": "Chaises de bureau bouréés noire", "couleur": "", "codification": "Sec-Ch-002", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 2, "service": "Administration"}, {"no": "3", "description": "Ventilateurs noir", "couleur": "", "codification": "Sec-V-002", "marque": "Westpoint", "model": "", "serie": "", "financement": "OXFAM", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "4", "description": "Bureau metalique gris et Beige et marron", "couleur": "", "codification": "Sec-Br-002", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 3, "service": "Administration"}, {"no": "5", "description": "Classeurs metaliques gris 4T", "couleur": "Gris", "codification": "Sec-cl-002", "marque": "IEH/ MERCURY", "model": "", "serie": "", "financement": "USAID/OXFAM", "etat": "F", "qte": 3, "service": "Administration"}, {"no": "6", "description": "Ordinateur complet", "couleur": "", "codification": "Sec-cl-001", "marque": "HP", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "7", "description": "Ordinateur complet", "couleur": "", "codification": "Sec-Et-001", "marque": "DELL", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "8", "description": "Imprimante blanc", "couleur": "", "codification": "Sec-Imp-001", "marque": "HP", "model": "", "serie": "QSC-40249", "financement": "MSPP", "etat": "F", "qte": 2, "service": "Administration"}, {"no": "9", "description": "Chaises de bureau bouréés noire", "couleur": "", "codification": "Sec-Imp-001", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "10", "description": "Chaise simple", "couleur": "", "codification": "Sec-PC-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "11", "description": "Miltiprise Noir", "couleur": "", "codification": "Sec-PC-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "12", "description": "Miltiprise Jaune Longue 10 matres", "couleur": "", "codification": "Sec-Wc-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "13", "description": "Poubelle plastique blanche", "couleur": "", "codification": "Sec-Pb-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "14", "description": "Reliure crème et gris", "couleur": "", "codification": "Sec- R-001", "marque": "", "model": "", "serie": "C150", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "15", "description": "Multiprises 8 T", "couleur": "", "codification": "Sec-MP-001", "marque": "Digicel", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "16", "description": "Milti Prise beige", "couleur": "", "codification": "Sec-Mlt-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "17", "description": "Corbeille petite noire", "couleur": "", "codification": "Sec-Cob-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "2", "description": "Bureau metallique gris et marron a 7T", "couleur": "", "codification": "SOS-Br-003", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 3, "service": "Administration"}, {"no": "3", "description": "Bureau metallique crème a 4 T", "couleur": "", "codification": "SOS-Br-001", "marque": "", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "4", "description": "Bureau gris et formica crème 1 T", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "CANADA", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "5", "description": "Bureau gris et marron 4T", "couleur": "", "codification": "SOS-Br-002", "marque": "IEH", "model": "", "serie": "", "financement": "Union Europ", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "6", "description": "Bureau gris et marron 4T avec formica", "couleur": "", "codification": "SOS-Br-001", "marque": "IEH", "model": "", "serie": "", "financement": "PEPFAR", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "7", "description": "Bufet gris et crème a 3 T", "couleur": "", "codification": "SOS-Br-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "8", "description": "Classeur metallique gris a 4 T", "couleur": "", "codification": "SOS-Cl-008", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 8, "service": "Administration"}, {"no": "9", "description": "Classeur metallique gris a 4 T", "couleur": "", "codification": "SOS-Cl-002", "marque": "", "model": "", "serie": "", "financement": "Union Europ", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "10", "description": "Classeur metallique gris a 4 T", "couleur": "", "codification": "SOS-Cl-006", "marque": "HON", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 6, "service": "Administration"}, {"no": "11", "description": "Classeur 1/2 metallique gris a 2T", "couleur": "", "codification": "SOS-Cl-001", "marque": "HON", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 2, "service": "Administration"}, {"no": "12", "description": "Chaises bourrees noires", "couleur": "", "codification": "SOS-Ch-007", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 5, "service": "Administration"}, {"no": "13", "description": "Fauteuils noires", "couleur": "", "codification": "SOS-Ft-004", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 4, "service": "Administration"}, {"no": "14", "description": "Harmoire metallique gris 5 etages", "couleur": "", "codification": "SOS-Ha-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "15", "description": "Refrigerateur gris", "couleur": "", "codification": "SOS-Ref-001", "marque": "Westpoint", "model": "", "serie": "", "financement": "Union Europ", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "16", "description": "Back up APC", "couleur": "", "codification": "SOS-BC-001", "marque": "", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "17", "description": "Imprimante noire", "couleur": "", "codification": "SOS-Imp-001", "marque": "EPSON", "model": "", "serie": "VGNK295389", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "18", "description": "Imprimante noire", "couleur": "", "codification": "SOS-Imp-001", "marque": "HPJASER JET", "model": "", "serie": "0902-01", "financement": "USAID", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "19", "description": "ventilateur blanc", "couleur": "", "codification": "SOS-v-001", "marque": "LASKO", "model": "", "serie": "", "financement": "Union Europ", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "20", "description": "LAPTOP noire et gris", "couleur": "", "codification": "SOS-Lap-001", "marque": "DELL VOSTRO", "model": "", "serie": "9C3R5", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "21", "description": "LAPTOP noire", "couleur": "", "codification": "SOS-Lap-003", "marque": "DELL Latitude", "model": "", "serie": "SWBT8X1", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "22", "description": "Desktop noire", "couleur": "", "codification": "SOS-PC-001", "marque": "DELL VOSTRO", "model": "", "serie": "HZPZFX1", "financement": "USAID", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "23", "description": "Desktop noire", "couleur": "", "codification": "SOS-PC-001", "marque": "HP", "model": "", "serie": "MXL6290KZ5", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "24", "description": "Desktop noire", "couleur": "", "codification": "SOS-PC-001", "marque": "HP", "model": "", "serie": "MXL618179V", "financement": "OMAST/PSI", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "25", "description": "Classeur en bois 4 etages", "couleur": "", "codification": "SOS-Cl-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "2", "description": "Bureau  a 6T", "couleur": "Gris et marron", "codification": "SOS-Br-001", "marque": "", "model": "", "serie": "", "financement": "USAID/MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "3", "description": "Fauteuil", "couleur": "noir", "codification": "SOS-Ft-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "4", "description": "Classeur  Gris a 4 T", "couleur": "Gris", "codification": "SOS-Cl-002", "marque": "2 MERCURY/ 1 IEH", "model": "1 pas de marque", "serie": "", "financement": "2 USAID/MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "5", "description": "Ordinateur complet", "couleur": "noir", "codification": "SOS-ord-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "6", "description": "Chaise pliante", "couleur": "Blanche", "codification": "SOS-CHP-004", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 4, "service": "Administration"}, {"no": "7", "description": "TABLEAU MURALE", "couleur": "EN BOIS", "codification": "SOS-TABL-00", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "2", "description": "Water cooler", "couleur": "", "codification": "Recep-dir wat-001", "marque": "OFFICE STAR", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Réception / Compt / ADM"}, {"no": "3", "description": "chaise bourrees", "couleur": "", "codification": "recep dire- ch B-002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 6, "service": "Réception / Compt / ADM"}, {"no": "4", "description": "Chaise miltiple", "couleur": "", "codification": "ch-M-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Réception / Compt / ADM"}, {"no": "5", "description": "chaise Simple", "couleur": "", "codification": "Recep ch.S--002", "marque": "CB", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Réception / Compt / ADM"}, {"no": "2", "description": "Water cooler", "couleur": "", "codification": "Cons-Tec-wt-cl-002", "marque": "IEH", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Conseiller Technique"}, {"no": "3", "description": "Imprimante", "couleur": "Blanche", "codification": "Cons-Tec-Imp-001", "marque": "HP", "model": "", "serie": "JPBDY01006", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Conseiller Technique"}, {"no": "4", "description": "Classeur gris", "couleur": "", "codification": "Cons-Tec-Cl-002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Conseiller Technique"}, {"no": "5", "description": "Fauteuil rouge grena", "couleur": "", "codification": "Cons-Tec-Ft-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Conseiller Technique"}, {"no": "6", "description": "Bureau gris et Marron", "couleur": "", "codification": "Cons-Tec-Br-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Conseiller Technique"}, {"no": "7", "description": "Personnel computer", "couleur": "", "codification": "Cons-Tec-Pc-001", "marque": "Dell", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "Conseiller Technique"}, {"no": "8", "description": "Fauteuil noire", "couleur": "", "codification": "Cons-Tec-Ft-001", "marque": "", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "Conseiller Technique"}, {"no": "9", "description": "Classeur 1/2 3 T crème", "couleur": "", "codification": "Cons-Tec-Cl-001", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "Conseiller Technique"}, {"no": "10", "description": "Classeur gris", "couleur": "", "codification": "Con-Tec-Cl-001", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "Conseiller Technique"}, {"no": "11", "description": "Chaise simple", "couleur": "", "codification": "Con-ch-spl-001", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Conseiller Technique"}, {"no": "12", "description": "Pannier a Dossier", "couleur": "Noir", "codification": "Cons-tec- pn-001", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Conseiller Technique"}, {"no": "133", "description": "Porte outil", "couleur": "Noir", "codification": "Cons-Port out-001", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Conseiller Technique"}, {"no": "2", "description": "Bureau metal marron et crème", "couleur": "", "codification": "SRec-Br-001", "marque": "", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "3", "description": "Ventilateur blanc", "couleur": "", "codification": "SRec-V-001", "marque": "Lasko", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "4", "description": "Chaisses bourrees noires", "couleur": "", "codification": "SRec-Ch-006", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 4, "service": "Administration"}, {"no": "5", "description": "Television  Screen", "couleur": "", "codification": "Srec-TV-001", "marque": "Wespoint", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "6", "description": "Multiprises 8T en bois", "couleur": "Rouge", "codification": "Srec-MP-001", "marque": "Digicel", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "7", "description": "Recever canal sat", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "8", "description": "Water cooler", "couleur": "noir et vert", "codification": "", "marque": "Wespoint", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "9", "description": "Petite table en fer", "couleur": "Bleu", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "10", "description": "Chaise simple", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "11", "description": "Cassier a pistolet en bois", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "2", "description": "Bureau gris et Marron", "couleur": "", "codification": "PH-Br-003", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 3, "service": "Administration"}, {"no": "3", "description": "Poubelle", "couleur": "", "codification": "PH-PB-002", "marque": "HP", "model": "", "serie": "JPBDY01006", "financement": "MSPP", "etat": "F", "qte": 2, "service": "Administration"}, {"no": "4", "description": "Classeur Metallique", "couleur": "", "codification": "PH-CL-011", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 11, "service": "Administration"}, {"no": "5", "description": "Ecran", "couleur": "", "codification": "PH-ECR-001", "marque": "Dell", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "6", "description": "Bureau gris et Marron", "couleur": "", "codification": "PH-BUR-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "7", "description": "Personnel computer", "couleur": "", "codification": "PH-PER COMP-001", "marque": "Dell", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "9", "description": "Fauteuil noire", "couleur": "", "codification": "PH-FT-001", "marque": "", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 3, "service": "Administration"}, {"no": "10", "description": "Classeur 1/2 3 T crème", "couleur": "", "codification": "PH-CL-001", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "11", "description": "Classeur gris", "couleur": "", "codification": "Ing-Tec-Cl-001", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "12", "description": "Bufet en bois", "couleur": "", "codification": "Ing-Tec-Bc-00", "marque": "FORZA", "model": "NT511ND", "serie": "", "financement": "USAID", "etat": "F", "qte": 2, "service": "Administration"}, {"no": "13", "description": "Star link", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "14", "description": "Chaise bureau", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 3, "service": "Administration"}, {"no": "15", "description": "Ordinateurcomplet", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "16", "description": "Etager a 4 etage en bois", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "2", "description": "Chaises de bureau bouréés noire", "couleur": "", "codification": "Sec-Ch-002", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "3", "description": "Chaises de bureau", "couleur": "", "codification": "Chb-epid-002", "marque": "Westpoint", "model": "", "serie": "", "financement": "OXFAM", "etat": "F", "qte": 7, "service": "Épidémiologie"}, {"no": "4", "description": "bufet metallique", "couleur": "", "codification": "epid- buf-001", "marque": "Mercure", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 2, "service": "Épidémiologie"}, {"no": "5", "description": "Bureau gri et marron à 7T", "couleur": "", "codification": "epid-bur-001", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 8, "service": "Épidémiologie"}, {"no": "6", "description": "Bureau en bois marron", "couleur": "", "codification": "epid-bru-002", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 2, "service": "Épidémiologie"}, {"no": "7", "description": "Classeurs metaliques gris 4T", "couleur": "", "codification": "epid-clss mt-001", "marque": "IEH/ MERCURY", "model": "", "serie": "", "financement": "USAID/OXFAM", "etat": "F", "qte": 12, "service": "Épidémiologie"}, {"no": "8", "description": "Etagere metallique a 4 etage", "couleur": "", "codification": "epid- etag-001", "marque": "IEH/ MERCURY", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "9", "description": "Etagere en bois marron", "couleur": "", "codification": "epid etag-002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "10", "description": "Imprimante crème", "couleur": "", "codification": "epid-impr-001", "marque": "Canonn", "model": "", "serie": "QSC-40249", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "11", "description": "Imprimante gris et bleu", "couleur": "", "codification": "epid-imp-002", "marque": "HP", "model": "", "serie": "CN624DF4XD", "financement": "PADES", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "12", "description": "Personnel computer noire", "couleur": "", "codification": "epid- compt.p-001", "marque": "DELL", "model": "", "serie": "CN-0R16JC72872", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "13", "description": "Personnel computer noire", "couleur": "", "codification": "epid-compt.p-002", "marque": "DELL /VOSTRO", "model": "", "serie": "37322533849", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "14", "description": "Ordinateur non complet", "couleur": "", "codification": "ordi-ncp.001", "marque": "T center/ ecr HP", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "15", "description": "Poubelle plastique Blanche", "couleur": "", "codification": "Epid-poub-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 2, "service": "Épidémiologie"}, {"no": "16", "description": "Backup noire", "couleur": "", "codification": "epid-bcup-001", "marque": "", "model": "", "serie": "C150", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "17", "description": "Giotine", "couleur": "", "codification": "Sec-Bc-001", "marque": "Forza", "model": "NT1011", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "18", "description": "Ventilateur blanc et Rouge", "couleur": "", "codification": "epid-gtine-001", "marque": "HP", "model": "", "serie": "CNDRPB178B", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "19", "description": "Classeur Crème", "couleur": "", "codification": "epid-V-001", "marque": "Whirlpool", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "20", "description": "Ventilateur blanc", "couleur": "", "codification": "epid-V-002", "marque": "Jocker", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "21", "description": "Boitier  Noire", "couleur": "", "codification": "epid-", "marque": "IEH Mercury", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "22", "description": "Ventilateur a pied", "couleur": "noir", "codification": "epid-V-002", "marque": "Lasko", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "2", "description": "Bureau noir et beige", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "USAID/MSPP", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "3", "description": "Fauteuil noire", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "4", "description": "Classeur metallique Gris et marron", "couleur": "", "codification": "", "marque": "2 MERCURY/ 1 IEH", "model": "1 pas de marque", "serie": "", "financement": "2 USAID/MSPP", "etat": "F", "qte": 4, "service": "Épidémiologie"}, {"no": "5", "description": "Bureau gris et marron", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "1-800-932-2278", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "6", "description": "Chateau blanc vide", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "Union Europ", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "7", "description": "Chateau blanc rempli lique", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "8", "description": "drum blanc rempli", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 2, "service": "Épidémiologie"}, {"no": "9", "description": "Invertaire Hybride", "couleur": "", "codification": "", "marque": "Luc solar", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "10", "description": "8 Batteries", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 8, "service": "Épidémiologie"}, {"no": "11", "description": "Petite table en Fer", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "2", "description": "Bureau gris et marron", "couleur": "", "codification": "", "marque": "IEH", "model": "", "serie": "", "financement": "USAID/MSPP", "etat": "F", "qte": 3, "service": "Épidémiologie"}, {"no": "3", "description": "Chaise simple", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 3, "service": "Épidémiologie"}, {"no": "4", "description": "Classeur metallique Gris et marron", "couleur": "", "codification": "", "marque": "2 MERCURY/ 1 IEH", "model": "1 pas de marque", "serie": "", "financement": "2 USAID/MSPP", "etat": "F", "qte": 6, "service": "Épidémiologie"}, {"no": "5", "description": "Bureau  marron", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "6", "description": "Coffre F.", "couleur": "noir", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "7", "description": "Armoir en bois a 6 portes", "couleur": "Marron", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Épidémiologie"}, {"no": "8", "description": "Water cooler", "couleur": "beige", "codification": "", "marque": "Wespoint", "model": "", "serie": "", "financement": "", "etat": "MÉ", "qte": 1, "service": "Épidémiologie"}, {"no": "2", "description": "Bureau gris et marron", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "USAID/MSPP", "etat": "F", "qte": 2, "service": "Administration"}, {"no": "3", "description": "Fauteuil noire", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 2, "service": "Administration"}, {"no": "4", "description": "Classeur metallique Gris", "couleur": "", "codification": "", "marque": "IEH", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "5", "description": "Ordinateur comlpet", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "6", "description": "Imprimante", "couleur": "", "codification": "", "marque": "HP", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "7", "description": "Ventillateur", "couleur": "", "codification": "", "marque": "wespoint", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "8", "description": "Panier a Dossier vert", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "2", "description": "Tables crème et gris pliante plastique", "couleur": "", "codification": "SS-Ta-008", "marque": "OFFICE STAR", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 8, "service": "Administration"}, {"no": "3", "description": "Tables en formica marron et noire", "couleur": "", "codification": "SS- Ta-002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 2, "service": "Administration"}, {"no": "4", "description": "Table ronde en formica", "couleur": "", "codification": "SS- Ta-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "5", "description": "Speaker noire petit", "couleur": "", "codification": "SS-Spk-002", "marque": "CB", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 6, "service": "Administration"}, {"no": "6", "description": "Tv", "couleur": "", "codification": "SS-Trep-001", "marque": "Samsung", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 2, "service": "Administration"}, {"no": "7", "description": "Pots Fleurs", "couleur": "", "codification": "SS-Fl-002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 2, "service": "Administration"}, {"no": "8", "description": "Bureau IEH", "couleur": "", "codification": "SS-bur-004", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 4, "service": "Administration"}, {"no": "9", "description": "Chaise Bourrées", "couleur": "", "codification": "SS-CHB.002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "10", "description": "Air conditionné", "couleur": "", "codification": "SS-AIRC-002", "marque": "TGM", "model": "", "serie": "", "financement": "MSPP", "etat": "NF", "qte": 2, "service": "Administration"}, {"no": "11", "description": "Tableau de projection Gros", "couleur": "", "codification": "SS-TBPA-001", "marque": "EPSON", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "12", "description": "Projecteur", "couleur": "", "codification": "SS-PROJEC-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Administration"}, {"no": "13", "description": "Chaise pliante BLANCHE", "couleur": "", "codification": "SS.CH.P.075", "marque": "", "model": "", "serie": "", "financement": "MSPP/OPS", "etat": "F", "qte": 75, "service": "Administration"}, {"no": "2", "description": "Bureau blanc", "couleur": "", "codification": "SRH-Br-004", "marque": "IEH", "model": "", "serie": "", "financement": "USAID/MSPP", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "3", "description": "Bureau gris et marron", "couleur": "", "codification": "SRH-Br-002", "marque": "", "model": "", "serie": "", "financement": "USAID/MSPP", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "4", "description": "Classeur CRÈME", "couleur": "", "codification": "SRH-Cl-006", "marque": "MERCURY", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "5", "description": "Classeur", "couleur": "", "codification": "SRH-Cl-004", "marque": "HON", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 4, "service": "Ressources Humaines"}, {"no": "6", "description": "Chaise simple", "couleur": "", "codification": "SRH-ch-003", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 3, "service": "Ressources Humaines"}, {"no": "7", "description": "Imprimante", "couleur": "", "codification": "SRH-Imp-001", "marque": "Cannon", "model": "", "serie": "WQG35553", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "8", "description": "Imprimante", "couleur": "", "codification": "SRH-Imp-002", "marque": "HP137FNW", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "9", "description": "Fauteuils noire", "couleur": "", "codification": "SRH-Ft-002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 2, "service": "Ressources Humaines"}, {"no": "10", "description": "Ecran et clavier", "couleur": "", "codification": "SRH-ECr-001", "marque": "DELL", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "11", "description": "Personnel Computer", "couleur": "gris", "codification": "SRH-Pc-001", "marque": "lenovo", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 2, "service": "Ressources Humaines"}, {"no": "12", "description": "Multiprises bleu et crème", "couleur": "", "codification": "SRH-MP-002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 2, "service": "Ressources Humaines"}, {"no": "13", "description": "Ordinateur complet", "couleur": "", "codification": "SRH-dell-001", "marque": "DELL", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "14", "description": "Poubelle petit", "couleur": "noir", "codification": "SRH-PB-001", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "15", "description": "Agrapheuse", "couleur": "noir", "codification": "SRH-AGR-002", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 2, "service": "Ressources Humaines"}, {"no": "16", "description": "Panier a document", "couleur": "gris", "codification": "SRH PAN-001", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "17", "description": "Chaise Bourrees", "couleur": "", "codification": "SRH-ch-002", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 2, "service": "Ressources Humaines"}, {"no": "18", "description": "Table pliante", "couleur": "", "codification": "SRH-TAB P-002", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 2, "service": "Ressources Humaines"}, {"no": "19", "description": "Chaise bureau", "couleur": "", "codification": "SRH- CHB-001", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "20", "description": "Chaise pliante", "couleur": "", "codification": "SRH-CH.P-007", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 7, "service": "Ressources Humaines"}, {"no": "21", "description": "Laptop personnel", "couleur": "", "codification": "SRH-LAP PERS-002", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 2, "service": "Ressources Humaines"}, {"no": "22", "description": "Tableau", "couleur": "", "codification": "SRH-TABL-002", "marque": "", "model": "", "serie": "", "financement": "MSPP/DSNE", "etat": "F", "qte": 2, "service": "Ressources Humaines"}, {"no": "23", "description": "Imprimante", "couleur": "", "codification": "SRH-Imp-003", "marque": "Cannon", "model": "", "serie": "ADVC525IF", "financement": "", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "2", "description": "Bureau", "couleur": "noir et beige", "codification": "LOG-Br-001", "marque": "PHOENIX", "model": "", "serie": "", "financement": "USAID/MSPP", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "3", "description": "Bureau", "couleur": "gris et marron", "codification": "LOG-Br-002", "marque": "IEH", "model": "", "serie": "", "financement": "USAID/MSPP", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "4", "description": "Classeur 4 tirroirs", "couleur": "CRÈME", "codification": "LOG-Cl-001", "marque": "IEH", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "5", "description": "Classeur 4 tirroirs", "couleur": "crème", "codification": "SRH-Cl-001", "marque": "", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "6", "description": "Chaise simple", "couleur": "NOIR", "codification": "LOG-ch-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "7", "description": "Imprimante", "couleur": "BLANCHE", "codification": "LOG-Imp-001", "marque": "HPCF248A", "model": "", "serie": "", "financement": "MSPP/DSNE", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "8", "description": "Imprimante RIZO", "couleur": "BLANCHE", "codification": "LOG-Imp-001", "marque": "RIZO390UI", "model": "", "serie": "", "financement": "MSPP/DSNE", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "9", "description": "Fauteuils noire", "couleur": "NOIRE", "codification": "LOG-Ft-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "10", "description": "Ecran et clavier", "couleur": "NOIR", "codification": "LOG-ECr-001", "marque": "DELL", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "11", "description": "Personnel Computer", "couleur": "gris", "codification": "LOG-Pc-001", "marque": "HP", "model": "15-DY1031WM", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "12", "description": "Television", "couleur": "NOIR", "codification": "LOG-TV-001", "marque": "HAIER", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "13", "description": "DESCTOP complet", "couleur": "NOIR", "codification": "LOG-DESCT-001", "marque": "HP", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "14", "description": "Poubelle petit", "couleur": "NOIR", "codification": "LOG-PB-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "15", "description": "Agrapheuse", "couleur": "NOIR", "codification": "LOG-AGR-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "16", "description": "Panier a document", "couleur": "NOIR", "codification": "LOG-PAN-002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 2, "service": "Ressources Humaines"}, {"no": "17", "description": "Chaise Bourrees", "couleur": "NOIR", "codification": "LOG-ch-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "18", "description": "Frigidaire", "couleur": "BLANCHE", "codification": "log-FRIG-001", "marque": "whirlpool", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "19", "description": "Lampe solaire", "couleur": "", "codification": "log- lamp s-004", "marque": "vmn power", "model": "", "serie": "", "financement": "MSPP/DSNE", "etat": "F", "qte": 7, "service": "Ressources Humaines"}, {"no": "20", "description": "Chaise pliante", "couleur": "BLANCHE", "codification": "LOG-CH.P-003", "marque": "", "model": "", "serie": "", "financement": "MSPP/DSNE", "etat": "F", "qte": 3, "service": "Ressources Humaines"}, {"no": "21", "description": "imprimante", "couleur": "noir", "codification": "LOG-ch-001", "marque": "CANON", "model": "", "serie": "", "financement": "MSPP/DSNE", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "22", "description": "COFFREFORT", "couleur": "Beige et blen p.", "codification": "LOG.COFR P.001", "marque": "", "model": "", "serie": "", "financement": "USAID", "etat": "NF", "qte": 1, "service": "Ressources Humaines"}, {"no": "23", "description": "Ecran", "couleur": "noir", "codification": "Log-ecr-001", "marque": "LENOVO", "model": "", "serie": "", "financement": "USAID", "etat": "NF", "qte": 1, "service": "Ressources Humaines"}, {"no": "24", "description": "ECRAN", "couleur": "BLANC ET NOIR", "codification": "Log-ecr-001", "marque": "HP", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "service": "Ressources Humaines"}, {"no": "25", "description": "Ventilateur", "couleur": "blanche", "codification": "LOG-VT-001", "marque": "EASY POWER", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "service": "Ressources Humaines"}];
+const INVENTAIRE_GENERAL = [
+  {"no": "1", "description": "Destructeur de document", "couleur": "noir", "codification": "ADM-Ch-001 à 006", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "2", "description": "ventillateur", "couleur": "blanc", "codification": "ADM-FT-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "3", "description": "Television Samsung", "couleur": "noir", "codification": "ADM-CL-001", "marque": "", "model": "", "serie": "", "financement": "Padess", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "4", "description": "canl+receiver", "couleur": "noir", "codification": "ADM-H-001", "marque": "Mercury", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "5", "description": "Satar Link", "couleur": "balnc", "codification": "ADM-CL-001002-003", "marque": "Mercury/Hon", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "6", "description": "Table en bois et en metal", "couleur": "marron", "codification": "ADM-REF-001", "marque": "Marbe", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "7", "description": "Calculatrice a ruban", "couleur": "Noir et gris", "codification": "ADM-PB-001", "marque": "Fellowes", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "14", "description": "Poubelle", "couleur": "crème", "codification": "ADM-Imp-001", "marque": "HP", "model": "", "serie": "CNB9G814M8", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "15", "description": "Panneaux d'installation des clefs", "couleur": "gris et amrron", "codification": "ADM-FT-014", "marque": "", "model": "", "serie": "", "financement": "CDS", "etat": "F", "qte": 2, "piece": "Administration"},
+  {"no": "16", "description": "Bloc chequier", "couleur": "", "codification": "ADM-blo.ch-002", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 2, "piece": "Administration"},
+  {"no": "17", "description": "Radio", "couleur": "noir", "codification": "ADM-Rd-001S", "marque": "", "model": "", "serie": "", "financement": "MSH/USAID", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "18", "description": "Griotine", "couleur": "gris et noir", "codification": "ADM-Ag-001", "marque": "Swingline", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "19", "description": "Risographe Gris", "couleur": "", "codification": "ADM-RZ-001", "marque": "", "model": "", "serie": "390UI", "financement": "MSPP", "etat": "NF", "qte": 1, "piece": "Administration"},
+  {"no": "20", "description": "Cloche metalique", "couleur": "", "codification": "ADM-C-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "21", "description": "Radio Noire ancienne", "couleur": "", "codification": "ADM-Ra-001", "marque": "RCA", "model": "", "serie": "", "financement": "Mspp", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "22", "description": "Stetoscope Noire", "couleur": "", "codification": "ADM-Ste-001-002", "marque": "", "model": "81-131", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "23", "description": "Gallon bleu ciel", "couleur": "", "codification": "ADM-Gl-001", "marque": "", "model": "", "serie": "IKTMO26232EW", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "24", "description": "Sceau en Bois Payé Livré", "couleur": "", "codification": "ADM-sc-001", "marque": "", "model": "431K01", "serie": "E5500", "financement": "MSH/USAID", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "25", "description": "Boitier noire", "couleur": "", "codification": "ADM-PC-001", "marque": "HP", "model": "", "serie": "DUAO24116G", "financement": "PEPFAR", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "26", "description": "Retroprojecteur Gris/noire", "couleur": "", "codification": "ADM-Rp-001-002", "marque": "Dell/Focus", "model": "", "serie": "AZMB92101457/C62Y4M1", "financement": "PEPFAR", "etat": "NF", "qte": 2, "piece": "Administration"},
+  {"no": "27", "description": "Cartouche Toner", "couleur": "", "codification": "ADM-Cat-001-002", "marque": "", "model": "", "serie": "", "financement": "MSH/USAID", "etat": "F", "qte": 2, "piece": "Administration"},
+  {"no": "28", "description": "Xerox Drum", "couleur": "", "codification": "ADM-XD-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "29", "description": "3 Boites de 5 Master", "couleur": "", "codification": "ADM-Mas-001-002-003", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 15, "piece": "Administration"},
+  {"no": "30", "description": "Encre HP deja Utilisé", "couleur": "", "codification": "ADM-EN-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "31", "description": "Cable reseau Catégorie 5", "couleur": "", "codification": "ADM-cab-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 50, "piece": "Administration"},
+  {"no": "32", "description": "Multi prises Cremes", "couleur": "", "codification": "ADM-MP-001-002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "33", "description": "Router Natcom bLanche 4G", "couleur": "", "codification": "ADM-Rt-001", "marque": "4GLTE", "model": "", "serie": "321265101105", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "34", "description": "Digital Video Recorder", "couleur": "", "codification": "ADM-DV-001", "marque": "", "model": "", "serie": "MNAHDR3116", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "35", "description": "Sceau en Bois Payé Livré", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "36", "description": "Porte clef des vehicules", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "37", "description": "projecteur EPSON", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 3, "piece": "Administration"},
+  {"no": "38", "description": "Enveloppe jaune", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 4, "piece": "Administration"},
+  {"no": "39", "description": "Sacehet Glisseur pourPotre", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 37, "piece": "Administration"},
+  {"no": "40", "description": "Classeur Metallique", "couleur": "", "codification": "", "marque": "HON ( ferme)", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "41", "description": "Classeur Metallique", "couleur": "", "codification": "", "marque": "mercury", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 2, "piece": "Administration"},
+  {"no": "42", "description": "Classeur Metallique", "couleur": "", "codification": "", "marque": "Mercury", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "43", "description": "Climatiseur", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "NF", "qte": 1, "piece": "Administration"},
+  {"no": "44", "description": "Agrapheuse", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 2, "piece": "Administration"},
+  {"no": "45", "description": "Water cooler", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "46", "description": "Corbeille a document", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "47", "description": "Certains document", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "48", "description": "Pompe", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Administration"},
+  {"no": "49", "description": "Enseigne d'Identification", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 2, "piece": "Administration"},
+  {"no": "2", "description": "Bureau metalique à7T", "couleur": "Marron et gris", "codification": "UAS-Br-001", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 3, "piece": "UAS"},
+  {"no": "3", "description": "Classeur metalique 4T", "couleur": "Gris", "codification": "UAS-Cl-001", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 2, "piece": "UAS"},
+  {"no": "4", "description": "Porte papier ( Personnel)", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "9QMPSW1", "financement": "USAID", "etat": "F", "qte": 1, "piece": "UAS"},
+  {"no": "5", "description": "Ventilateur ( Personnel)", "couleur": "Blanc", "codification": "UAS-V-001", "marque": "WESTPOINT", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "UAS"},
+  {"no": "2", "description": "Classeurs metaliques a 4T", "couleur": "Gris", "codification": "Compt-Cl-005", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 5, "piece": "Comptabilité"},
+  {"no": "3", "description": "Bureau  a 7T", "couleur": "gris et Marron", "codification": "Compt-Br-002", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 3, "piece": "Comptabilité"},
+  {"no": "4", "description": "Bureau gris et marron a 4T", "couleur": "gris et Marron", "codification": "Compt-Br-002", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 2, "piece": "Comptabilité"},
+  {"no": "5", "description": "Bureau  m en formica", "couleur": "marrron", "codification": "Compt-Br-002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 3, "piece": "Comptabilité"},
+  {"no": "6", "description": "Bureau  marron  3T", "couleur": "marron en En", "codification": "Compt-Br-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Comptabilité"},
+  {"no": "7", "description": "Ventilateurs gris, crème, noire", "couleur": "grisinnnrs gris, crème", "codification": "Compt-V-003", "marque": "LASCO", "model": "", "serie": "", "financement": "MSPP/ USAID", "etat": "F", "qte": 3, "piece": "Comptabilité"},
+  {"no": "8", "description": "Dekstop", "couleur": "noire", "codification": "Compt-PC-002", "marque": "HP", "model": "", "serie": "MXL7091HX3", "financement": "MSPP", "etat": "F", "qte": 3, "piece": "Comptabilité"},
+  {"no": "9", "description": "Perforateur", "couleur": "", "codification": "Compt-perfor-001", "marque": "", "model": "", "serie": "WQG35581", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Comptabilité"},
+  {"no": "10", "description": "Grillotine", "couleur": "", "codification": "Compt-gr-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Comptabilité"},
+  {"no": "11", "description": "Classeur 1/2 marron en bois 2T", "couleur": "marron en En", "codification": "Compt-Cl-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Comptabilité"},
+  {"no": "12", "description": "Agrapheuse", "couleur": "noir", "codification": "Compt-agrap-001", "marque": "", "model": "", "serie": "MXL4171NDT", "financement": "PEPFAR", "etat": "F", "qte": 4, "piece": "Comptabilité"},
+  {"no": "13", "description": "Backup 5 Tous", "couleur": "", "codification": "Compt-Bc-001", "marque": "", "model": "", "serie": "43FKDF", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Comptabilité"},
+  {"no": "14", "description": "Imprimante noire", "couleur": "noire", "codification": "Compt-Imp-001", "marque": "HP", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Comptabilité"},
+  {"no": "15", "description": "Imprimante noire", "couleur": "noire", "codification": "Compt-Imp-002", "marque": "HP", "model": "", "serie": "CND9D7DCPG", "financement": "BRESIL", "etat": "F", "qte": 1, "piece": "Comptabilité"},
+  {"no": "16", "description": "Dekstop noire", "couleur": "noire", "codification": "Compt-PC-001", "marque": "DELL ViSTRO", "model": "", "serie": "9QMQSW1", "financement": "BRESIL", "etat": "F", "qte": 1, "piece": "Comptabilité"},
+  {"no": "17", "description": "Radio noire", "couleur": "noire", "codification": "Compt-RD-001", "marque": "", "model": "", "serie": "RCD109", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Comptabilité"},
+  {"no": "18", "description": "Fauteuil noire", "couleur": "noire", "codification": "Compt-Ft-004", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 9, "piece": "Comptabilité"},
+  {"no": "19", "description": "Poubelle Crème plastique", "couleur": "Crème", "codification": "Compt-Pb-001", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Comptabilité"},
+  {"no": "20", "description": "Poubelle noire electrique", "couleur": "noire", "codification": "Compt-Pb-002", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Comptabilité"},
+  {"no": "21", "description": "Poubelle plastique noire", "couleur": "noire", "codification": "Compt-Pb-003", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Comptabilité"},
+  {"no": "22", "description": "Frigidaire", "couleur": "blanc", "codification": "Compt-Frig-001", "marque": "Wespointe", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Comptabilité"},
+  {"no": "23", "description": "Chaise bureau", "couleur": "noir", "codification": "Compt-ch.b.001", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Comptabilité"},
+  {"no": "24", "description": "Classeur Metallique", "couleur": "", "codification": "Compt-Cl-009", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 9, "piece": "Comptabilité"},
+  {"no": "2", "description": "Bureau metalique noire a 7T", "couleur": "", "codification": "SES-Br-001", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "SES"},
+  {"no": "3", "description": "Bureau metalique noire a 7T", "couleur": "", "codification": "SES-Br-002", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "SES"},
+  {"no": "4", "description": "Bureau metalique noire a 7T", "couleur": "", "codification": "SES-Br-003", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "SES"},
+  {"no": "5", "description": "Bureau metalique noire a 7T", "couleur": "", "codification": "SES-Br-004", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "SES"},
+  {"no": "6", "description": "Bureau metalique noire a 7T", "couleur": "", "codification": "SES-Br-005", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "SES"},
+  {"no": "7", "description": "Bureau metalique noire a 7T", "couleur": "", "codification": "SES-Br-006", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "SES"},
+  {"no": "8", "description": "Bureau metalique noire a 4T", "couleur": "", "codification": "SES-Br-001", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "SES"},
+  {"no": "9", "description": "Bureau metalique noire a 4T", "couleur": "", "codification": "SES-Br-002", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "SES"},
+  {"no": "10", "description": "Bureau en formica a 3T", "couleur": "", "codification": "SES-Br-001", "marque": "MERCURY", "model": "", "serie": "", "financement": "CANADA", "etat": "F", "qte": 1, "piece": "SES"},
+  {"no": "11", "description": "Bureau Metalique marron a 3T", "couleur": "", "codification": "SES-Br-002", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "SES"},
+  {"no": "12", "description": "Bureau Metalique marron En Bois", "couleur": "", "codification": "SES-Br-001", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "SES"},
+  {"no": "13", "description": "Bureau Metalique marron En Bois", "couleur": "", "codification": "SES-Br-002", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "SES"},
+  {"no": "14", "description": "Classeur metalique 4T gris", "couleur": "", "codification": "SES-Cl-004", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "SES"},
+  {"no": "15", "description": "Classeur metalique 4T gris", "couleur": "", "codification": "SES-Cl-003", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "SES"},
+  {"no": "16", "description": "Harmoire metalique", "couleur": "", "codification": "SES-Ha-001", "marque": "MERCURY", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "SES"},
+  {"no": "17", "description": "Harmoire metalique", "couleur": "", "codification": "SES-Ha-002", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "SES"},
+  {"no": "18", "description": "Imprimante Crème", "couleur": "", "codification": "SES-Imp-001", "marque": "HP", "model": "", "serie": "MFP4303FDW", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "SES"},
+  {"no": "19", "description": "Ventilateur blanc", "couleur": "", "codification": "SES-V-001", "marque": "WESTPOINT", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "SES"},
+  {"no": "20", "description": "Ventilateur blanc", "couleur": "", "codification": "SES-V-002", "marque": "WESTPOINT", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "SES"},
+  {"no": "21", "description": "Fauteuils noire et gris", "couleur": "", "codification": "SES-Ft-005", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "SES"},
+  {"no": "2", "description": "Chaises de bureau bouréés noire", "couleur": "", "codification": "Sec-Ch-002", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 2, "piece": "Secrétariat"},
+  {"no": "3", "description": "Ventilateurs noir", "couleur": "", "codification": "Sec-V-002", "marque": "Westpoint", "model": "", "serie": "", "financement": "OXFAM", "etat": "F", "qte": 1, "piece": "Secrétariat"},
+  {"no": "4", "description": "Bureau metalique gris et Beige et marron", "couleur": "", "codification": "Sec-Br-002", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 3, "piece": "Secrétariat"},
+  {"no": "5", "description": "Classeurs metaliques gris 4T", "couleur": "Gris", "codification": "Sec-cl-002", "marque": "IEH/ MERCURY", "model": "", "serie": "", "financement": "USAID/OXFAM", "etat": "F", "qte": 3, "piece": "Secrétariat"},
+  {"no": "6", "description": "Ordinateur complet", "couleur": "", "codification": "Sec-cl-001", "marque": "HP", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Secrétariat"},
+  {"no": "7", "description": "Ordinateur complet", "couleur": "", "codification": "Sec-Et-001", "marque": "DELL", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Secrétariat"},
+  {"no": "8", "description": "Imprimante blanc", "couleur": "", "codification": "Sec-Imp-001", "marque": "HP", "model": "", "serie": "QSC-40249", "financement": "MSPP", "etat": "F", "qte": 2, "piece": "Secrétariat"},
+  {"no": "9", "description": "Chaises de bureau bouréés noire", "couleur": "", "codification": "Sec-Imp-001", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Secrétariat"},
+  {"no": "10", "description": "Chaise simple", "couleur": "", "codification": "Sec-PC-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Secrétariat"},
+  {"no": "11", "description": "Miltiprise Noir", "couleur": "", "codification": "Sec-PC-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Secrétariat"},
+  {"no": "12", "description": "Miltiprise Jaune Longue 10 matres", "couleur": "", "codification": "Sec-Wc-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Secrétariat"},
+  {"no": "13", "description": "Poubelle plastique blanche", "couleur": "", "codification": "Sec-Pb-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Secrétariat"},
+  {"no": "14", "description": "Reliure crème et gris", "couleur": "", "codification": "Sec- R-001", "marque": "", "model": "", "serie": "C150", "financement": "MSPP", "etat": "NF", "qte": 1, "piece": "Secrétariat"},
+  {"no": "15", "description": "Multiprises 8 T", "couleur": "", "codification": "Sec-MP-001", "marque": "Digicel", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Secrétariat"},
+  {"no": "16", "description": "Milti Prise beige", "couleur": "", "codification": "Sec-Mlt-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Secrétariat"},
+  {"no": "17", "description": "Corbeille petite noire", "couleur": "", "codification": "Sec-Cob-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Secrétariat"},
+  {"no": "2", "description": "Bureau metallique gris et marron a 7T", "couleur": "", "codification": "SOS-Br-003", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 3, "piece": "SOS 1"},
+  {"no": "3", "description": "Bureau metallique crème a 4 T", "couleur": "", "codification": "SOS-Br-001", "marque": "", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "SOS 1"},
+  {"no": "4", "description": "Bureau gris et formica crème 1 T", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "CANADA", "etat": "F", "qte": 1, "piece": "SOS 1"},
+  {"no": "5", "description": "Bureau gris et marron 4T", "couleur": "", "codification": "SOS-Br-002", "marque": "IEH", "model": "", "serie": "", "financement": "Union Europ", "etat": "F", "qte": 1, "piece": "SOS 1"},
+  {"no": "6", "description": "Bureau gris et marron 4T avec formica", "couleur": "", "codification": "SOS-Br-001", "marque": "IEH", "model": "", "serie": "", "financement": "PEPFAR", "etat": "F", "qte": 1, "piece": "SOS 1"},
+  {"no": "7", "description": "Bufet gris et crème a 3 T", "couleur": "", "codification": "SOS-Br-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "SOS 1"},
+  {"no": "8", "description": "Classeur metallique gris a 4 T", "couleur": "", "codification": "SOS-Cl-008", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 8, "piece": "SOS 1"},
+  {"no": "9", "description": "Classeur metallique gris a 4 T", "couleur": "", "codification": "SOS-Cl-002", "marque": "", "model": "", "serie": "", "financement": "Union Europ", "etat": "F", "qte": 1, "piece": "SOS 1"},
+  {"no": "10", "description": "Classeur metallique gris a 4 T", "couleur": "", "codification": "SOS-Cl-006", "marque": "HON", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 6, "piece": "SOS 1"},
+  {"no": "11", "description": "Classeur 1/2 metallique gris a 2T", "couleur": "", "codification": "SOS-Cl-001", "marque": "HON", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 2, "piece": "SOS 1"},
+  {"no": "12", "description": "Chaises bourrees noires", "couleur": "", "codification": "SOS-Ch-007", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 5, "piece": "SOS 1"},
+  {"no": "13", "description": "Fauteuils noires", "couleur": "", "codification": "SOS-Ft-004", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 4, "piece": "SOS 1"},
+  {"no": "14", "description": "Harmoire metallique gris 5 etages", "couleur": "", "codification": "SOS-Ha-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "SOS 1"},
+  {"no": "15", "description": "Refrigerateur gris", "couleur": "", "codification": "SOS-Ref-001", "marque": "Westpoint", "model": "", "serie": "", "financement": "Union Europ", "etat": "F", "qte": 1, "piece": "SOS 1"},
+  {"no": "16", "description": "Back up APC", "couleur": "", "codification": "SOS-BC-001", "marque": "", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "SOS 1"},
+  {"no": "17", "description": "Imprimante noire", "couleur": "", "codification": "SOS-Imp-001", "marque": "EPSON", "model": "", "serie": "VGNK295389", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "SOS 1"},
+  {"no": "18", "description": "Imprimante noire", "couleur": "", "codification": "SOS-Imp-001", "marque": "HPJASER JET", "model": "", "serie": "0902-01", "financement": "USAID", "etat": "F", "qte": 1, "piece": "SOS 1"},
+  {"no": "19", "description": "ventilateur blanc", "couleur": "", "codification": "SOS-v-001", "marque": "LASKO", "model": "", "serie": "", "financement": "Union Europ", "etat": "F", "qte": 1, "piece": "SOS 1"},
+  {"no": "20", "description": "LAPTOP noire et gris", "couleur": "", "codification": "SOS-Lap-001", "marque": "DELL VOSTRO", "model": "", "serie": "9C3R5", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "SOS 1"},
+  {"no": "21", "description": "LAPTOP noire", "couleur": "", "codification": "SOS-Lap-003", "marque": "DELL Latitude", "model": "", "serie": "SWBT8X1", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "SOS 1"},
+  {"no": "22", "description": "Desktop noire", "couleur": "", "codification": "SOS-PC-001", "marque": "DELL VOSTRO", "model": "", "serie": "HZPZFX1", "financement": "USAID", "etat": "F", "qte": 1, "piece": "SOS 1"},
+  {"no": "23", "description": "Desktop noire", "couleur": "", "codification": "SOS-PC-001", "marque": "HP", "model": "", "serie": "MXL6290KZ5", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "SOS 1"},
+  {"no": "24", "description": "Desktop noire", "couleur": "", "codification": "SOS-PC-001", "marque": "HP", "model": "", "serie": "MXL618179V", "financement": "OMAST/PSI", "etat": "F", "qte": 1, "piece": "SOS 1"},
+  {"no": "25", "description": "Classeur en bois 4 etages", "couleur": "", "codification": "SOS-Cl-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "SOS 1"},
+  {"no": "2", "description": "Bureau  a 6T", "couleur": "Gris et marron", "codification": "SOS-Br-001", "marque": "", "model": "", "serie": "", "financement": "USAID/MSPP", "etat": "F", "qte": 1, "piece": "SOS S"},
+  {"no": "3", "description": "Fauteuil", "couleur": "noir", "codification": "SOS-Ft-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "SOS S"},
+  {"no": "4", "description": "Classeur  Gris a 4 T", "couleur": "Gris", "codification": "SOS-Cl-002", "marque": "2 MERCURY/ 1 IEH", "model": "1 pas de marque", "serie": "", "financement": "2 USAID/MSPP", "etat": "F", "qte": 1, "piece": "SOS S"},
+  {"no": "5", "description": "Ordinateur complet", "couleur": "noir", "codification": "SOS-ord-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "SOS S"},
+  {"no": "6", "description": "Chaise pliante", "couleur": "Blanche", "codification": "SOS-CHP-004", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 4, "piece": "SOS S"},
+  {"no": "7", "description": "TABLEAU MURALE", "couleur": "EN BOIS", "codification": "SOS-TABL-00", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "SOS S"},
+  {"no": "2", "description": "Water cooler", "couleur": "", "codification": "Recep-dir wat-001", "marque": "OFFICE STAR", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Réception / Direction"},
+  {"no": "3", "description": "chaise bourrees", "couleur": "", "codification": "recep dire- ch B-002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 6, "piece": "Réception / Direction"},
+  {"no": "4", "description": "Chaise miltiple", "couleur": "", "codification": "ch-M-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Réception / Direction"},
+  {"no": "5", "description": "chaise Simple", "couleur": "", "codification": "Recep ch.S--002", "marque": "CB", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Réception / Direction"},
+  {"no": "2", "description": "Water cooler", "couleur": "", "codification": "Cons-Tec-wt-cl-002", "marque": "IEH", "model": "", "serie": "", "financement": "MSPP", "etat": "NF", "qte": 1, "piece": "Conseiller Technique"},
+  {"no": "3", "description": "Imprimante", "couleur": "Blanche", "codification": "Cons-Tec-Imp-001", "marque": "HP", "model": "", "serie": "JPBDY01006", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Conseiller Technique"},
+  {"no": "4", "description": "Classeur gris", "couleur": "", "codification": "Cons-Tec-Cl-002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Conseiller Technique"},
+  {"no": "5", "description": "Fauteuil rouge grena", "couleur": "", "codification": "Cons-Tec-Ft-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Conseiller Technique"},
+  {"no": "6", "description": "Bureau gris et Marron", "couleur": "", "codification": "Cons-Tec-Br-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Conseiller Technique"},
+  {"no": "7", "description": "Personnel computer", "couleur": "", "codification": "Cons-Tec-Pc-001", "marque": "Dell", "model": "", "serie": "", "financement": "USAID", "etat": "NF", "qte": 1, "piece": "Conseiller Technique"},
+  {"no": "8", "description": "Fauteuil noire", "couleur": "", "codification": "Cons-Tec-Ft-001", "marque": "", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "Conseiller Technique"},
+  {"no": "9", "description": "Classeur 1/2 3 T crème", "couleur": "", "codification": "Cons-Tec-Cl-001", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "Conseiller Technique"},
+  {"no": "10", "description": "Classeur gris", "couleur": "", "codification": "Con-Tec-Cl-001", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "Conseiller Technique"},
+  {"no": "11", "description": "Chaise simple", "couleur": "", "codification": "Con-ch-spl-001", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Conseiller Technique"},
+  {"no": "12", "description": "Pannier a Dossier", "couleur": "Noir", "codification": "Cons-tec- pn-001", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Conseiller Technique"},
+  {"no": "133", "description": "Porte outil", "couleur": "Noir", "codification": "Cons-Port out-001", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Conseiller Technique"},
+  {"no": "2", "description": "Bureau metal marron et crème", "couleur": "", "codification": "SRec-Br-001", "marque": "", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "Salle de Réception"},
+  {"no": "3", "description": "Ventilateur blanc", "couleur": "", "codification": "SRec-V-001", "marque": "Lasko", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Salle de Réception"},
+  {"no": "4", "description": "Chaisses bourrees noires", "couleur": "", "codification": "SRec-Ch-006", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 4, "piece": "Salle de Réception"},
+  {"no": "5", "description": "Television  Screen", "couleur": "", "codification": "Srec-TV-001", "marque": "Wespoint", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Salle de Réception"},
+  {"no": "6", "description": "Multiprises 8T en bois", "couleur": "Rouge", "codification": "Srec-MP-001", "marque": "Digicel", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Salle de Réception"},
+  {"no": "7", "description": "Recever canal sat", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Salle de Réception"},
+  {"no": "8", "description": "Water cooler", "couleur": "noir et vert", "codification": "", "marque": "Wespoint", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Salle de Réception"},
+  {"no": "9", "description": "Petite table en fer", "couleur": "Bleu", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Salle de Réception"},
+  {"no": "10", "description": "Chaise simple", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Salle de Réception"},
+  {"no": "11", "description": "Cassier a pistolet en bois", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Salle de Réception"},
+  {"no": "2", "description": "Bureau gris et Marron", "couleur": "", "codification": "PH-Br-003", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "NF", "qte": 3, "piece": "Pharmacie"},
+  {"no": "3", "description": "Poubelle", "couleur": "", "codification": "PH-PB-002", "marque": "HP", "model": "", "serie": "JPBDY01006", "financement": "MSPP", "etat": "F", "qte": 2, "piece": "Pharmacie"},
+  {"no": "4", "description": "Classeur Metallique", "couleur": "", "codification": "PH-CL-011", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 11, "piece": "Pharmacie"},
+  {"no": "5", "description": "Ecran", "couleur": "", "codification": "PH-ECR-001", "marque": "Dell", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Pharmacie"},
+  {"no": "6", "description": "Bureau gris et Marron", "couleur": "", "codification": "PH-BUR-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Pharmacie"},
+  {"no": "7", "description": "Personnel computer", "couleur": "", "codification": "PH-PER COMP-001", "marque": "Dell", "model": "", "serie": "", "financement": "USAID", "etat": "NF", "qte": 1, "piece": "Pharmacie"},
+  {"no": "9", "description": "Fauteuil noire", "couleur": "", "codification": "PH-FT-001", "marque": "", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 3, "piece": "Pharmacie"},
+  {"no": "10", "description": "Classeur 1/2 3 T crème", "couleur": "", "codification": "PH-CL-001", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "Pharmacie"},
+  {"no": "11", "description": "Classeur gris", "couleur": "", "codification": "Ing-Tec-Cl-001", "marque": "MERCURY", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 1, "piece": "Pharmacie"},
+  {"no": "12", "description": "Bufet en bois", "couleur": "", "codification": "Ing-Tec-Bc-00", "marque": "FORZA", "model": "NT511ND", "serie": "", "financement": "USAID", "etat": "F", "qte": 2, "piece": "Pharmacie"},
+  {"no": "13", "description": "Star link", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Pharmacie"},
+  {"no": "14", "description": "Chaise bureau", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 3, "piece": "Pharmacie"},
+  {"no": "15", "description": "Ordinateurcomplet", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Pharmacie"},
+  {"no": "16", "description": "Etager a 4 etage en bois", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Pharmacie"},
+  {"no": "2", "description": "Chaises de bureau bouréés noire", "couleur": "", "codification": "Sec-Ch-002", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Épidémiologie"},
+  {"no": "3", "description": "Chaises de bureau", "couleur": "", "codification": "Chb-epid-002", "marque": "Westpoint", "model": "", "serie": "", "financement": "OXFAM", "etat": "F", "qte": 7, "piece": "Épidémiologie"},
+  {"no": "4", "description": "bufet metallique", "couleur": "", "codification": "epid- buf-001", "marque": "Mercure", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 2, "piece": "Épidémiologie"},
+  {"no": "5", "description": "Bureau gri et marron à 7T", "couleur": "", "codification": "epid-bur-001", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 8, "piece": "Épidémiologie"},
+  {"no": "6", "description": "Bureau en bois marron", "couleur": "", "codification": "epid-bru-002", "marque": "IEH", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 2, "piece": "Épidémiologie"},
+  {"no": "7", "description": "Classeurs metaliques gris 4T", "couleur": "", "codification": "epid-clss mt-001", "marque": "IEH/ MERCURY", "model": "", "serie": "", "financement": "USAID/OXFAM", "etat": "F", "qte": 12, "piece": "Épidémiologie"},
+  {"no": "8", "description": "Etagere metallique a 4 etage", "couleur": "", "codification": "epid- etag-001", "marque": "IEH/ MERCURY", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Épidémiologie"},
+  {"no": "9", "description": "Etagere en bois marron", "couleur": "", "codification": "epid etag-002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Épidémiologie"},
+  {"no": "10", "description": "Imprimante crème", "couleur": "", "codification": "epid-impr-001", "marque": "Canonn", "model": "", "serie": "QSC-40249", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Épidémiologie"},
+  {"no": "11", "description": "Imprimante gris et bleu", "couleur": "", "codification": "epid-imp-002", "marque": "HP", "model": "", "serie": "CN624DF4XD", "financement": "PADES", "etat": "NF", "qte": 1, "piece": "Épidémiologie"},
+  {"no": "12", "description": "Personnel computer noire", "couleur": "", "codification": "epid- compt.p-001", "marque": "DELL", "model": "", "serie": "CN-0R16JC72872", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Épidémiologie"},
+  {"no": "13", "description": "Personnel computer noire", "couleur": "", "codification": "epid-compt.p-002", "marque": "DELL /VOSTRO", "model": "", "serie": "37322533849", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Épidémiologie"},
+  {"no": "14", "description": "Ordinateur non complet", "couleur": "", "codification": "ordi-ncp.001", "marque": "T center/ ecr HP", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Épidémiologie"},
+  {"no": "15", "description": "Poubelle plastique Blanche", "couleur": "", "codification": "Epid-poub-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 2, "piece": "Épidémiologie"},
+  {"no": "16", "description": "Backup noire", "couleur": "", "codification": "epid-bcup-001", "marque": "", "model": "", "serie": "C150", "financement": "MSPP", "etat": "NF", "qte": 1, "piece": "Épidémiologie"},
+  {"no": "17", "description": "Giotine", "couleur": "", "codification": "Sec-Bc-001", "marque": "Forza", "model": "NT1011", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Épidémiologie"},
+  {"no": "18", "description": "Ventilateur blanc et Rouge", "couleur": "", "codification": "epid-gtine-001", "marque": "HP", "model": "", "serie": "CNDRPB178B", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Épidémiologie"},
+  {"no": "19", "description": "Classeur Crème", "couleur": "", "codification": "epid-V-001", "marque": "Whirlpool", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Épidémiologie"},
+  {"no": "20", "description": "Ventilateur blanc", "couleur": "", "codification": "epid-V-002", "marque": "Jocker", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Épidémiologie"},
+  {"no": "21", "description": "Boitier  Noire", "couleur": "", "codification": "epid-", "marque": "IEH Mercury", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Épidémiologie"},
+  {"no": "22", "description": "Ventilateur a pied", "couleur": "noir", "codification": "epid-V-002", "marque": "Lasko", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Épidémiologie"},
+  {"no": "2", "description": "Bureau noir et beige", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "USAID/MSPP", "etat": "F", "qte": 1, "piece": "Sous-Marche Escalier"},
+  {"no": "3", "description": "Fauteuil noire", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Sous-Marche Escalier"},
+  {"no": "4", "description": "Classeur metallique Gris et marron", "couleur": "", "codification": "", "marque": "2 MERCURY/ 1 IEH", "model": "1 pas de marque", "serie": "", "financement": "2 USAID/MSPP", "etat": "F", "qte": 4, "piece": "Sous-Marche Escalier"},
+  {"no": "5", "description": "Bureau gris et marron", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "1-800-932-2278", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Sous-Marche Escalier"},
+  {"no": "6", "description": "Chateau blanc vide", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "Union Europ", "etat": "F", "qte": 1, "piece": "Sous-Marche Escalier"},
+  {"no": "7", "description": "Chateau blanc rempli lique", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Sous-Marche Escalier"},
+  {"no": "8", "description": "drum blanc rempli", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 2, "piece": "Sous-Marche Escalier"},
+  {"no": "9", "description": "Invertaire Hybride", "couleur": "", "codification": "", "marque": "Luc solar", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Sous-Marche Escalier"},
+  {"no": "10", "description": "8 Batteries", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 8, "piece": "Sous-Marche Escalier"},
+  {"no": "11", "description": "Petite table en Fer", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Sous-Marche Escalier"},
+  {"no": "2", "description": "Bureau gris et marron", "couleur": "", "codification": "", "marque": "IEH", "model": "", "serie": "", "financement": "USAID/MSPP", "etat": "F", "qte": 3, "piece": "Service Juridique"},
+  {"no": "3", "description": "Chaise simple", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 3, "piece": "Service Juridique"},
+  {"no": "4", "description": "Classeur metallique Gris et marron", "couleur": "", "codification": "", "marque": "2 MERCURY/ 1 IEH", "model": "1 pas de marque", "serie": "", "financement": "2 USAID/MSPP", "etat": "F", "qte": 6, "piece": "Service Juridique"},
+  {"no": "5", "description": "Bureau  marron", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Service Juridique"},
+  {"no": "6", "description": "Coffre F.", "couleur": "noir", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Service Juridique"},
+  {"no": "7", "description": "Armoir en bois a 6 portes", "couleur": "Marron", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Service Juridique"},
+  {"no": "8", "description": "Water cooler", "couleur": "beige", "codification": "", "marque": "Wespoint", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Service Juridique"},
+  {"no": "2", "description": "Bureau gris et marron", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "USAID/MSPP", "etat": "F", "qte": 2, "piece": "Assistant ADM"},
+  {"no": "3", "description": "Fauteuil noire", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 2, "piece": "Assistant ADM"},
+  {"no": "4", "description": "Classeur metallique Gris", "couleur": "", "codification": "", "marque": "IEH", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Assistant ADM"},
+  {"no": "5", "description": "Ordinateur comlpet", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "NF", "qte": 1, "piece": "Assistant ADM"},
+  {"no": "6", "description": "Imprimante", "couleur": "", "codification": "", "marque": "HP", "model": "", "serie": "", "financement": "", "etat": "NF", "qte": 1, "piece": "Assistant ADM"},
+  {"no": "7", "description": "Ventillateur", "couleur": "", "codification": "", "marque": "wespoint", "model": "", "serie": "", "financement": "", "etat": "NF", "qte": 1, "piece": "Assistant ADM"},
+  {"no": "8", "description": "Panier a Dossier vert", "couleur": "", "codification": "", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Assistant ADM"},
+  {"no": "2", "description": "Tables crème et gris pliante plastique", "couleur": "", "codification": "SS-Ta-008", "marque": "OFFICE STAR", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 8, "piece": "Salle de Situation"},
+  {"no": "3", "description": "Tables en formica marron et noire", "couleur": "", "codification": "SS- Ta-002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 2, "piece": "Salle de Situation"},
+  {"no": "4", "description": "Table ronde en formica", "couleur": "", "codification": "SS- Ta-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Salle de Situation"},
+  {"no": "5", "description": "Speaker noire petit", "couleur": "", "codification": "SS-Spk-002", "marque": "CB", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 6, "piece": "Salle de Situation"},
+  {"no": "6", "description": "Tv", "couleur": "", "codification": "SS-Trep-001", "marque": "Samsung", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 2, "piece": "Salle de Situation"},
+  {"no": "7", "description": "Pots Fleurs", "couleur": "", "codification": "SS-Fl-002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 2, "piece": "Salle de Situation"},
+  {"no": "8", "description": "Bureau IEH", "couleur": "", "codification": "SS-bur-004", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 4, "piece": "Salle de Situation"},
+  {"no": "9", "description": "Chaise Bourrées", "couleur": "", "codification": "SS-CHB.002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Salle de Situation"},
+  {"no": "10", "description": "Air conditionné", "couleur": "", "codification": "SS-AIRC-002", "marque": "TGM", "model": "", "serie": "", "financement": "MSPP", "etat": "NF", "qte": 2, "piece": "Salle de Situation"},
+  {"no": "11", "description": "Tableau de projection Gros", "couleur": "", "codification": "SS-TBPA-001", "marque": "EPSON", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Salle de Situation"},
+  {"no": "12", "description": "Projecteur", "couleur": "", "codification": "SS-PROJEC-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Salle de Situation"},
+  {"no": "13", "description": "Chaise pliante BLANCHE", "couleur": "", "codification": "SS.CH.P.075", "marque": "", "model": "", "serie": "", "financement": "MSPP/OPS", "etat": "F", "qte": 75, "piece": "Salle de Situation"},
+  {"no": "2", "description": "Bureau blanc", "couleur": "", "codification": "SRH-Br-004", "marque": "IEH", "model": "", "serie": "", "financement": "USAID/MSPP", "etat": "F", "qte": 1, "piece": "Ressources Humaines"},
+  {"no": "3", "description": "Bureau gris et marron", "couleur": "", "codification": "SRH-Br-002", "marque": "", "model": "", "serie": "", "financement": "USAID/MSPP", "etat": "F", "qte": 1, "piece": "Ressources Humaines"},
+  {"no": "4", "description": "Classeur CRÈME", "couleur": "", "codification": "SRH-Cl-006", "marque": "MERCURY", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Ressources Humaines"},
+  {"no": "5", "description": "Classeur", "couleur": "", "codification": "SRH-Cl-004", "marque": "HON", "model": "", "serie": "", "financement": "USAID", "etat": "F", "qte": 4, "piece": "Ressources Humaines"},
+  {"no": "6", "description": "Chaise simple", "couleur": "", "codification": "SRH-ch-003", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 3, "piece": "Ressources Humaines"},
+  {"no": "7", "description": "Imprimante", "couleur": "", "codification": "SRH-Imp-001", "marque": "Cannon", "model": "", "serie": "WQG35553", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Ressources Humaines"},
+  {"no": "8", "description": "Imprimante", "couleur": "", "codification": "SRH-Imp-002", "marque": "HP137FNW", "model": "", "serie": "", "financement": "MSPP", "etat": "NF", "qte": 1, "piece": "Ressources Humaines"},
+  {"no": "9", "description": "Fauteuils noire", "couleur": "", "codification": "SRH-Ft-002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 2, "piece": "Ressources Humaines"},
+  {"no": "10", "description": "Ecran et clavier", "couleur": "", "codification": "SRH-ECr-001", "marque": "DELL", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Ressources Humaines"},
+  {"no": "11", "description": "Personnel Computer", "couleur": "gris", "codification": "SRH-Pc-001", "marque": "lenovo", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 2, "piece": "Ressources Humaines"},
+  {"no": "12", "description": "Multiprises bleu et crème", "couleur": "", "codification": "SRH-MP-002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 2, "piece": "Ressources Humaines"},
+  {"no": "13", "description": "Ordinateur complet", "couleur": "", "codification": "SRH-dell-001", "marque": "DELL", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Ressources Humaines"},
+  {"no": "14", "description": "Poubelle petit", "couleur": "noir", "codification": "SRH-PB-001", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Ressources Humaines"},
+  {"no": "15", "description": "Agrapheuse", "couleur": "noir", "codification": "SRH-AGR-002", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 2, "piece": "Ressources Humaines"},
+  {"no": "16", "description": "Panier a document", "couleur": "gris", "codification": "SRH PAN-001", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Ressources Humaines"},
+  {"no": "17", "description": "Chaise Bourrees", "couleur": "", "codification": "SRH-ch-002", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 2, "piece": "Ressources Humaines"},
+  {"no": "18", "description": "Table pliante", "couleur": "", "codification": "SRH-TAB P-002", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 2, "piece": "Ressources Humaines"},
+  {"no": "19", "description": "Chaise bureau", "couleur": "", "codification": "SRH- CHB-001", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Ressources Humaines"},
+  {"no": "20", "description": "Chaise pliante", "couleur": "", "codification": "SRH-CH.P-007", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 7, "piece": "Ressources Humaines"},
+  {"no": "21", "description": "Laptop personnel", "couleur": "", "codification": "SRH-LAP PERS-002", "marque": "", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 2, "piece": "Ressources Humaines"},
+  {"no": "22", "description": "Tableau", "couleur": "", "codification": "SRH-TABL-002", "marque": "", "model": "", "serie": "", "financement": "MSPP/DSNE", "etat": "F", "qte": 2, "piece": "Ressources Humaines"},
+  {"no": "23", "description": "Imprimante", "couleur": "", "codification": "SRH-Imp-003", "marque": "Cannon", "model": "", "serie": "ADVC525IF", "financement": "", "etat": "F", "qte": 1, "piece": "Ressources Humaines"},
+  {"no": "2", "description": "Bureau", "couleur": "noir et beige", "codification": "LOG-Br-001", "marque": "PHOENIX", "model": "", "serie": "", "financement": "USAID/MSPP", "etat": "F", "qte": 1, "piece": "Logistique"},
+  {"no": "3", "description": "Bureau", "couleur": "gris et marron", "codification": "LOG-Br-002", "marque": "IEH", "model": "", "serie": "", "financement": "USAID/MSPP", "etat": "F", "qte": 1, "piece": "Logistique"},
+  {"no": "4", "description": "Classeur 4 tirroirs", "couleur": "CRÈME", "codification": "LOG-Cl-001", "marque": "IEH", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Logistique"},
+  {"no": "5", "description": "Classeur 4 tirroirs", "couleur": "crème", "codification": "SRH-Cl-001", "marque": "", "model": "", "serie": "", "financement": "USAID", "etat": "NF", "qte": 1, "piece": "Logistique"},
+  {"no": "6", "description": "Chaise simple", "couleur": "NOIR", "codification": "LOG-ch-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Logistique"},
+  {"no": "7", "description": "Imprimante", "couleur": "BLANCHE", "codification": "LOG-Imp-001", "marque": "HPCF248A", "model": "", "serie": "", "financement": "MSPP/DSNE", "etat": "F", "qte": 1, "piece": "Logistique"},
+  {"no": "8", "description": "Imprimante RIZO", "couleur": "BLANCHE", "codification": "LOG-Imp-001", "marque": "RIZO390UI", "model": "", "serie": "", "financement": "MSPP/DSNE", "etat": "NF", "qte": 1, "piece": "Logistique"},
+  {"no": "9", "description": "Fauteuils noire", "couleur": "NOIRE", "codification": "LOG-Ft-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Logistique"},
+  {"no": "10", "description": "Ecran et clavier", "couleur": "NOIR", "codification": "LOG-ECr-001", "marque": "DELL", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Logistique"},
+  {"no": "11", "description": "Personnel Computer", "couleur": "gris", "codification": "LOG-Pc-001", "marque": "HP", "model": "15-DY1031WM", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Logistique"},
+  {"no": "12", "description": "Television", "couleur": "NOIR", "codification": "LOG-TV-001", "marque": "HAIER", "model": "", "serie": "", "financement": "MSPP", "etat": "NF", "qte": 1, "piece": "Logistique"},
+  {"no": "13", "description": "DESCTOP complet", "couleur": "NOIR", "codification": "LOG-DESCT-001", "marque": "HP", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Logistique"},
+  {"no": "14", "description": "Poubelle petit", "couleur": "NOIR", "codification": "LOG-PB-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Logistique"},
+  {"no": "15", "description": "Agrapheuse", "couleur": "NOIR", "codification": "LOG-AGR-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Logistique"},
+  {"no": "16", "description": "Panier a document", "couleur": "NOIR", "codification": "LOG-PAN-002", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 2, "piece": "Logistique"},
+  {"no": "17", "description": "Chaise Bourrees", "couleur": "NOIR", "codification": "LOG-ch-001", "marque": "", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Logistique"},
+  {"no": "18", "description": "Frigidaire", "couleur": "BLANCHE", "codification": "log-FRIG-001", "marque": "whirlpool", "model": "", "serie": "", "financement": "MSPP", "etat": "F", "qte": 1, "piece": "Logistique"},
+  {"no": "19", "description": "Lampe solaire", "couleur": "", "codification": "log- lamp s-004", "marque": "vmn power", "model": "", "serie": "", "financement": "MSPP/DSNE", "etat": "F", "qte": 7, "piece": "Logistique"},
+  {"no": "20", "description": "Chaise pliante", "couleur": "BLANCHE", "codification": "LOG-CH.P-003", "marque": "", "model": "", "serie": "", "financement": "MSPP/DSNE", "etat": "NF", "qte": 3, "piece": "Logistique"},
+  {"no": "21", "description": "imprimante", "couleur": "noir", "codification": "LOG-ch-001", "marque": "CANON", "model": "", "serie": "", "financement": "MSPP/DSNE", "etat": "NF", "qte": 1, "piece": "Logistique"},
+  {"no": "22", "description": "COFFREFORT", "couleur": "Beige et blen p.", "codification": "LOG.COFR P.001", "marque": "", "model": "", "serie": "", "financement": "USAID", "etat": "NF", "qte": 1, "piece": "Logistique"},
+  {"no": "23", "description": "Ecran", "couleur": "noir", "codification": "Log-ecr-001", "marque": "LENOVO", "model": "", "serie": "", "financement": "USAID", "etat": "NF", "qte": 1, "piece": "Logistique"},
+  {"no": "24", "description": "ECRAN", "couleur": "BLANC ET NOIR", "codification": "Log-ecr-001", "marque": "HP", "model": "", "serie": "", "financement": "USAID", "etat": "NF", "qte": 1, "piece": "Logistique"},
+  {"no": "25", "description": "Ventilateur", "couleur": "blanche", "codification": "LOG-VT-001", "marque": "EASY POWER", "model": "", "serie": "", "financement": "", "etat": "F", "qte": 1, "piece": "Logistique"},
+];
 
 
 /* ── Inventaire Général ── */
-let invGenFilter = {q:'', service:'', etat:''};
+let invGenFilter = {q:'', piece:'', etat:''};
 let invGenItems = JSON.parse(JSON.stringify(INVENTAIRE_GENERAL));
 let invNextId = INVENTAIRE_GENERAL.length + 1;
 
@@ -470,7 +750,7 @@ function filterInvGen(q, service, etat) {
   if (q !== '') invGenFilter.q = q;
   if (service !== '') invGenFilter.service = service;
   if (etat !== '') invGenFilter.etat = etat;
-  if (q === '' && document.querySelector('#inv-service-filter') === null) {
+  if (q === '' && document.querySelector('#inv-piece-filter') === null) {
     // called with empty q to reset
   }
   renderInvGen();
@@ -478,14 +758,14 @@ function filterInvGen(q, service, etat) {
 
 function renderInvGen() {
   const q = (invGenFilter.q || '').toLowerCase();
-  const svc = document.getElementById('inv-service-filter') ? document.getElementById('inv-service-filter').value : '';
+  const piece = document.getElementById('inv-piece-filter') ? document.getElementById('inv-piece-filter').value : '';
   const et  = document.getElementById('inv-etat-filter') ? document.getElementById('inv-etat-filter').value : '';
 
   const filtered = invGenItems.filter(function(i) {
     const matchQ   = !q   || i.description.toLowerCase().includes(q) || i.codification.toLowerCase().includes(q) || i.marque.toLowerCase().includes(q);
-    const matchSvc = !svc || i.service === svc;
+    const matchPiece = !piece || i.piece === piece;
     const matchEt  = !et  || i.etat === et;
-    return matchQ && matchSvc && matchEt;
+    return matchQ && matchPiece && matchEt;
   });
 
   const total = filtered.length;
@@ -518,7 +798,7 @@ function renderInvGen() {
       '<td style="font-size:11px">' + esc(item.financement) + '</td>' +
       '<td>' + etatBadge(item.etat) + '</td>' +
       '<td style="text-align:center;font-weight:600">' + esc(String(item.qte)) + '</td>' +
-      '<td style="font-size:11px;color:var(--text3)">' + esc(item.service) + '</td>' +
+      '<td style="font-size:11px;color:var(--text3)">' + esc(item.piece) + '</td>' +
       '<td><button class="btn btn-ghost" style="padding:3px 8px;font-size:10px" onclick="editInvGen(' + JSON.stringify(item.no) + ')">Modifier</button></td>' +
       '</tr>';
   }).join('') || '<tr><td colspan="10" class="empty">Aucun résultat.</td></tr>';
@@ -538,7 +818,7 @@ function editInvGen(no) {
   document.getElementById('inv-fin').value      = item.financement;
   document.getElementById('inv-etat').value     = item.etat;
   document.getElementById('inv-qte').value      = item.qte;
-  document.getElementById('inv-service').value  = item.service;
+  document.getElementById('inv-piece').value  = item.piece;
   openModal('modal-inv-add');
 }
 
@@ -554,7 +834,7 @@ function saveInvGen() {
     financement:  document.getElementById('inv-fin').value,
     etat:         document.getElementById('inv-etat').value,
     qte:          parseInt(document.getElementById('inv-qte').value)||1,
-    service:      document.getElementById('inv-service').value,
+    service:      document.getElementById('inv-piece').value,
   };
   if (!obj.description) { alert('Description requise.'); return; }
   if (editNo) {
@@ -923,7 +1203,7 @@ async function saveTransfert() {
   let fromLabel = '';
   if (source === 'hq') {
     const item = invGenItems.find(x => String(x.no) === String(itemId));
-    fromLabel = item ? item.service : 'HQ';
+    fromLabel = item ? item.piece : 'HQ';
   } else {
     const item = invDItems.find(x => x.id === itemId);
     fromLabel = item ? item.institution : '—';
@@ -963,7 +1243,7 @@ async function saveTransfert() {
     saveInvD_data(invDItems);
   } else if (source === 'hq') {
     const item = invGenItems.find(x => String(x.no) === String(itemId));
-    if (item && destType === 'service') item.service = destVal;
+    if (item && destType === 'service') item.piece = destVal;
     localStorage.setItem('dsne_inv_general', JSON.stringify(invGenItems));
   }
 
@@ -1524,13 +1804,13 @@ function renderInvGen() {
   if (!tbody) return;
   // Re-render with transfer button
   const q   = '';
-  const svc = document.getElementById('inv-service-filter') ? document.getElementById('inv-service-filter').value : '';
+  const piece = document.getElementById('inv-piece-filter') ? document.getElementById('inv-piece-filter').value : '';
   const et  = document.getElementById('inv-etat-filter') ? document.getElementById('inv-etat-filter').value : '';
   const filtered = invGenItems.filter(function(i) {
     const matchQ   = !q   || i.description.toLowerCase().includes(q);
-    const matchSvc = !svc || i.service === svc;
+    const matchPiece = !piece || i.piece === piece;
     const matchEt  = !et  || i.etat === et;
-    return matchQ && matchSvc && matchEt;
+    return matchQ && matchPiece && matchEt;
   });
   tbody.innerHTML = filtered.map(function(item) {
     return '<tr>' +
@@ -1542,7 +1822,7 @@ function renderInvGen() {
       '<td style="font-size:11px">' + esc(item.financement) + '</td>' +
       '<td>' + etatBadge(item.etat) + '</td>' +
       '<td style="text-align:center;font-weight:600">' + esc(String(item.qte)) + '</td>' +
-      '<td style="font-size:11px;color:var(--g400)">' + esc(item.service) + '</td>' +
+      '<td style="font-size:11px;color:var(--g400)">' + esc(item.piece) + '</td>' +
       '<td style="display:flex;gap:4px">' +
         '<button class="btn btn-secondary btn-sm" style="padding:3px 8px;font-size:10px" onclick="editInvGen(\'' + String(item.no).replace(/'/g,"\\'") + '\')">Modifier</button>' +
         '<button class="btn btn-primary btn-sm" style="padding:3px 8px;font-size:10px" onclick="openTransfertModal(\'hq\',\'' + String(item.no).replace(/'/g,"\\'") + '\')">Transférer</button>' +
@@ -1561,3 +1841,443 @@ document.addEventListener('DOMContentLoaded', function() {
     if (el) el.value = today;
   });
 });
+
+/* ══════════════════════════════════════════════════════════
+   VISUAL EXCEL IMPORT
+   Uses SheetJS (xlsx) loaded via CDN in index.html
+   Handles both Inventaire Général and Inventaire Départemental
+══════════════════════════════════════════════════════════ */
+
+/* ── Import for Inventaire Général (HQ rooms) ── */
+function importInventaireGeneral(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const wb   = XLSX.read(data, { type: 'array' });
+      const ws   = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+      const parsed = parseInventaireSheet(rows);
+      if (!parsed.length) { toast('Aucun bien trouvé dans le fichier.', 'error'); return; }
+
+      // Show preview modal before merging
+      showImportPreview(parsed, 'general');
+    } catch(err) {
+      toast('Erreur lecture fichier : ' + err.message, 'error');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+  input.value = ''; // reset so same file can be re-imported
+}
+
+/* ── Import for Inventaire Départemental ── */
+function importInventaireDept(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const wb   = XLSX.read(data, { type: 'array' });
+      const ws   = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+      const parsed = parseDeptSheet(rows);
+      if (!parsed.length) { toast('Aucun bien trouvé dans le fichier.', 'error'); return; }
+      showImportPreview(parsed, 'dept');
+    } catch(err) {
+      toast('Erreur lecture fichier : ' + err.message, 'error');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+  input.value = '';
+}
+
+/* ── Parse DSNE-format inventory sheet (multi-service, col layout) ── */
+function parseInventaireSheet(rows) {
+  const SERVICE_MAP = {
+    'ADMINISTRATION':'Administration','UAS':'UAS','COMPTABILITE':'Comptabilité',
+    'COMPTABILITÉ':'Comptabilité','SES':'SES','SECRETARIAT':'Secrétariat',
+    'SECRÉTARIAT':'Secrétariat','SOS1':'SOS 1','SOSS':'SOS S',
+    'RECEPTION DE DIRECTION':'Réception / Direction','CONSEILLER TECH':'Conseiller Technique',
+    'SALLE RECEPTION':'Salle de Réception','SALLE DE RÉCEPTION':'Salle de Réception',
+    'PHARMACIE':'Pharmacie','PARMACIE':'Pharmacie','EPIDEMIOLOGIE':'Épidémiologie',
+    'ÉPIDÉMIOLOGIE':'Épidémiologie','SOUS MARCHE ESCALIER':'Sous-Marche Escalier',
+    'JURIDIQUE':'Service Juridique','SERVICE JURIDIQUE':'Service Juridique',
+    "SALLE D'ATTENTE":'Salle d\'Attente','ASSISTANT ADM':'Assistant ADM',
+    'SALLE SITUATION':'Salle de Situation','RESSOURCES HUMAINES':'Ressources Humaines',
+    'RH':'Ressources Humaines','LOGISTIQUE':'Logistique','INTENDANTE':'Intendante',
+    'LABORATOIRE':'Laboratoire',
+  };
+  let currentPiece = 'Administration';
+  const items = [];
+
+  for (const row of rows) {
+    // Detect piece/service header
+    const c0 = String(row[0]||'').trim().toUpperCase();
+    const c1 = String(row[1]||'').trim().toUpperCase();
+    // "SERVICE: XXXX" pattern
+    if (c0.startsWith('SERVICE') && c0.includes(':')) {
+      const after = c0.split(':').slice(1).join(':').trim();
+      if (SERVICE_MAP[after]) { currentPiece = SERVICE_MAP[after]; continue; }
+    }
+    // Standalone col1 name
+    if (SERVICE_MAP[c1]) { currentPiece = SERVICE_MAP[c1]; continue; }
+
+    // Data row: col0 = numeric no, col1 = description
+    const no   = row[0];
+    const desc = String(row[1]||'').trim();
+    if (!desc || desc.toLowerCase() === 'description') continue;
+    if (typeof no !== 'number' && isNaN(parseInt(no))) continue;
+
+    const bon = String(row[8]||'').trim().toUpperCase();
+    const nf  = String(row[9]||'').trim().toUpperCase();
+    let etat = 'F';
+    if (nf.includes('N')) etat = 'NF';
+    else if (nf.toLowerCase().includes('mauvais')) etat = 'MÉ';
+    else if (bon === 'F' || bon === '1F') etat = 'F';
+
+    let qte = 1;
+    try { qte = parseInt(String(row[10]||'1').split(' ')[0]) || 1; } catch(e) {}
+
+    const clean = v => { const s = String(v||'').trim(); return (s.toUpperCase()==='N/A'||s.toUpperCase()==='NA') ? '' : s; };
+    items.push({
+      no:           String(parseInt(no)||''),
+      description:  desc,
+      couleur:      clean(row[2]),
+      codification: clean(row[3]),
+      marque:       clean(row[4]),
+      model:        clean(row[5]),
+      serie:        clean(row[6]),
+      financement:  clean(row[7]),
+      etat, qte,
+      piece:        currentPiece,
+    });
+  }
+  return items;
+}
+
+/* ── Parse dept sheet: simpler format (description, institution, etat, qte) ── */
+function parseDeptSheet(rows) {
+  // Expect header row with: Description, Marque, Institution, Etat, Qte
+  // or we do a best-effort parse similar to general
+  const items = [];
+  let headerRow = -1;
+  for (let i = 0; i < rows.length; i++) {
+    const r = rows[i].map(c => String(c||'').toLowerCase().trim());
+    if (r.includes('description') || r.includes('bien')) { headerRow = i; break; }
+  }
+  if (headerRow < 0) headerRow = 0;
+
+  const hdr = rows[headerRow].map(c => String(c||'').toLowerCase().trim());
+  const col = (name) => hdr.findIndex(h => h.includes(name));
+  const cDesc = col('description') !== -1 ? col('description') : col('bien') !== -1 ? col('bien') : 0;
+  const cMarq = col('marque');
+  const cCode = col('codif');
+  const cInst = col('institution') !== -1 ? col('institution') : col('inst');
+  const cEtat = col('etat') !== -1 ? col('etat') : col('bon');
+  const cQte  = col('qte') !== -1 ? col('qte') : col('quantit');
+
+  for (let i = headerRow + 1; i < rows.length; i++) {
+    const row = rows[i];
+    const desc = String(row[cDesc >= 0 ? cDesc : 0]||'').trim();
+    if (!desc) continue;
+    let etat = 'F';
+    if (cEtat >= 0) {
+      const ev = String(row[cEtat]||'').toUpperCase();
+      if (ev.includes('N')) etat = 'NF';
+      else if (ev.includes('MAU')) etat = 'MÉ';
+    }
+    let qte = 1;
+    if (cQte >= 0) try { qte = parseInt(row[cQte]) || 1; } catch(e) {}
+    items.push({
+      desc,
+      marque:      cMarq >= 0 ? String(row[cMarq]||'').trim() : '',
+      code:        cCode >= 0 ? String(row[cCode]||'').trim() : '',
+      serie:       '',
+      fin:         '',
+      etat, qte,
+      isVehicule:  false,
+      institution: cInst >= 0 ? String(row[cInst]||'').trim() : INSTITUTIONS_NE[0],
+      id:          'id-' + Date.now() + '-' + i,
+    });
+  }
+  return items;
+}
+
+/* ── Import Preview Modal ── */
+let _importBuffer = [];
+let _importTarget = '';
+
+function showImportPreview(items, target) {
+  _importBuffer = items;
+  _importTarget = target;
+
+  const overlay = document.getElementById('modal-import-preview');
+  if (!overlay) {
+    // Create it dynamically
+    const div = document.createElement('div');
+    div.className = 'modal-overlay';
+    div.id = 'modal-import-preview';
+    div.innerHTML = `
+      <div class="modal" style="width:780px;max-height:80vh">
+        <div class="modal-header">
+          <h2 id="import-preview-title">Aperçu de l'importation</h2>
+          <button class="modal-close" onclick="closeModal('modal-import-preview')">✕</button>
+        </div>
+        <div class="modal-body">
+          <div id="import-preview-stats" style="margin-bottom:1rem;padding:10px 14px;background:var(--c50);border:1px solid var(--c100);font-size:13px"></div>
+          <div style="max-height:380px;overflow-y:auto">
+            <table class="data-table" id="import-preview-table">
+              <thead><tr id="import-preview-thead"></tr></thead>
+              <tbody id="import-preview-tbody"></tbody>
+            </table>
+          </div>
+          <div style="margin-top:1rem;padding:10px 14px;background:var(--amber-bg,#FFF4E6);border:1px solid #F59E42;font-size:12px;color:#7A4700">
+            ⚠️ Cette importation <strong>remplace</strong> les données actuelles. Vérifiez l'aperçu avant de confirmer.
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="confirmImport()">✓ Confirmer l'importation</button>
+            <button class="btn btn-secondary" onclick="closeModal('modal-import-preview')">Annuler</button>
+          </div>
+        </div>
+      </div>`;
+    div.addEventListener('click', e => { if (e.target === div) div.classList.remove('open'); });
+    document.body.appendChild(div);
+  }
+
+  // Populate preview
+  const isGeneral = target === 'general';
+  document.getElementById('import-preview-title').textContent =
+    'Aperçu — ' + (isGeneral ? 'Inventaire Général' : 'Inventaire Départemental') +
+    ' (' + items.length + ' biens)';
+
+  document.getElementById('import-preview-stats').innerHTML =
+    '<strong>' + items.length + ' biens</strong> détectés · ' +
+    [...new Set(items.map(i => isGeneral ? i.piece : i.institution))].length +
+    (isGeneral ? ' pièces' : ' institutions');
+
+  const thead = document.getElementById('import-preview-thead');
+  const tbody = document.getElementById('import-preview-tbody');
+
+  if (isGeneral) {
+    thead.innerHTML = '<th>No</th><th>Description</th><th>Marque</th><th>Codification</th><th>État</th><th>Qté</th><th>Pièce / Local</th>';
+    tbody.innerHTML = items.slice(0, 50).map(it =>
+      `<tr>
+        <td style="font-family:monospace;font-size:10px">${esc(it.no)}</td>
+        <td style="color:var(--g800)">${esc(it.description)}</td>
+        <td style="font-size:11px">${esc(it.marque)}</td>
+        <td style="font-family:monospace;font-size:10px">${esc(it.codification)}</td>
+        <td>${etatBadge(it.etat)}</td>
+        <td style="text-align:center;font-weight:600">${it.qte}</td>
+        <td style="font-size:11px;color:var(--c600)">${esc(it.piece)}</td>
+      </tr>`
+    ).join('') + (items.length > 50 ? `<tr><td colspan="7" style="text-align:center;color:var(--g400);font-style:italic;padding:12px">… et ${items.length - 50} autres biens</td></tr>` : '');
+  } else {
+    thead.innerHTML = '<th>Description</th><th>Marque</th><th>État</th><th>Qté</th><th>Institution</th>';
+    tbody.innerHTML = items.slice(0, 50).map(it =>
+      `<tr>
+        <td style="color:var(--g800)">${esc(it.desc)}</td>
+        <td style="font-size:11px">${esc(it.marque)}</td>
+        <td>${etatBadge(it.etat)}</td>
+        <td style="text-align:center;font-weight:600">${it.qte}</td>
+        <td style="font-size:11px;color:var(--c600)">${esc(it.institution)}</td>
+      </tr>`
+    ).join('') + (items.length > 50 ? `<tr><td colspan="5" style="text-align:center;color:var(--g400);font-style:italic;padding:12px">… et ${items.length - 50} autres biens</td></tr>` : '');
+  }
+
+  document.getElementById('modal-import-preview').classList.add('open');
+}
+
+function confirmImport() {
+  if (_importTarget === 'general') {
+    invGenItems = _importBuffer;
+    localStorage.setItem('dsne_inv_general', JSON.stringify(invGenItems));
+    toast(_importBuffer.length + ' biens importés dans l\'Inventaire Général.', 'success');
+    closeModal('modal-import-preview');
+    renderInvGen();
+  } else {
+    invDItems = _importBuffer;
+    saveInvD_data(invDItems);
+    toast(_importBuffer.length + ' biens importés dans l\'Inventaire Départemental.', 'success');
+    closeModal('modal-import-preview');
+    renderInvD();
+    updateInvDXlsx();
+  }
+  _importBuffer = [];
+}
+
+/* ══════════════════════════════════════════════════════════
+   RÉQUISITIONS v2 — MSPP form format
+   Inline form (no modal), item rows, file attachment
+══════════════════════════════════════════════════════════ */
+
+let reqItems = []; // current form rows
+
+function openReqForm(uid) {
+  const panel = document.getElementById('req-form-panel');
+  const today = new Date().toISOString().split('T')[0];
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  if (uid) {
+    const r = requisitions.find(x => x.uid === uid);
+    if (!r) return;
+    document.getElementById('req-form-title').textContent = 'Modifier — ' + uid;
+    document.getElementById('req-edit-id').value   = uid;
+    document.getElementById('req-ref').value        = uid;
+    document.getElementById('req-date').value       = r.date;
+    document.getElementById('req-statut').value     = r.statut;
+    document.getElementById('req-nom').value        = r.nom || '';
+    document.getElementById('req-service').value    = r.service || '';
+    document.getElementById('req-poste').value      = r.poste || '';
+    document.getElementById('req-attach-name').textContent = r.attachName || 'Aucun fichier';
+    document.getElementById('req-attach-path').value = r.attachPath || '';
+    reqItems = (r.items || []).map(i => ({ ...i }));
+  } else {
+    document.getElementById('req-form-title').textContent = 'Nouvelle réquisition';
+    document.getElementById('req-edit-id').value   = '';
+    document.getElementById('req-ref').value       = '(auto)';
+    document.getElementById('req-date').value      = today;
+    document.getElementById('req-statut').value    = 'En attente';
+    document.getElementById('req-nom').value       = '';
+    document.getElementById('req-service').value   = '';
+    document.getElementById('req-poste').value     = '';
+    document.getElementById('req-attach-name').textContent = 'Aucun fichier';
+    document.getElementById('req-attach-path').value = '';
+    reqItems = [{ qte: '', designation: '', observation: '' }];
+  }
+  renderReqItems();
+}
+
+function closeReqForm() {
+  document.getElementById('req-form-panel').style.display = 'none';
+  document.getElementById('req-edit-id').value = '';
+  reqItems = [];
+}
+
+function addReqItem() {
+  reqItems.push({ qte: '', designation: '', observation: '' });
+  renderReqItems();
+}
+
+function renderReqItems() {
+  document.getElementById('req-items-tbody').innerHTML = reqItems.map((item, i) =>
+    `<tr>
+      <td><input class="form-input" style="padding:5px 8px;width:70px;text-align:center"
+        type="number" min="1" value="${esc(String(item.qte))}"
+        oninput="reqItems[${i}].qte=this.value"></td>
+      <td><input class="form-input" style="padding:5px 8px;width:100%"
+        value="${esc(item.designation)}"
+        oninput="reqItems[${i}].designation=this.value"
+        placeholder="Désignation du produit / matériel / fourniture"></td>
+      <td><input class="form-input" style="padding:5px 8px;width:100%"
+        value="${esc(item.observation)}"
+        oninput="reqItems[${i}].observation=this.value"
+        placeholder="Observation"></td>
+      <td><button class="btn btn-secondary btn-sm" style="padding:3px 8px;color:var(--danger)"
+        onclick="reqItems.splice(${i},1);renderReqItems()">✕</button></td>
+    </tr>`
+  ).join('');
+}
+
+function attachReqFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  document.getElementById('req-attach-name').textContent = file.name;
+  // Store file object reference for later copy
+  window._reqAttachFile = file;
+  input.value = '';
+}
+
+function saveRequisition() {
+  const editUid = document.getElementById('req-edit-id').value;
+  const validItems = reqItems.filter(i => i.designation && i.designation.trim());
+  if (!validItems.length) { alert('Ajoutez au moins un article.'); return; }
+
+  const obj = {
+    date:       document.getElementById('req-date').value,
+    statut:     document.getElementById('req-statut').value,
+    nom:        document.getElementById('req-nom').value.trim(),
+    service:    document.getElementById('req-service').value.trim(),
+    poste:      document.getElementById('req-poste').value.trim(),
+    items:      validItems,
+    attachName: document.getElementById('req-attach-name').textContent,
+    attachPath: document.getElementById('req-attach-path').value,
+  };
+
+  if (editUid) {
+    const r = requisitions.find(x => x.uid === editUid);
+    if (r) Object.assign(r, obj);
+  } else {
+    obj.uid = genUID('REQ', requisitions);
+    requisitions.push(obj);
+    document.getElementById('req-ref').value = obj.uid;
+  }
+
+  saveRequisitions_data(requisitions);
+  renderRequisitions();
+  updateRequisitionsXlsx();
+  toast('Réquisition enregistrée.', 'success');
+}
+
+function renderRequisitions() {
+  const total   = requisitions.length;
+  const attente = requisitions.filter(r => r.statut === 'En attente').length;
+  const approuv = requisitions.filter(r => r.statut === 'Approuvée').length;
+  document.getElementById('req-kpis').innerHTML =
+    kpiCard('Total', total, 'réquisitions', 'purple') +
+    kpiCard('En attente', attente, '', 'amber') +
+    kpiCard('Approuvées', approuv, '', 'green');
+
+  document.getElementById('req-tbody').innerHTML = requisitions.slice().reverse().map(r =>
+    '<tr>' +
+    `<td style="font-family:monospace;font-size:10px;color:var(--c600)">${esc(r.uid)}</td>` +
+    `<td>${esc(fmtDate(r.date))}</td>` +
+    `<td style="color:var(--g800)">${esc(r.nom)}</td>` +
+    `<td style="font-size:11px">${esc(r.service)}</td>` +
+    `<td style="text-align:center;font-weight:600">${(r.items||[]).length}</td>` +
+    `<td>${statutBadgeReq(r.statut)}</td>` +
+    `<td>${r.attachName && r.attachName !== 'Aucun fichier'
+      ? `<span style="font-size:11px;color:var(--c600)">📎 ${esc(r.attachName)}</span>`
+      : '<span style="color:var(--g400);font-size:11px">—</span>'}</td>` +
+    `<td style="display:flex;gap:4px">
+       <button class="btn btn-secondary btn-sm" onclick="openReqForm('${r.uid}')">Modifier</button>
+       <button class="btn btn-primary btn-sm" onclick="genRequisitionDocxById('${r.uid}')">⬇ .docx</button>
+     </td>` +
+    '</tr>'
+  ).join('') || '<tr><td colspan="8" class="empty">Aucune réquisition.</td></tr>';
+}
+
+/* docx for MSPP requisition form */
+async function genRequisitionDocxById(uid) {
+  const r = requisitions.find(x => x.uid === uid);
+  if (!r) return;
+  // Prefill form silently then generate
+  const prev = { nom: document.getElementById('req-nom').value, service: document.getElementById('req-service').value,
+    poste: document.getElementById('req-poste').value, date: document.getElementById('req-date').value };
+  document.getElementById('req-nom').value     = r.nom;
+  document.getElementById('req-service').value = r.service;
+  document.getElementById('req-poste').value   = r.poste;
+  document.getElementById('req-date').value    = r.date;
+  reqItems = r.items || [];
+  await genRequisitionDocx(r.uid);
+  Object.assign(document.getElementById('req-nom'), { value: prev.nom });
+}
+
+async function genRequisitionDocx(uid) {
+  const d = {
+    uid:     uid || document.getElementById('req-edit-id').value || '(brouillon)',
+    date:    document.getElementById('req-date').value,
+    nom:     document.getElementById('req-nom').value.trim(),
+    service: document.getElementById('req-service').value.trim(),
+    poste:   document.getElementById('req-poste').value.trim(),
+    items:   reqItems.filter(i => i.designation && i.designation.trim()),
+  };
+  if (!d.items.length) { alert('Ajoutez au moins un article.'); return; }
+  const filename = (d.uid !== '(brouillon)' ? d.uid : 'REQ-brouillon') + '.docx';
+  await buildAndSaveDocx('Requisitions', filename, () =>
+    window.electronDocx.buildRequisitionMSPP(d, enteteLines(), fmtDateLong(d.date))
+  );
+}
