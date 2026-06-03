@@ -61,11 +61,7 @@ async function doRegister() {
   btn.textContent = 'Envoi en cours...';
 
   try {
-    const res = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify({ nom_complet, username, password, email })
-    });
-    const result = await res.json();
+    const result = await window.dsne.register({ nom_complet, username, password, email });
     if (result.ok) {
       window.location.href = 'pending.html';
     } else {
