@@ -18,4 +18,5 @@ contextBridge.exposeInMainWorld('electronDocx', {
   buildRestitution: (d,sig,entete,dateStr) => ipcRenderer.invoke('build-restitution', {d,sig,entete,dateStr}),
   buildAffectation: (d,sig,entete,dateStr) => ipcRenderer.invoke('build-affectation', {d,sig,entete,dateStr}),
   buildAccuse:      (acc,entete,dateStr)   => ipcRenderer.invoke('build-accuse',      {acc,entete,dateStr}),
+  buildRequisitionMSPP: (d,entete,dateStr) => ipcRenderer.invoke('build-requisition-mspp', {d,entete,dateStr}),
 });
