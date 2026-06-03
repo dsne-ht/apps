@@ -1,11 +1,11 @@
 {
   "name": "dsne-bureau",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Bureau de Direction — DSNE",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --win --x64"
+    "dist": "electron-builder --win --x64 --publish always"
   },
   "build": {
     "appId": "ht.dsne.bureau",
@@ -13,9 +13,16 @@
     "directories": {
       "output": "dist"
     },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "dsne-ht",
+        "repo": "apps"
+      }
+    ],
     "win": {
       "target": "nsis",
-      "icon": "assets/bureau.png"
+      "icon": "assets/cm.png"
     },
     "nsis": {
       "oneClick": true,
@@ -27,6 +34,9 @@
       "assets/**/*",
       "node_modules/**/*"
     ]
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
   },
   "devDependencies": {
     "electron": "^28.3.3",
