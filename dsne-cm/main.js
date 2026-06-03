@@ -1,39 +1,35 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
-const https = require('https');
 const path = require('path');
 const Database = require('better-sqlite3');
-const fs = require('fs');
+const https = require('https');
 
-let db;
-let win;
-
-// ── CONFIGURATION ──
-const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzTAOg78o7iWchNoqxsqR81vS6pxGGq5cEsbfyJd5u5agA9rOKfRgR_bg3hmzb81yIP/exec';
 const APP_NAME  = 'Clinique Mobile';
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzTAOg78o7iWchNoqxsqR81vS6pxGGq5cEsbfyJd5u5agA9rOKfRgR_bg3hmzb81yIP/exec';
+const ADMIN_EMAIL = 'sec.direction.dsne@gmail.com';
 
-const userDataPath = app.getPath('userData');
-const dbPath       = path.join(userDataPath, 'dsne_cm.db');
+let db, win;
 
-// ── DATABASE ──
 function initDB() {
+  const userDataPath = app.getPath('userData');
+  const dbPath = path.join(userDataPath, 'dsne_cm.db');
   db = new Database(dbPath);
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT UNIQUE NOT NULL,
-      password TEXT NOT NULL,
+      code TEXT UNIQUE NOT NULL,
       nom_complet TEXT NOT NULL,
       email TEXT DEFAULT '',
+      password TEXT DEFAULT '',
       role TEXT DEFAULT 'uas',
-      statut TEXT DEFAULT 'en_attente',
+      activated INTEGER DEFAULT 0,
       created_at TEXT DEFAULT (datetime('now'))
     );
     CREATE TABLE IF NOT EXISTS audit_log (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user TEXT NOT NULL,
-      action TEXT NOT NULL,
+      user TEXT,
+      action TEXT,
       details TEXT,
-      timestamp TEXT DEFAULT (datetime('now'))
+      created_at TEXT DEFAULT (datetime('now'))
     );
     CREATE TABLE IF NOT EXISTS queue (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,20 +38,26 @@ function initDB() {
       created_at TEXT DEFAULT (datetime('now')),
       synced_at TEXT
     );
-    INSERT OR IGNORE INTO users (username, password, nom_complet, statut, role)
-    VALUES ('admin', 'dsne2026', 'Administrateur', 'approuve', 'admin');
   `);
+
+  // Seed accounts — INSERT OR IGNORE so existing data is preserved
+  const seedUsers = [
+    { code: '174839', nom_complet: 'Daisha Dorsainvil', role: 'admin' },
+    { code: '263751', nom_complet: 'John Y. Milien',    role: 'uas'   },
+    { code: '391847', nom_complet: 'Dieulin Toussaint', role: 'uas'   },
+    { code: '517293', nom_complet: 'Jodlyn Etienne',    role: 'uas'   },
+  ];
+  const stmt = db.prepare(
+    "INSERT OR IGNORE INTO users (code, nom_complet, role) VALUES (?, ?, ?)"
+  );
+  seedUsers.forEach(u => stmt.run(u.code, u.nom_complet, u.role));
 }
 
 function getStartPage() {
-  const approved = db.prepare("SELECT COUNT(*) as n FROM users WHERE statut='approuve'").get().n;
-  const pending  = db.prepare("SELECT COUNT(*) as n FROM users WHERE statut='en_attente'").get().n;
-  if (approved > 1) return 'login.html';   // >1 because admin always exists
-  if (pending  > 0) return 'pending.html';
-  return 'register.html';
+  // Always start at login
+  return 'login.html';
 }
 
-// ── WINDOW ──
 function createWindow(page) {
   win = new BrowserWindow({
     width: 960, height: 760, minWidth: 800, minHeight: 600,
@@ -70,118 +72,91 @@ function createWindow(page) {
   win.loadFile(path.join(__dirname, 'src', page));
   win.setMenuBarVisibility(false);
   win.once('ready-to-show', () => win.show());
-  win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-    callback({
-      responseHeaders: {
-        ...details.responseHeaders,
-        'Content-Security-Policy': ["default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:"]
-      }
-    });
-  });
 }
 
-app.whenReady().then(() => {
-  initDB();
-  createWindow(getStartPage());
-});
+app.whenReady().then(() => { initDB(); createWindow(getStartPage()); });
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
 
-// ── IPC HANDLERS ──
+// ── CHECK CODE ──
+// Returns: { ok, exists, activated, nom_complet }
+ipcMain.handle('check-code', (_, { code }) => {
+  const user = db.prepare("SELECT * FROM users WHERE code = ?").get(code);
+  if (!user) return { ok: false, message: 'Code invalide.' };
+  return { ok: true, activated: user.activated === 1, nom_complet: user.nom_complet };
+});
 
-ipcMain.handle('login', (_, { username, password }) => {
-  const user = db.prepare(
-    "SELECT * FROM users WHERE username=? AND password=? AND statut='approuve'"
-  ).get(username, password);
+// ── ACTIVATE (first login — set email + password) ──
+ipcMain.handle('activate', async (_, { code, email, password }) => {
+  const user = db.prepare("SELECT * FROM users WHERE code = ?").get(code);
+  if (!user) return { ok: false, message: 'Code invalide.' };
+  if (user.activated) return { ok: false, message: 'Compte déjà activé.' };
 
+  db.prepare("UPDATE users SET email = ?, password = ?, activated = 1 WHERE code = ?")
+    .run(email, password, code);
+
+  // Notify admin
+  try {
+    await httpsPost(SHEET_URL, {
+      action: 'new-account',
+      username: code,
+      nom_complet: user.nom_complet,
+      email: email,
+      app_name: APP_NAME,
+      created_at: new Date().toISOString()
+    });
+  } catch(e) {
+    console.error('Notification error:', e.message);
+  }
+
+  return { ok: true, user: { code: user.code, nom_complet: user.nom_complet, role: user.role } };
+});
+
+// ── LOGIN ──
+ipcMain.handle('login', (_, { code, password }) => {
+  const user = db.prepare("SELECT * FROM users WHERE code = ? AND password = ? AND activated = 1").get(code, password);
   if (user) {
-    db.prepare('INSERT INTO audit_log (user, action) VALUES (?,?)').run(user.username, 'login');
-    return { ok: true, user: { id: user.id, username: user.username, nom_complet: user.nom_complet, role: user.role } };
+    db.prepare('INSERT INTO audit_log (user, action) VALUES (?,?)').run(user.nom_complet, 'login');
+    return { ok: true, user: { id: user.id, code: user.code, nom_complet: user.nom_complet, role: user.role } };
   }
-
-  const pending = db.prepare("SELECT * FROM users WHERE username=?").get(username);
-  if (pending) {
-    if (pending.statut === 'en_attente') return { ok: false, pending: true, message: "Compte en attente d'approbation." };
-    if (pending.password !== password) return { ok: false, message: 'Mot de passe incorrect.' };
-  }
-  return { ok: false, message: 'Identifiants incorrects.' };
+  const exists = db.prepare("SELECT * FROM users WHERE code = ?").get(code);
+  if (!exists) return { ok: false, message: 'Code invalide.' };
+  if (!exists.activated) return { ok: false, message: 'Compte non activé. Entrez votre code pour configurer votre mot de passe.' };
+  return { ok: false, message: 'Mot de passe incorrect.' };
 });
 
-ipcMain.handle('register', async (_, { username, password, nom_complet, email }) => {
-  try {
-    db.prepare(
-      "INSERT INTO users (username, password, nom_complet, email, statut) VALUES (?,?,?,?,'en_attente')"
-    ).run(username, password, nom_complet, email || '');
-
-    // Notify via Apps Script (logs to Google Sheet)
-    await notifySheetNewAccount({ username, nom_complet, email: email || '', app_name: APP_NAME, created_at: new Date().toISOString() });
-
-    return { ok: true };
-  } catch (e) {
-    if (e.message.includes('UNIQUE')) return { ok: false, message: "Ce nom d'utilisateur existe déjà." };
-    return { ok: false, message: e.message };
-  }
-});
-
-ipcMain.handle('sync-approval', async () => {
-  // Check Google Sheet for approved accounts and update local DB
-  try {
-    const pendingUsers = db.prepare("SELECT * FROM users WHERE statut='en_attente'").all();
-    if (pendingUsers.length === 0) return { ok: true, approved: false };
-
-    // Ask the sheet which accounts are approved
-    const usernames = pendingUsers.map(u => u.username).join(',');
-    const getUrl = SHEET_URL + '?usernames=' + encodeURIComponent(usernames);
-    const response = await httpsGet(getUrl);
-
-    if (response.approved && response.approved.length > 0) {
-      const stmt = db.prepare("UPDATE users SET statut='approuve' WHERE username=?");
-      response.approved.forEach(username => stmt.run(username));
-      return { ok: true, approved: true, count: response.approved.length };
-    }
-
-    return { ok: true, approved: false };
-  } catch (e) {
-    console.error('sync-approval error:', e.message);
-    return { ok: true, approved: false };
-  }
-});
-
+// ── LOGOUT ──
 ipcMain.handle('logout', () => {
   win.loadFile(path.join(__dirname, 'src', 'login.html'));
   return { ok: true };
 });
 
+// ── NAVIGATE ──
 ipcMain.handle('navigate', (_, page) => {
   win.loadFile(path.join(__dirname, 'src', page));
 });
 
-ipcMain.handle('log-action', (_, { user, action, details }) => {
-  db.prepare('INSERT INTO audit_log (user, action, details) VALUES (?,?,?)').run(user, action, details || '');
-  return { ok: true };
-});
-
-ipcMain.handle('get-audit-log', () => {
-  return db.prepare('SELECT * FROM audit_log ORDER BY timestamp DESC LIMIT 500').all();
-});
-
-ipcMain.handle('queue-save',        (_, data) => {
-  const r = db.prepare('INSERT INTO queue (data) VALUES (?)').run(JSON.stringify(data));
+// ── QUEUE ──
+ipcMain.handle('queue-save', (_, data) => {
+  const r = db.prepare("INSERT INTO queue (data) VALUES (?)").run(JSON.stringify(data));
   return { id: r.lastInsertRowid };
 });
-ipcMain.handle('queue-pending',     () => db.prepare("SELECT * FROM queue WHERE status='pending' ORDER BY id DESC").all());
-ipcMain.handle('queue-all',         () => db.prepare('SELECT * FROM queue ORDER BY id DESC').all());
+ipcMain.handle('queue-pending', () => db.prepare("SELECT * FROM queue WHERE status='pending' ORDER BY id DESC").all());
+ipcMain.handle('queue-all',     () => db.prepare("SELECT * FROM queue ORDER BY id DESC").all());
 ipcMain.handle('queue-mark-synced', (_, id) => {
   db.prepare("UPDATE queue SET status='synced', synced_at=datetime('now') WHERE id=?").run(id);
   return true;
 });
 ipcMain.handle('queue-count', () => db.prepare("SELECT COUNT(*) as n FROM queue WHERE status='pending'").get().n);
 
-// ── HELPERS ──
+// ── AUDIT LOG ──
+ipcMain.handle('log-action', (_, { user, action, details }) => {
+  db.prepare('INSERT INTO audit_log (user, action, details) VALUES (?,?,?)').run(user, action, details || '');
+});
+ipcMain.handle('get-audit-log', () => db.prepare("SELECT * FROM audit_log ORDER BY id DESC LIMIT 100").all());
 
-
+// ── HTTP HELPERS ──
 function httpsGet(url) {
   return new Promise((resolve, reject) => {
-    const https = require('https');
     const follow = (u) => {
       const urlObj = new URL(u);
       const options = { hostname: urlObj.hostname, path: urlObj.pathname + urlObj.search, method: 'GET' };
@@ -202,6 +177,7 @@ function httpsGet(url) {
     follow(url);
   });
 }
+
 function httpsPost(url, data) {
   return new Promise((resolve, reject) => {
     const payload = JSON.stringify(data);
@@ -224,14 +200,4 @@ function httpsPost(url, data) {
     req.write(payload);
     req.end();
   });
-}
-
-async function notifySheetNewAccount(data) {
-  try {
-    await httpsPost(SHEET_URL, { action: 'new-account', ...data });
-    console.log('Account notification sent for:', data.nom_complet);
-  } catch (e) {
-    console.error('Notification failed (offline?):', e.message);
-    // Non-fatal — account is still saved locally
-  }
 }
