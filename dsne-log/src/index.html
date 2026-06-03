@@ -26,26 +26,26 @@
 <div class="sidebar">
   <div class="sidebar-section">
     <div class="sidebar-label">Tableau de bord</div>
-    <div class="sidebar-item active" onclick="switchTab('tableau',this)"><span class="si-icon">📊</span>Tableau de bord</div>
+    <div class="sidebar-item active" onclick="switchTab('tableau',this)"><span class="si-icon"></span>Tableau de bord</div>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-label">Flotte</div>
-    <div class="sidebar-item" onclick="switchTab('flotte',this)"><span class="si-icon">🚗</span>Véhicules</div>
-    <div class="sidebar-item" onclick="switchTab('journal',this)"><span class="si-icon">📍</span>Journal de bord</div>
-    <div class="sidebar-item" onclick="switchTab('entretien',this)"><span class="si-icon">🔧</span>Entretien</div>
-    <div class="sidebar-item" onclick="switchTab('chauffeurs',this)"><span class="si-icon">👤</span>Chauffeurs</div>
+    <div class="sidebar-item" onclick="switchTab('flotte',this)"><span class="si-icon"></span>Véhicules</div>
+    <div class="sidebar-item" onclick="switchTab('journal',this)"><span class="si-icon"></span>Journal de bord</div>
+    <div class="sidebar-item" onclick="switchTab('entretien',this)"><span class="si-icon"></span>Entretien</div>
+    <div class="sidebar-item" onclick="switchTab('chauffeurs',this)"><span class="si-icon"></span>Chauffeurs</div>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-label">Inventaire</div>
-    <div class="sidebar-item" onclick="switchTab('inv-general',this)"><span class="si-icon">🗄</span>Inv. Général (HQ)</div>
-    <div class="sidebar-item" onclick="switchTab('inv-activites',this)"><span class="si-icon">📦</span>Inv. Activités</div>
-    <div class="sidebar-item" onclick="switchTab('inv-depart',this)"><span class="si-icon">🏥</span>Inv. Départemental</div>
-    <div class="sidebar-item" onclick="switchTab('transferts',this)"><span class="si-icon">↔</span>Transferts</div>
+    <div class="sidebar-item" onclick="switchTab('inv-general',this)"><span class="si-icon"></span>Inv. Général (HQ)</div>
+    <div class="sidebar-item" onclick="switchTab('inv-activites',this)"><span class="si-icon"></span>Inv. Activités</div>
+    <div class="sidebar-item" onclick="switchTab('inv-depart',this)"><span class="si-icon"></span>Inv. Départemental</div>
+    <div class="sidebar-item" onclick="switchTab('transferts',this)"><span class="si-icon"></span>Transferts</div>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-label">Documents</div>
-    <div class="sidebar-item" onclick="switchTab('requisition',this)"><span class="si-icon">📝</span>Réquisitions</div>
-    <div class="sidebar-item" onclick="switchTab('courrier',this)"><span class="si-icon">✉</span>Courrier / Lettres</div>
+    <div class="sidebar-item" onclick="switchTab('requisition',this)"><span class="si-icon"></span>Réquisitions</div>
+    <div class="sidebar-item" onclick="switchTab('courrier',this)"><span class="si-icon"></span>Courrier / Lettres</div>
     <div class="sidebar-item" onclick="switchTab('accuses',this)"><span class="si-icon">📨</span>Accusés réception</div>
   </div>
 </div>
@@ -204,10 +204,13 @@
       <option value="NF">Non fonctionnel</option>
       <option value="MÉ">Mauvais état</option>
     </select>
-    <label class="btn btn-secondary btn-sm" style="cursor:pointer;margin-left:auto" title="Importer un fichier Excel (.xlsx)">
-      ⬆ Importer Excel
-      <input type="file" accept=".xlsx,.xls" style="display:none" onchange="importInventaireGeneral(this)">
-    </label>
+    <div style="display:flex;gap:6px;margin-left:auto">
+      <button class="btn btn-secondary btn-sm" onclick="downloadInvTemplate('general')">Telecharger modele</button>
+      <label class="btn btn-primary btn-sm" style="cursor:pointer">
+        Importer Excel
+        <input type="file" accept=".xlsx,.xls" style="display:none" onchange="importInventaireGeneral(this)">
+      </label>
+    </div>
   </div>
   <div class="section-header" style="display:flex;align-items:center;justify-content:space-between">
     <span id="inv-gen-count">279 biens</span>
@@ -263,8 +266,9 @@
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
     <div style="font-size:13px;color:var(--g600)">Biens affectés aux 40 institutions sanitaires du Nord-Est</div>
     <div style="display:flex;gap:8px">
-      <label class="btn btn-secondary btn-sm" style="cursor:pointer" title="Importer un fichier Excel (.xlsx)">
-        ⬆ Importer Excel
+      <button class="btn btn-secondary btn-sm" onclick="downloadInvTemplate('dept')">Telecharger modele</button>
+      <label class="btn btn-secondary btn-sm" style="cursor:pointer">
+        Importer Excel
         <input type="file" accept=".xlsx,.xls" style="display:none" onchange="importInventaireDept(this)">
       </label>
       <button class="btn btn-primary btn-sm" onclick="openModal('modal-invd-add')">+ Ajouter un bien</button>
@@ -303,7 +307,7 @@
 <div id="tab-transferts" class="content" style="display:none">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
     <div style="font-size:13px;color:var(--g600)">Journal des transferts de biens · DSNE</div>
-    <button class="btn btn-secondary btn-sm" onclick="window.dsneLog&&window.dsneLog.openFolder('Transferts')">📁 Ouvrir dossier</button>
+    <button class="btn btn-secondary btn-sm" onclick="window.dsneLog&&window.dsneLog.openFolder('Transferts')"> Ouvrir dossier</button>
   </div>
   <div class="kpi-row" id="transferts-kpis"></div>
   <div class="section-header">Tous les transferts</div>
@@ -395,7 +399,7 @@
         <label class="form-label" style="margin-bottom:6px;display:block">Pièce jointe (scan formulaire signé, optionnel)</label>
         <div style="display:flex;gap:8px;align-items:center">
           <label class="btn btn-secondary btn-sm" style="cursor:pointer">
-            📎 Joindre fichier
+             Joindre fichier
             <input type="file" accept=".pdf,.png,.jpg,.jpeg" style="display:none" onchange="attachReqFile(this)">
           </label>
           <span style="font-size:12px;color:var(--g400)" id="req-attach-name">Aucun fichier</span>
@@ -405,7 +409,7 @@
 
       <div class="form-actions">
         <button class="btn btn-primary" onclick="saveRequisition()">Enregistrer</button>
-        <button class="btn btn-secondary" onclick="genRequisitionDocx()">⬇ Générer .docx</button>
+        <button class="btn btn-secondary" onclick="genRequisitionDocx()"> Générer .docx</button>
       </div>
     </div>
   </div>
@@ -430,7 +434,7 @@
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
     <div style="font-size:13px;color:var(--g600)">Lettres générées par le service logistique</div>
     <div style="display:flex;gap:8px">
-      <button class="btn btn-secondary btn-sm" onclick="window.dsneLog&&window.dsneLog.openFolder('Courrier')">📁 Ouvrir dossier</button>
+      <button class="btn btn-secondary btn-sm" onclick="window.dsneLog&&window.dsneLog.openFolder('Courrier')"> Ouvrir dossier</button>
     </div>
   </div>
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:1.5rem">
@@ -914,12 +918,12 @@
         </div>
       </div>
       <div style="margin:1rem 0;padding:10px 14px;background:var(--g50);border:1px solid var(--g100);font-size:12px;color:var(--g600)" id="tr-vehicule-note" style="display:none">
-        ⚠️ Ce bien est un véhicule — une <strong>Lettre d'affectation</strong> sera générée automatiquement après enregistrement.
+         Ce bien est un véhicule — une <strong>Lettre d'affectation</strong> sera générée automatiquement après enregistrement.
       </div>
       <div style="margin-bottom:1rem">
         <label class="form-label" style="margin-bottom:6px;display:block">Scan bon de livraison (optionnel)</label>
         <div style="display:flex;gap:8px;align-items:center">
-          <button class="btn btn-secondary btn-sm" onclick="pickScanTransfert()">📎 Joindre scan</button>
+          <button class="btn btn-secondary btn-sm" onclick="pickScanTransfert()"> Joindre scan</button>
           <span style="font-size:12px;color:var(--g400)" id="tr-scan-name">Aucun fichier</span>
         </div>
         <input type="hidden" id="tr-scan-path">
@@ -1028,7 +1032,7 @@
         </div>
       </div>
       <div class="form-actions">
-        <button class="btn btn-primary" onclick="genLettreDeplacement()">⬇ Générer .docx</button>
+        <button class="btn btn-primary" onclick="genLettreDeplacement()"> Générer .docx</button>
         <button class="btn btn-secondary" onclick="closeModal('modal-lettre-deplacement')">Annuler</button>
       </div>
     </div>
@@ -1050,7 +1054,7 @@
         <div class="form-group full"><label class="form-label">Détails / missions principales</label><textarea class="form-textarea" id="le-details" placeholder="1- Le transport des matériels&#10;2- La sécurisation du transport…"></textarea></div>
       </div>
       <div class="form-actions">
-        <button class="btn btn-primary" onclick="genLettreEngagement()">⬇ Générer .docx</button>
+        <button class="btn btn-primary" onclick="genLettreEngagement()"> Générer .docx</button>
         <button class="btn btn-secondary" onclick="closeModal('modal-lettre-engagement')">Annuler</button>
       </div>
     </div>
@@ -1081,7 +1085,7 @@
         <div class="form-group full"><label class="form-label">Accessoires rendus</label><input class="form-input" id="lr-accessoires" placeholder="ex. Clef (double inclus), casque, genouillères"></div>
       </div>
       <div class="form-actions">
-        <button class="btn btn-primary" onclick="genLettreRestitution()">⬇ Générer .docx</button>
+        <button class="btn btn-primary" onclick="genLettreRestitution()"> Générer .docx</button>
         <button class="btn btn-secondary" onclick="closeModal('modal-lettre-restitution')">Annuler</button>
       </div>
     </div>
@@ -1113,7 +1117,7 @@
         <div class="form-group full"><label class="form-label">Motif de l'affectation</label><textarea class="form-textarea" id="la-motif" placeholder="Contexte et raison de l'affectation…"></textarea></div>
       </div>
       <div class="form-actions">
-        <button class="btn btn-primary" onclick="genLettreAffectation()">⬇ Générer .docx</button>
+        <button class="btn btn-primary" onclick="genLettreAffectation()"> Générer .docx</button>
         <button class="btn btn-secondary" onclick="closeModal('modal-lettre-affectation')">Annuler</button>
       </div>
     </div>
