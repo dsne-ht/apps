@@ -740,19 +740,24 @@ const INVENTAIRE_GENERAL = [
 
 /* ── Inventaire Général ── */
 let invGenFilter = {q:'', piece:'', etat:''};
-let invGenItems = JSON.parse(JSON.stringify(INVENTAIRE_GENERAL));
+let invGenItems = [];
+(function() {
+  const saved = localStorage.getItem('dsne_inv_general');
+  if (saved) {
+    try { invGenItems = JSON.parse(saved); } catch(e) { invGenItems = JSON.parse(JSON.stringify(INVENTAIRE_GENERAL)); }
+  } else {
+    invGenItems = JSON.parse(JSON.stringify(INVENTAIRE_GENERAL));
+  }
+})();
 let invNextId = INVENTAIRE_GENERAL.length + 1;
 
 function nav_inv_general() { renderInvGen(); }
 function nav_inv_activites() { renderInvAct(); }
 
-function filterInvGen(q, service, etat) {
+function filterInvGen(q, piece, etat) {
   if (q !== '') invGenFilter.q = q;
-  if (service !== '') invGenFilter.service = service;
+  if (piece !== '') invGenFilter.piece = piece;
   if (etat !== '') invGenFilter.etat = etat;
-  if (q === '' && document.querySelector('#inv-piece-filter') === null) {
-    // called with empty q to reset
-  }
   renderInvGen();
 }
 
@@ -983,11 +988,7 @@ function saveReception() {
   renderInvAct();
 }
 
-// Load saved general inventory customizations
-(function() {
-  const saved = localStorage.getItem('dsne_inv_general');
-  if (saved) invGenItems = JSON.parse(saved);
-})();
+
 
 
 /* ══════════════════════════════════════════════════════════
@@ -1301,8 +1302,8 @@ function renderTransferts() {
     `<td style="font-size:11px">${esc(t.fromLabel)}</td>` +
     `<td style="font-size:11px;color:var(--c600)">${esc(t.destVal)}</td>` +
     `<td>${t.isVehicule ? '<span class="badge badge-blue">Oui</span>' : '—'}</td>` +
-    `<td>${t.lettrePath ? `<button class="btn btn-secondary btn-sm" onclick="window.dsneLog&&window.dsneLog.showFile('${t.lettrePath.replace(/'/g,"\\'")}')">📄 Voir</button>` : '—'}</td>` +
-    `<td>${t.scanPath && t.scanPath !== '' && t.scanName !== 'Aucun fichier' ? `<button class="btn btn-secondary btn-sm" onclick="window.dsneLog&&window.dsneLog.showFile('${t.scanPath.replace(/'/g,"\\'")}')">🖼 Voir</button>` : '—'}</td>` +
+    `<td>${t.lettrePath ? `<button class="btn btn-secondary btn-sm" onclick="window.dsneLog&&window.dsneLog.showFile('${t.lettrePath.replace(/'/g,"\\'")}')"> Voir</button>` : '—'}</td>` +
+    `<td>${t.scanPath && t.scanPath !== '' && t.scanName !== 'Aucun fichier' ? `<button class="btn btn-secondary btn-sm" onclick="window.dsneLog&&window.dsneLog.showFile('${t.scanPath.replace(/'/g,"\\'")}')"> Voir</button>` : '—'}</td>` +
     '</tr>'
   ).join('') || '<tr><td colspan="9" class="empty">Aucun transfert enregistré.</td></tr>';
 }
@@ -1359,7 +1360,7 @@ function renderCourrier() {
     `<td><span class="badge badge-purple">${esc(l.type)}</span></td>` +
     `<td style="color:var(--g800)">${esc(l.destinataire)}</td>` +
     `<td style="font-size:11px">${esc(l.objet)}</td>` +
-    `<td>${l.lettrePath ? `<button class="btn btn-secondary btn-sm" onclick="window.dsneLog&&window.dsneLog.showFile('${l.lettrePath.replace(/'/g,"\\'")}')">📄 Voir</button>` : '—'}</td>` +
+    `<td>${l.lettrePath ? `<button class="btn btn-secondary btn-sm" onclick="window.dsneLog&&window.dsneLog.showFile('${l.lettrePath.replace(/'/g,"\\'")}')"> Voir</button>` : '—'}</td>` +
     '</tr>'
   ).join('') || '<tr><td colspan="6" class="empty">Aucune lettre générée.</td></tr>';
 }
@@ -1443,7 +1444,7 @@ function renderAccuses() {
     `<td style="font-size:11px">${esc(a.institution)}</td>` +
     `<td style="font-size:11px">${a.docs.map(d => esc(d.doc)).join(', ')}</td>` +
     `<td><span class="badge badge-gray">${esc(a.mode)}</span></td>` +
-    `<td>${a.lettrePath ? `<button class="btn btn-secondary btn-sm" onclick="window.dsneLog&&window.dsneLog.showFile('${a.lettrePath.replace(/'/g,"\\'")}')">📄 Voir</button>` : '—'}</td>` +
+    `<td>${a.lettrePath ? `<button class="btn btn-secondary btn-sm" onclick="window.dsneLog&&window.dsneLog.showFile('${a.lettrePath.replace(/'/g,"\\'")}')"> Voir</button>` : '—'}</td>` +
     '</tr>'
   ).join('') || '<tr><td colspan="8" class="empty">Aucun accusé enregistré.</td></tr>';
 }
@@ -1950,10 +1951,10 @@ function showImportPreview(items, target) {
             </table>
           </div>
           <div style="margin-top:1rem;padding:10px 14px;background:var(--amber-bg,#FFF4E6);border:1px solid #F59E42;font-size:12px;color:#7A4700">
-            ⚠️ Cette importation <strong>remplace</strong> les données actuelles. Vérifiez l'aperçu avant de confirmer.
+             Cette importation <strong>remplace</strong> les données actuelles. Vérifiez l'aperçu avant de confirmer.
           </div>
           <div class="form-actions">
-            <button class="btn btn-primary" onclick="confirmImport()">✓ Confirmer l'importation</button>
+            <button class="btn btn-primary" onclick="confirmImport()"> Confirmer l'importation</button>
             <button class="btn btn-secondary" onclick="closeModal('modal-import-preview')">Annuler</button>
           </div>
         </div>
@@ -2155,11 +2156,11 @@ function renderRequisitions() {
     `<td style="text-align:center;font-weight:600">${(r.items||[]).length}</td>` +
     `<td>${statutBadgeReq(r.statut)}</td>` +
     `<td>${r.attachName && r.attachName !== 'Aucun fichier'
-      ? `<span style="font-size:11px;color:var(--c600)">📎 ${esc(r.attachName)}</span>`
+      ? `<span style="font-size:11px;color:var(--c600)"> ${esc(r.attachName)}</span>`
       : '<span style="color:var(--g400);font-size:11px">—</span>'}</td>` +
     `<td style="display:flex;gap:4px">
        <button class="btn btn-secondary btn-sm" onclick="openReqForm('${r.uid}')">Modifier</button>
-       <button class="btn btn-primary btn-sm" onclick="genRequisitionDocxById('${r.uid}')">⬇ .docx</button>
+       <button class="btn btn-primary btn-sm" onclick="genRequisitionDocxById('${r.uid}')"> .docx</button>
      </td>` +
     '</tr>'
   ).join('') || '<tr><td colspan="8" class="empty">Aucune réquisition.</td></tr>';
@@ -2195,4 +2196,33 @@ async function genRequisitionDocx(uid) {
   await buildAndSaveDocx('Requisitions', filename, () =>
     window.electronDocx.buildRequisitionMSPP(d, enteteLines(), fmtDateLong(d.date))
   );
+}
+
+/* ══ TEMPLATE DOWNLOAD (Excel) ══ */
+function downloadInvTemplate(type) {
+  if (type === 'general') {
+    const wb = XLSX.utils.book_new();
+    const headers = [['No','Description','Couleur','Codification','Marque','Model','Serie','Financement','Bon (F)','N/F','QTE','Piece/Local']];
+    // Add sample rows per piece
+    const samples = [
+      ['1','Bureau metalique','gris et marron','ADM-Br-001','IEH','','','USAID','F','',1,'Administration'],
+      ['2','Classeur 4 tiroirs','gris','UAS-Cl-001','MERCURY','','','USAID','F','',2,'UAS'],
+    ];
+    const ws = XLSX.utils.aoa_to_sheet([...headers, ...samples]);
+    ws['!cols'] = [40,220,80,120,80,80,100,80,50,50,50,120].map(w=>({wch:Math.round(w/7)}));
+    XLSX.utils.book_append_sheet(wb, ws, 'Inventaire');
+    XLSX.writeFile(wb, 'Modele_Inventaire_General_DSNE.xlsx');
+  } else {
+    const wb = XLSX.utils.book_new();
+    const headers = [['Description','Marque','Codification','Serie','Financement','Etat (F/NF/ME)','Quantite','Institution']];
+    const samples = [
+      ['Bureau metalique','IEH','HFL-Br-001','','USAID','F',1,'Hopital Departemental de Fort-Liberte (HFL)'],
+      ['Classeur 4 tiroirs','MERCURY','CMSO-Cl-001','','MSPP','F',2,'CMS Ouanaminthe (CMSO)'],
+    ];
+    const ws = XLSX.utils.aoa_to_sheet([...headers, ...samples]);
+    ws['!cols'] = [220,80,120,100,80,80,60,280].map(w=>({wch:Math.round(w/7)}));
+    XLSX.utils.book_append_sheet(wb, ws, 'Inventaire Departemental');
+    XLSX.writeFile(wb, 'Modele_Inventaire_Departemental_DSNE.xlsx');
+  }
+  toast('Modele telecharge.', 'success');
 }
