@@ -12,65 +12,128 @@
       <div class="login-dsne">DSNE</div>
       <div class="login-appname">Enregistrement Clinique Mobile</div>
     </div>
+
     <div id="alert" class="alert alert-error" style="display:none"></div>
-    <div class="field" style="margin-bottom:12px">
-      <label>Nom d'utilisateur</label>
-      <input type="text" id="username" placeholder="Votre identifiant" autocomplete="username">
+
+    <!-- STEP 1: Code entry -->
+    <div id="step-code">
+      <div class="field" style="margin-bottom:16px">
+        <label>Code d'accès</label>
+        <input type="password" id="code" placeholder="• • • • • •" maxlength="6"
+          style="letter-spacing:0.3em;text-align:center;font-size:1.2rem"
+          onkeydown="if(event.key==='Enter') submitCode()">
+        <span style="font-size:11px;color:var(--g400)">Saisissez votre code personnel à 6 chiffres.</span>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="submitCode()">Continuer</button>
     </div>
-    <div class="field" style="margin-bottom:1.25rem">
-      <label>Mot de passe</label>
-      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+
+    <!-- STEP 2a: First login — set email + password -->
+    <div id="step-activate" style="display:none">
+      <p style="font-size:13px;color:var(--g600);text-align:center;margin-bottom:1rem">
+        Bienvenue, <strong id="welcomeName"></strong>. Configurez votre compte.
+      </p>
+      <div class="field" style="margin-bottom:12px">
+        <label>Adresse e-mail</label>
+        <input type="email" id="email" placeholder="votre@email.com">
+      </div>
+      <div class="field" style="margin-bottom:12px">
+        <label>Mot de passe</label>
+        <input type="password" id="newPassword" placeholder="Choisissez un mot de passe">
+      </div>
+      <div class="field" style="margin-bottom:16px">
+        <label>Confirmer le mot de passe</label>
+        <input type="password" id="confirmPassword" placeholder="Répétez le mot de passe"
+          onkeydown="if(event.key==='Enter') submitActivate()">
+      </div>
+      <button class="btn btn-primary btn-full" onclick="submitActivate()">Activer mon compte</button>
+      <button class="btn btn-secondary btn-full" style="margin-top:8px" onclick="resetToCode()">Retour</button>
     </div>
-    <button class="btn btn-primary btn-full" id="loginBtn" onclick="doLogin()">Se connecter</button>
-    <div style="text-align:center;margin-top:0.875rem">
-      <span style="font-size:12px;color:var(--g400)">Pas encore de compte ? </span>
-      <a href="register.html" style="font-size:12px;color:var(--c600);font-weight:500;text-decoration:none">Créer un compte</a>
+
+    <!-- STEP 2b: Normal login — enter password -->
+    <div id="step-password" style="display:none">
+      <p style="font-size:13px;color:var(--g600);text-align:center;margin-bottom:1rem">
+        Bonjour, <strong id="welcomeName2"></strong>.
+      </p>
+      <div class="field" style="margin-bottom:16px">
+        <label>Mot de passe</label>
+        <input type="password" id="password" placeholder="Votre mot de passe"
+          onkeydown="if(event.key==='Enter') submitLogin()">
+      </div>
+      <button class="btn btn-primary btn-full" onclick="submitLogin()">Se connecter</button>
+      <button class="btn btn-secondary btn-full" style="margin-top:8px" onclick="resetToCode()">Retour</button>
     </div>
+
   </div>
 </div>
 <script>
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzxjdMeyxhHS9eF4uW1Kg29IoGnVZKyJ1mkXEu3J99lxAOHJcyMxaqNjJG4eQiNhWT9/exec';
+let currentCode = '';
 
-async function doLogin() {
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value.trim();
-  const alertEl  = document.getElementById('alert');
-  const btn      = document.getElementById('loginBtn');
+function showAlert(msg) {
+  const el = document.getElementById('alert');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function hideAlert() {
+  document.getElementById('alert').style.display = 'none';
+}
+function resetToCode() {
+  currentCode = '';
+  hideAlert();
+  document.getElementById('code').value = '';
+  document.getElementById('step-code').style.display = 'block';
+  document.getElementById('step-activate').style.display = 'none';
+  document.getElementById('step-password').style.display = 'none';
+}
 
-  if (!username || !password) {
-    alertEl.textContent = 'Veuillez remplir tous les champs.';
-    alertEl.style.display = 'block';
-    return;
-  }
+async function submitCode() {
+  hideAlert();
+  const code = document.getElementById('code').value.trim();
+  if (!code || code.length !== 6) { showAlert('Veuillez saisir un code à 6 chiffres.'); return; }
 
-  btn.disabled = true;
-  btn.textContent = 'Connexion...';
+  const result = await window.dsne.checkCode({ code });
+  if (!result.ok) { showAlert(result.message); return; }
 
-  try {
-    const result = await window.dsne.login({ username, password });
+  currentCode = code;
+  document.getElementById('step-code').style.display = 'none';
 
-    if (result.ok) {
-      sessionStorage.setItem('user', JSON.stringify(result.user));
-      window.location.href = 'index.html';
-    } else {
-      if (result.pending) {
-        window.location.href = 'pending.html';
-      } else {
-        alertEl.textContent = result.message;
-        alertEl.style.display = 'block';
-        btn.disabled = false;
-        btn.textContent = 'Se connecter';
-      }
-    }
-  } catch (err) {
-    alertEl.textContent = 'Erreur de connexion. Réessayez.';
-    alertEl.style.display = 'block';
-    btn.disabled = false;
-    btn.textContent = 'Se connecter';
+  if (!result.activated) {
+    document.getElementById('welcomeName').textContent = result.nom_complet;
+    document.getElementById('step-activate').style.display = 'block';
+  } else {
+    document.getElementById('welcomeName2').textContent = result.nom_complet;
+    document.getElementById('step-password').style.display = 'block';
+    setTimeout(() => document.getElementById('password').focus(), 100);
   }
 }
 
-document.addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
+async function submitActivate() {
+  hideAlert();
+  const email   = document.getElementById('email').value.trim();
+  const pass1   = document.getElementById('newPassword').value;
+  const pass2   = document.getElementById('confirmPassword').value;
+
+  if (!email) { showAlert('Veuillez saisir votre adresse e-mail.'); return; }
+  if (!pass1 || pass1.length < 6) { showAlert('Le mot de passe doit contenir au moins 6 caractères.'); return; }
+  if (pass1 !== pass2) { showAlert('Les mots de passe ne correspondent pas.'); return; }
+
+  const result = await window.dsne.activate({ code: currentCode, email, password: pass1 });
+  if (!result.ok) { showAlert(result.message); return; }
+
+  sessionStorage.setItem('user', JSON.stringify(result.user));
+  window.location.href = 'index.html';
+}
+
+async function submitLogin() {
+  hideAlert();
+  const password = document.getElementById('password').value;
+  if (!password) { showAlert('Veuillez saisir votre mot de passe.'); return; }
+
+  const result = await window.dsne.login({ code: currentCode, password });
+  if (!result.ok) { showAlert(result.message); return; }
+
+  sessionStorage.setItem('user', JSON.stringify(result.user));
+  window.location.href = 'index.html';
+}
 </script>
 </body>
 </html>
