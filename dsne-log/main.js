@@ -469,3 +469,69 @@ ipcMain.handle('build-requisition-mspp', async (_, { d, entete, dateStr }) => {
   ]}]});
   return await toBase64(doc);
 });
+
+ipcMain.handle('build-requisition-mspp', async (_, { d, entete, dateStr }) => {
+  const { Document, Paragraph, TextRun, Table, TableRow, TableCell,
+          BorderStyle, AlignmentType, WidthType, ShadingType, VerticalAlign } = getDocx();
+  const b = { style: BorderStyle.SINGLE, size: 8, color: '000000' };
+  const bords = { top:b, bottom:b, left:b, right:b };
+  const hcell = (txt, w) => new TableCell({
+    borders: bords, width: { size:w, type:WidthType.DXA },
+    shading: { fill:'DDDDDD', type:ShadingType.CLEAR },
+    margins: { top:80, bottom:80, left:120, right:120 },
+    children: [new Paragraph({ alignment: AlignmentType.LEFT,
+      children: [new TextRun({ text: txt, bold:true, size:20, font:'Times New Roman' })] })]
+  });
+  const dcell = (txt, w, align) => new TableCell({
+    borders: bords, width: { size:w, type:WidthType.DXA },
+    margins: { top:80, bottom:80, left:120, right:120 },
+    children: [new Paragraph({ alignment: align||AlignmentType.LEFT,
+      children: [new TextRun({ text: String(txt||''), size:20, font:'Times New Roman' })] })]
+  });
+
+  // Build items rows (min 15 rows)
+  const items = (d.items||[]).filter(i => i.designation);
+  while (items.length < 15) items.push({ qte:'', designation:'', observation:'' });
+
+  const doc = new Document({ sections: [{ children: [
+    ...makeEnTete(entete, dateStr),
+    new Paragraph({ alignment: AlignmentType.CENTER, spacing:{after:240},
+      children:[new TextRun({text:'RÉQUISITION', bold:true, size:32, font:'Times New Roman'})] }),
+
+    // Ref + Date
+    new Paragraph({ spacing:{after:60},
+      children:[new TextRun({text:'No de référence : ' + (d.uid||''), bold:true, size:22, font:'Times New Roman'})] }),
+    new Paragraph({ spacing:{after:240},
+      children:[new TextRun({text:'Date : ' + dateStr, bold:true, size:22, font:'Times New Roman'})] }),
+
+    // Section 1
+    new Paragraph({ alignment:AlignmentType.CENTER, spacing:{after:160},
+      children:[new TextRun({text:'1- Information sur le Requérant', bold:true, size:24, font:'Times New Roman'})] }),
+    new Paragraph({ spacing:{after:100},
+      children:[new TextRun({text:'Nom / Prénom :  ' + (d.nom||''), size:22, font:'Times New Roman', underline:{}})] }),
+    new Paragraph({ spacing:{after:100},
+      children:[new TextRun({text:'Programme / Service :  ' + (d.service||''), size:22, font:'Times New Roman', underline:{}})] }),
+    new Paragraph({ spacing:{after:100},
+      children:[new TextRun({text:'Poste Occupé :  ' + (d.poste||''), size:22, font:'Times New Roman', underline:{}})] }),
+    new Paragraph({ spacing:{after:240},
+      children:[new TextRun({text:'Signature :  ___________________________________', size:22, font:'Times New Roman'})] }),
+
+    // Section 2
+    new Paragraph({ alignment:AlignmentType.CENTER, spacing:{after:160},
+      children:[new TextRun({text:'2- Liste des produits/ Matériels/ Fournitures de bureau demandées par le service', bold:true, size:22, font:'Times New Roman'})] }),
+
+    new Table({ width:{ size:100, type:WidthType.PERCENTAGE }, rows:[
+      new TableRow({ children:[
+        hcell('Quantité', 900),
+        hcell('Désignation des produits/ Matériels/ Fournitures de bureau', 5200),
+        hcell('Observation', 2100),
+      ]}),
+      ...items.map(it => new TableRow({ children:[
+        dcell(it.qte||'', 900, AlignmentType.CENTER),
+        dcell(it.designation||'', 5200),
+        dcell(it.observation||'', 2100),
+      ]}))
+    ]}),
+  ]}]});
+  return await toBase64(doc);
+});
