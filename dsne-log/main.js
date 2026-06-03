@@ -1,6 +1,29 @@
 const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const fs   = require('fs');
+const Database = require('better-sqlite3');
+
+let db;
+
+function initDB() {
+  const dbPath = path.join(app.getPath('userData'), 'dsne_log.db');
+  db = new Database(dbPath);
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      code TEXT UNIQUE NOT NULL,
+      nom_complet TEXT NOT NULL,
+      role TEXT DEFAULT 'logistique',
+      email TEXT DEFAULT '',
+      password TEXT DEFAULT '',
+      activated INTEGER DEFAULT 0
+    );
+  `);
+  const seed = db.prepare("INSERT OR REPLACE INTO users (code, nom_complet, role) VALUES (?, ?, ?)");
+  seed.run('174839', 'Daisha Dorsainvil', 'admin');
+  seed.run('629384', 'Elin Beauvin', 'logistique');
+}
 
 let win;
 let LOG_ROOT; // Documents/DSNE-Logistique
@@ -40,7 +63,7 @@ function createWindow() {
     },
     show: false
   });
-  win.loadFile(path.join(__dirname, 'src', 'index.html'));
+  win.loadFile(path.join(__dirname, 'src', 'login.html'));
   win.setMenuBarVisibility(false);
   win.once('ready-to-show', () => win.show());
   win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
@@ -53,7 +76,12 @@ function createWindow() {
   });
 }
 
-app.whenReady().then(() => { initFolders(); createWindow(); });
+app.whenReady().then(() => {
+  initDB();
+  initFolders();
+  createWindow();
+  autoUpdater.checkForUpdatesAndNotify();
+});
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
 
 /* ── IPC: GET ROOT PATH ── */
@@ -470,68 +498,33 @@ ipcMain.handle('build-requisition-mspp', async (_, { d, entete, dateStr }) => {
   return await toBase64(doc);
 });
 
-ipcMain.handle('build-requisition-mspp', async (_, { d, entete, dateStr }) => {
-  const { Document, Paragraph, TextRun, Table, TableRow, TableCell,
-          BorderStyle, AlignmentType, WidthType, ShadingType, VerticalAlign } = getDocx();
-  const b = { style: BorderStyle.SINGLE, size: 8, color: '000000' };
-  const bords = { top:b, bottom:b, left:b, right:b };
-  const hcell = (txt, w) => new TableCell({
-    borders: bords, width: { size:w, type:WidthType.DXA },
-    shading: { fill:'DDDDDD', type:ShadingType.CLEAR },
-    margins: { top:80, bottom:80, left:120, right:120 },
-    children: [new Paragraph({ alignment: AlignmentType.LEFT,
-      children: [new TextRun({ text: txt, bold:true, size:20, font:'Times New Roman' })] })]
-  });
-  const dcell = (txt, w, align) => new TableCell({
-    borders: bords, width: { size:w, type:WidthType.DXA },
-    margins: { top:80, bottom:80, left:120, right:120 },
-    children: [new Paragraph({ alignment: align||AlignmentType.LEFT,
-      children: [new TextRun({ text: String(txt||''), size:20, font:'Times New Roman' })] })]
-  });
 
-  // Build items rows (min 15 rows)
-  const items = (d.items||[]).filter(i => i.designation);
-  while (items.length < 15) items.push({ qte:'', designation:'', observation:'' });
 
-  const doc = new Document({ sections: [{ children: [
-    ...makeEnTete(entete, dateStr),
-    new Paragraph({ alignment: AlignmentType.CENTER, spacing:{after:240},
-      children:[new TextRun({text:'RÉQUISITION', bold:true, size:32, font:'Times New Roman'})] }),
+/* ── AUTH IPC ── */
+ipcMain.handle('check-code', (_, { code }) => {
+  const user = db.prepare("SELECT * FROM users WHERE code = ?").get(code);
+  if (!user) return { ok: false, message: 'Code invalide.' };
+  return { ok: true, activated: user.activated === 1, nom_complet: user.nom_complet };
+});
 
-    // Ref + Date
-    new Paragraph({ spacing:{after:60},
-      children:[new TextRun({text:'No de référence : ' + (d.uid||''), bold:true, size:22, font:'Times New Roman'})] }),
-    new Paragraph({ spacing:{after:240},
-      children:[new TextRun({text:'Date : ' + dateStr, bold:true, size:22, font:'Times New Roman'})] }),
+ipcMain.handle('activate', async (_, { code, email, password }) => {
+  const user = db.prepare("SELECT * FROM users WHERE code = ?").get(code);
+  if (!user) return { ok: false, message: 'Code invalide.' };
+  if (user.activated) return { ok: false, message: 'Compte déjà activé.' };
+  db.prepare("UPDATE users SET email = ?, password = ?, activated = 1 WHERE code = ?").run(email, password, code);
+  return { ok: true, user: { code: user.code, nom_complet: user.nom_complet, role: user.role } };
+});
 
-    // Section 1
-    new Paragraph({ alignment:AlignmentType.CENTER, spacing:{after:160},
-      children:[new TextRun({text:'1- Information sur le Requérant', bold:true, size:24, font:'Times New Roman'})] }),
-    new Paragraph({ spacing:{after:100},
-      children:[new TextRun({text:'Nom / Prénom :  ' + (d.nom||''), size:22, font:'Times New Roman', underline:{}})] }),
-    new Paragraph({ spacing:{after:100},
-      children:[new TextRun({text:'Programme / Service :  ' + (d.service||''), size:22, font:'Times New Roman', underline:{}})] }),
-    new Paragraph({ spacing:{after:100},
-      children:[new TextRun({text:'Poste Occupé :  ' + (d.poste||''), size:22, font:'Times New Roman', underline:{}})] }),
-    new Paragraph({ spacing:{after:240},
-      children:[new TextRun({text:'Signature :  ___________________________________', size:22, font:'Times New Roman'})] }),
+ipcMain.handle('login', (_, { code, password }) => {
+  const user = db.prepare("SELECT * FROM users WHERE code = ? AND password = ? AND activated = 1").get(code, password);
+  if (user) return { ok: true, user: { code: user.code, nom_complet: user.nom_complet, role: user.role } };
+  const exists = db.prepare("SELECT * FROM users WHERE code = ?").get(code);
+  if (!exists) return { ok: false, message: 'Code invalide.' };
+  if (!exists.activated) return { ok: false, message: 'Compte non activé.' };
+  return { ok: false, message: 'Mot de passe incorrect.' };
+});
 
-    // Section 2
-    new Paragraph({ alignment:AlignmentType.CENTER, spacing:{after:160},
-      children:[new TextRun({text:'2- Liste des produits/ Matériels/ Fournitures de bureau demandées par le service', bold:true, size:22, font:'Times New Roman'})] }),
-
-    new Table({ width:{ size:100, type:WidthType.PERCENTAGE }, rows:[
-      new TableRow({ children:[
-        hcell('Quantité', 900),
-        hcell('Désignation des produits/ Matériels/ Fournitures de bureau', 5200),
-        hcell('Observation', 2100),
-      ]}),
-      ...items.map(it => new TableRow({ children:[
-        dcell(it.qte||'', 900, AlignmentType.CENTER),
-        dcell(it.designation||'', 5200),
-        dcell(it.observation||'', 2100),
-      ]}))
-    ]}),
-  ]}]});
-  return await toBase64(doc);
+ipcMain.handle('logout', () => {
+  win.loadFile(path.join(__dirname, 'src', 'login.html'));
+  return { ok: true };
 });
