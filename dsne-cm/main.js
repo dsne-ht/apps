@@ -129,10 +129,9 @@ ipcMain.handle('sync-approval', async () => {
     if (pendingUsers.length === 0) return { ok: true, approved: false };
 
     // Ask the sheet which accounts are approved
-    const response = await httpsPost(SHEET_URL, {
-      action: 'check-approvals',
-      usernames: pendingUsers.map(u => u.username)
-    });
+    const usernames = pendingUsers.map(u => u.username).join(',');
+    const getUrl = SHEET_URL + '?usernames=' + encodeURIComponent(usernames);
+    const response = await httpsGet(getUrl);
 
     if (response.approved && response.approved.length > 0) {
       const stmt = db.prepare("UPDATE users SET statut='approuve' WHERE username=?");
@@ -179,6 +178,30 @@ ipcMain.handle('queue-count', () => db.prepare("SELECT COUNT(*) as n FROM queue 
 
 // ── HELPERS ──
 
+
+function httpsGet(url) {
+  return new Promise((resolve, reject) => {
+    const https = require('https');
+    const follow = (u) => {
+      const urlObj = new URL(u);
+      const options = { hostname: urlObj.hostname, path: urlObj.pathname + urlObj.search, method: 'GET' };
+      const req = https.request(options, (res) => {
+        if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+          return follow(res.headers.location);
+        }
+        let body = '';
+        res.on('data', chunk => body += chunk);
+        res.on('end', () => {
+          try { resolve(JSON.parse(body)); }
+          catch (e) { resolve({ ok: false, raw: body }); }
+        });
+      });
+      req.on('error', reject);
+      req.end();
+    };
+    follow(url);
+  });
+}
 function httpsPost(url, data) {
   return new Promise((resolve, reject) => {
     const payload = JSON.stringify(data);
