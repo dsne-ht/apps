@@ -30,6 +30,11 @@
   <div class="tab"         onclick="switchTab('chauffeurs',this)">Chauffeurs</div>
   <div class="tab"         onclick="switchTab('inv-general',this)">Inventaire général</div>
   <div class="tab"         onclick="switchTab('inv-activites',this)">Inventaire activités</div>
+  <div class="tab"         onclick="switchTab('inv-depart',this)">Inv. Départemental</div>
+  <div class="tab"         onclick="switchTab('transferts',this)">Transferts</div>
+  <div class="tab"         onclick="switchTab('requisition',this)">Réquisitions</div>
+  <div class="tab"         onclick="switchTab('courrier',this)">Courrier / Lettres</div>
+  <div class="tab"         onclick="switchTab('accuses',this)">Accusés réception</div>
 </div>
 
 <!-- ══ TABLEAU DE BORD ══ -->
@@ -181,7 +186,7 @@
       <thead>
         <tr>
           <th>No</th><th>Description</th><th>Couleur</th><th>Codification</th>
-          <th>Marque</th><th>Financement</th><th>État</th><th>Qté</th><th>Service</th><th></th>
+          <th>Marque</th><th>Financement</th><th>État</th><th>Qté</th><th>Service</th><th>Actions</th>
         </tr>
       </thead>
       <tbody id="inv-gen-tbody"></tbody>
@@ -218,6 +223,145 @@
         <tr><th>Date</th><th>Article</th><th>Quantité reçue</th><th>Source / Donateur</th><th>Reçu par</th><th>Notes</th></tr>
       </thead>
       <tbody id="inv-reception-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ INVENTAIRE DÉPARTEMENTAL ══ -->
+<div id="tab-inv-depart" class="content" style="display:none">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <div style="font-size:13px;color:var(--g600)">Biens affectés aux 40 institutions sanitaires du Nord-Est</div>
+    <button class="btn btn-primary btn-sm" onclick="openModal('modal-invd-add')">+ Ajouter un bien</button>
+  </div>
+  <div class="kpi-row" id="invd-kpis"></div>
+  <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap">
+    <input class="form-input" style="flex:1;max-width:300px" placeholder="Rechercher…" oninput="filterInvD(this.value,'','')">
+    <select class="form-select" id="invd-inst-filter" onchange="filterInvD('',this.value,'')">
+      <option value="">Toutes institutions</option>
+    </select>
+    <select class="form-select" id="invd-etat-filter" onchange="filterInvD('','',this.value)">
+      <option value="">Tous états</option>
+      <option value="F">Fonctionnel</option>
+      <option value="NF">Non fonctionnel</option>
+      <option value="MÉ">Mauvais état</option>
+    </select>
+  </div>
+  <div class="section-header" style="display:flex;align-items:center;justify-content:space-between">
+    <span id="invd-count">0 biens</span>
+  </div>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Description</th><th>Marque</th><th>Codification</th>
+          <th>État</th><th>Qté</th><th>Institution actuelle</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="invd-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ TRANSFERTS ══ -->
+<div id="tab-transferts" class="content" style="display:none">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <div style="font-size:13px;color:var(--g600)">Journal des transferts de biens · DSNE</div>
+    <button class="btn btn-secondary btn-sm" onclick="window.dsneLog&&window.dsneLog.openFolder('Transferts')">📁 Ouvrir dossier</button>
+  </div>
+  <div class="kpi-row" id="transferts-kpis"></div>
+  <div class="section-header">Tous les transferts</div>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Réf.</th><th>Date</th><th>Description bien</th><th>Type</th>
+          <th>De</th><th>Vers</th><th>Véhicule?</th><th>Lettre</th><th>Scan bon</th>
+        </tr>
+      </thead>
+      <tbody id="transferts-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ RÉQUISITIONS ══ -->
+<div id="tab-requisition" class="content" style="display:none">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <div style="font-size:13px;color:var(--g600)">Réquisitions de transport et services · DSNE</div>
+    <button class="btn btn-primary btn-sm" onclick="openModal('modal-req-add')">+ Nouvelle réquisition</button>
+  </div>
+  <div class="kpi-row" id="req-kpis"></div>
+  <div class="section-header">Toutes les réquisitions</div>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Réf.</th><th>Date</th><th>Demandeur</th><th>Fournisseur</th>
+          <th>Description</th><th>Durée</th><th>Prix/dépl.</th><th>Total HTG</th><th>Statut</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="req-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ COURRIER / LETTRES ══ -->
+<div id="tab-courrier" class="content" style="display:none">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <div style="font-size:13px;color:var(--g600)">Lettres générées par le service logistique</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-secondary btn-sm" onclick="window.dsneLog&&window.dsneLog.openFolder('Courrier')">📁 Ouvrir dossier</button>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:1.5rem">
+    <div class="card-standalone" style="border-top:3px solid var(--c600);cursor:pointer" onclick="openModal('modal-lettre-deplacement')">
+      <div style="font-size:11px;font-weight:700;color:var(--c600);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Mise à disposition</div>
+      <div style="font-size:13px;color:var(--g800)">Lettre de déplacement véhicule</div>
+      <div style="font-size:11px;color:var(--g400);margin-top:4px">Affectation d'un véhicule à un agent</div>
+    </div>
+    <div class="card-standalone" style="border-top:3px solid var(--c600);cursor:pointer" onclick="openModal('modal-lettre-engagement')">
+      <div style="font-size:11px;font-weight:700;color:var(--c600);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Engagement</div>
+      <div style="font-size:13px;color:var(--g800)">Lettre d'engagement transport</div>
+      <div style="font-size:11px;color:var(--g400);margin-top:4px">Engagement formel prestataire</div>
+    </div>
+    <div class="card-standalone" style="border-top:3px solid var(--c600);cursor:pointer" onclick="openModal('modal-lettre-restitution')">
+      <div style="font-size:11px;font-weight:700;color:var(--c600);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Restitution</div>
+      <div style="font-size:13px;color:var(--g800)">Accusé restitution véhicule</div>
+      <div style="font-size:11px;color:var(--g400);margin-top:4px">Retour d'un véhicule affecté</div>
+    </div>
+    <div class="card-standalone" style="border-top:3px solid var(--c600);cursor:pointer" onclick="openModal('modal-lettre-affectation')">
+      <div style="font-size:11px;font-weight:700;color:var(--c600);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Affectation</div>
+      <div style="font-size:13px;color:var(--g800)">Lettre d'affectation véhicule</div>
+      <div style="font-size:11px;color:var(--g400);margin-top:4px">Transfert vers institution</div>
+    </div>
+  </div>
+  <div class="section-header">Lettres générées</div>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr><th>Réf.</th><th>Date</th><th>Type</th><th>Destinataire</th><th>Objet</th><th>Fichier</th></tr>
+      </thead>
+      <tbody id="courrier-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ ACCUSÉS DE RÉCEPTION ══ -->
+<div id="tab-accuses" class="content" style="display:none">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <div style="font-size:13px;color:var(--g600)">Documents reçus · UID automatique par date</div>
+    <button class="btn btn-primary btn-sm" onclick="openModal('modal-accuse-add')">+ Nouvel accusé</button>
+  </div>
+  <div class="kpi-row" id="accuses-kpis"></div>
+  <div class="section-header">Journal des accusés de réception</div>
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>UID</th><th>Date</th><th>Reçu de</th><th>Qualité</th>
+          <th>Institution</th><th>Documents</th><th>Mode</th><th>Fichier</th>
+        </tr>
+      </thead>
+      <tbody id="accuses-tbody"></tbody>
     </table>
   </div>
 </div>
@@ -588,6 +732,368 @@
   </div>
 </div>
 
+<!-- Modal Transfert -->
+<div class="modal-overlay" id="modal-transfert">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="transfert-title">Transférer un bien</h2>
+      <button class="modal-close" onclick="closeModal('modal-transfert')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="tr-item-id">
+      <input type="hidden" id="tr-item-source">
+      <input type="hidden" id="tr-is-vehicule">
+      <div style="background:var(--c50);border:1px solid var(--c100);padding:10px 14px;margin-bottom:1rem;font-size:13px" id="tr-item-info"></div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Date du transfert</label>
+          <input class="form-input" id="tr-date" type="date">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Type de destination</label>
+          <select class="form-select" id="tr-dest-type" onchange="toggleTransfertDest()">
+            <option value="service">Service HQ (interne)</option>
+            <option value="institution">Institution départementale</option>
+          </select>
+        </div>
+        <div class="form-group full" id="tr-dest-service-group">
+          <label class="form-label">Service destinataire</label>
+          <select class="form-select" id="tr-dest-service">
+            <option>Administration</option><option>Comptabilité</option>
+            <option>Ressources Humaines</option><option>Épidémiologie</option>
+            <option>UAS</option><option>SES</option><option>Logistique</option>
+            <option>Réception / Compt / ADM</option><option>Conseiller Technique</option>
+          </select>
+        </div>
+        <div class="form-group full" id="tr-dest-inst-group" style="display:none">
+          <label class="form-label">Institution destinataire</label>
+          <select class="form-select" id="tr-dest-inst"></select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Observations</label>
+          <input class="form-input" id="tr-obs" placeholder="Motif du transfert">
+        </div>
+      </div>
+      <div style="margin:1rem 0;padding:10px 14px;background:var(--g50);border:1px solid var(--g100);font-size:12px;color:var(--g600)" id="tr-vehicule-note" style="display:none">
+        ⚠️ Ce bien est un véhicule — une <strong>Lettre d'affectation</strong> sera générée automatiquement après enregistrement.
+      </div>
+      <div style="margin-bottom:1rem">
+        <label class="form-label" style="margin-bottom:6px;display:block">Scan bon de livraison (optionnel)</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn btn-secondary btn-sm" onclick="pickScanTransfert()">📎 Joindre scan</button>
+          <span style="font-size:12px;color:var(--g400)" id="tr-scan-name">Aucun fichier</span>
+        </div>
+        <input type="hidden" id="tr-scan-path">
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="saveTransfert()">Enregistrer le transfert</button>
+        <button class="btn btn-secondary" onclick="closeModal('modal-transfert')">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Inventaire Départemental — Ajout -->
+<div class="modal-overlay" id="modal-invd-add">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="invd-modal-title">Nouveau bien — Inventaire Départemental</h2>
+      <button class="modal-close" onclick="closeModal('modal-invd-add')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="invd-edit-id">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label class="form-label">Description</label>
+          <input class="form-input" id="invd-desc" placeholder="ex. Moto LONCIN LX200">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Marque</label>
+          <input class="form-input" id="invd-marque" placeholder="">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Codification</label>
+          <input class="form-input" id="invd-code" placeholder="">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Série</label>
+          <input class="form-input" id="invd-serie" placeholder="">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Financement</label>
+          <select class="form-select" id="invd-fin">
+            <option>MSPP</option><option>USAID</option><option>USAID/MSPP</option>
+            <option>Union Européenne</option><option>PEPFAR</option><option>CANADA</option>
+            <option>OXFAM</option><option>Autre</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">État</label>
+          <select class="form-select" id="invd-etat">
+            <option value="F">Fonctionnel</option>
+            <option value="NF">Non fonctionnel</option>
+            <option value="MÉ">Mauvais état</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Quantité</label>
+          <input class="form-input" id="invd-qte" type="number" value="1" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Est un véhicule?</label>
+          <select class="form-select" id="invd-is-veh">
+            <option value="0">Non</option>
+            <option value="1">Oui</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Institution actuelle</label>
+          <select class="form-select" id="invd-inst"></select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="saveInvD()">Enregistrer</button>
+        <button class="btn btn-secondary" onclick="closeModal('modal-invd-add')">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Réquisition -->
+<div class="modal-overlay" id="modal-req-add">
+  <div class="modal" style="width:660px">
+    <div class="modal-header">
+      <h2 id="req-modal-title">Nouvelle réquisition</h2>
+      <button class="modal-close" onclick="closeModal('modal-req-add')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="req-edit-id">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <input class="form-input" id="req-date" type="date">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Demandeur</label>
+          <input class="form-input" id="req-demandeur" value="Service logistique DSNE">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fournisseur</label>
+          <input class="form-input" id="req-fournisseur" placeholder="ex. Ti Pa Service Location">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Description du service</label>
+          <input class="form-input" id="req-desc" placeholder="ex. Transport de matériels et fournitures">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Durée / Quantité</label>
+          <input class="form-input" id="req-duree" placeholder="ex. 2 Jours">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Prix / déplacement (HTG)</label>
+          <input class="form-input" id="req-prix" type="number" placeholder="0">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Justification</label>
+          <textarea class="form-textarea" id="req-justif" placeholder="Motif de la réquisition…"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mode de paiement</label>
+          <select class="form-select" id="req-paiement">
+            <option>Virement bancaire / Chèque</option>
+            <option>Cash</option>
+            <option>Mobile Money</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Statut</label>
+          <select class="form-select" id="req-statut">
+            <option>En attente</option>
+            <option>Approuvée</option>
+            <option>Rejetée</option>
+            <option>Exécutée</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="saveRequisition()">Enregistrer</button>
+        <button class="btn btn-secondary btn-sm" onclick="genRequisitionDocx()" style="margin-left:auto">⬇ Télécharger .docx</button>
+        <button class="btn btn-secondary" onclick="closeModal('modal-req-add')">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Lettre Déplacement -->
+<div class="modal-overlay" id="modal-lettre-deplacement">
+  <div class="modal" style="width:660px">
+    <div class="modal-header">
+      <h2>Lettre de déplacement — Mise à disposition véhicule</h2>
+      <button class="modal-close" onclick="closeModal('modal-lettre-deplacement')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="ld-date" type="date"></div>
+        <div class="form-group"><label class="form-label">Destinataire (nom)</label><input class="form-input" id="ld-dest-nom" placeholder="ex. Wendy FELIX"></div>
+        <div class="form-group full"><label class="form-label">Titre / Fonction destinataire</label><input class="form-input" id="ld-dest-titre" placeholder="ex. Chef section Hygiène de l'eau"></div>
+        <div class="form-group"><label class="form-label">Marque</label><input class="form-input" id="ld-marque" placeholder="ex. HONDA"></div>
+        <div class="form-group"><label class="form-label">Série</label><input class="form-input" id="ld-serie" placeholder=""></div>
+        <div class="form-group"><label class="form-label">Moteur</label><input class="form-input" id="ld-moteur" placeholder=""></div>
+        <div class="form-group"><label class="form-label">Modèle</label><input class="form-input" id="ld-model" placeholder=""></div>
+        <div class="form-group"><label class="form-label">Puissance</label><input class="form-input" id="ld-puissance" placeholder="ex. 150"></div>
+        <div class="form-group"><label class="form-label">Couleur</label><input class="form-input" id="ld-couleur" placeholder=""></div>
+        <div class="form-group"><label class="form-label">Plaque</label><input class="form-input" id="ld-plaque" placeholder="ex. SE-001225"></div>
+        <div class="form-group"><label class="form-label">Année</label><input class="form-input" id="ld-annee" placeholder="ex. 2023"></div>
+        <div class="form-group"><label class="form-label">État</label><input class="form-input" id="ld-etat" placeholder="ex. Neuf / Bon état"></div>
+        <div class="form-group">
+          <label class="form-label">Type d'usage</label>
+          <select class="form-select" id="ld-usage">
+            <option value="service">Véhicule de service (usage professionnel uniquement)</option>
+            <option value="fonction">Véhicule de fonction (usage pro + personnel autorisé)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="genLettreDeplacement()">⬇ Générer .docx</button>
+        <button class="btn btn-secondary" onclick="closeModal('modal-lettre-deplacement')">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Lettre Engagement -->
+<div class="modal-overlay" id="modal-lettre-engagement">
+  <div class="modal" style="width:620px">
+    <div class="modal-header">
+      <h2>Lettre d'engagement — Transport</h2>
+      <button class="modal-close" onclick="closeModal('modal-lettre-engagement')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="le-date" type="date"></div>
+        <div class="form-group"><label class="form-label">Prestataire</label><input class="form-input" id="le-prestataire" placeholder="ex. Ti Pa Service Location"></div>
+        <div class="form-group full"><label class="form-label">Objet du transport</label><input class="form-input" id="le-objet" placeholder="ex. Transport matériels et fournitures de bureau"></div>
+        <div class="form-group full"><label class="form-label">Détails / missions principales</label><textarea class="form-textarea" id="le-details" placeholder="1- Le transport des matériels&#10;2- La sécurisation du transport…"></textarea></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="genLettreEngagement()">⬇ Générer .docx</button>
+        <button class="btn btn-secondary" onclick="closeModal('modal-lettre-engagement')">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Lettre Restitution -->
+<div class="modal-overlay" id="modal-lettre-restitution">
+  <div class="modal" style="width:660px">
+    <div class="modal-header">
+      <h2>Accusé de restitution — Véhicule</h2>
+      <button class="modal-close" onclick="closeModal('modal-lettre-restitution')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="lr-date" type="date"></div>
+        <div class="form-group"><label class="form-label">Restituant (nom)</label><input class="form-input" id="lr-nom" placeholder="ex. Roudjerline Théophile"></div>
+        <div class="form-group full"><label class="form-label">Titre / Fonction</label><input class="form-input" id="lr-titre" placeholder="ex. Infirmière Spécialiste en Santé Communautaire"></div>
+        <div class="form-group"><label class="form-label">Marque</label><input class="form-input" id="lr-marque"></div>
+        <div class="form-group"><label class="form-label">Série</label><input class="form-input" id="lr-serie"></div>
+        <div class="form-group"><label class="form-label">Moteur</label><input class="form-input" id="lr-moteur"></div>
+        <div class="form-group"><label class="form-label">Modèle</label><input class="form-input" id="lr-model"></div>
+        <div class="form-group"><label class="form-label">Puissance</label><input class="form-input" id="lr-puissance"></div>
+        <div class="form-group"><label class="form-label">Couleur</label><input class="form-input" id="lr-couleur"></div>
+        <div class="form-group"><label class="form-label">Plaque</label><input class="form-input" id="lr-plaque"></div>
+        <div class="form-group"><label class="form-label">Date de restitution</label><input class="form-input" id="lr-date-rest" type="date"></div>
+        <div class="form-group"><label class="form-label">État à la restitution</label><input class="form-input" id="lr-etat" placeholder="ex. Très bon"></div>
+        <div class="form-group full"><label class="form-label">Accessoires rendus</label><input class="form-input" id="lr-accessoires" placeholder="ex. Clef (double inclus), casque, genouillères"></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="genLettreRestitution()">⬇ Générer .docx</button>
+        <button class="btn btn-secondary" onclick="closeModal('modal-lettre-restitution')">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Lettre Affectation -->
+<div class="modal-overlay" id="modal-lettre-affectation">
+  <div class="modal" style="width:660px">
+    <div class="modal-header">
+      <h2>Lettre d'affectation — Véhicule</h2>
+      <button class="modal-close" onclick="closeModal('modal-lettre-affectation')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="la-date" type="date"></div>
+        <div class="form-group"><label class="form-label">Institution destinataire</label><select class="form-select" id="la-dest-inst"></select></div>
+        <div class="form-group"><label class="form-label">Responsable destinataire</label><input class="form-input" id="la-resp" placeholder="ex. Dr Jhon Cador Joseph"></div>
+        <div class="form-group"><label class="form-label">Titre</label><input class="form-input" id="la-resp-titre" placeholder="ex. Directeur Médical"></div>
+        <div class="form-group"><label class="form-label">Marque</label><input class="form-input" id="la-marque"></div>
+        <div class="form-group"><label class="form-label">Série</label><input class="form-input" id="la-serie"></div>
+        <div class="form-group"><label class="form-label">Modèle</label><input class="form-input" id="la-model"></div>
+        <div class="form-group"><label class="form-label">Moteur</label><input class="form-input" id="la-moteur"></div>
+        <div class="form-group"><label class="form-label">Puissance</label><input class="form-input" id="la-puissance"></div>
+        <div class="form-group"><label class="form-label">Couleur</label><input class="form-input" id="la-couleur"></div>
+        <div class="form-group"><label class="form-label">Plaque</label><input class="form-input" id="la-plaque"></div>
+        <div class="form-group"><label class="form-label">Année</label><input class="form-input" id="la-annee"></div>
+        <div class="form-group"><label class="form-label">État</label><input class="form-input" id="la-etat"></div>
+        <div class="form-group full"><label class="form-label">Motif de l'affectation</label><textarea class="form-textarea" id="la-motif" placeholder="Contexte et raison de l'affectation…"></textarea></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="genLettreAffectation()">⬇ Générer .docx</button>
+        <button class="btn btn-secondary" onclick="closeModal('modal-lettre-affectation')">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Accusé de réception -->
+<div class="modal-overlay" id="modal-accuse-add">
+  <div class="modal" style="width:680px">
+    <div class="modal-header">
+      <h2>Nouvel accusé de réception de documents</h2>
+      <button class="modal-close" onclick="closeModal('modal-accuse-add')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Date de réception</label>
+          <input class="form-input" id="ac-date" type="date">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Reçu de (nom)</label>
+          <input class="form-input" id="ac-nom" placeholder="ex. Dr Jean Clervain Dorsainvil">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Qualité / Titre</label>
+          <input class="form-input" id="ac-qualite" placeholder="ex. Chef service / programme">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Institution / Service</label>
+          <input class="form-input" id="ac-institution" placeholder="ex. Direction DSNE">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mode de remise</label>
+          <select class="form-select" id="ac-mode">
+            <option>Main propre</option>
+            <option>Courrier</option>
+            <option>Voie Électronique</option>
+            <option>WhatsApp</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin:1rem 0">
+        <label class="form-label" style="margin-bottom:8px;display:block">Documents reçus</label>
+        <div id="ac-docs-list"></div>
+        <button class="btn btn-secondary btn-sm" style="margin-top:8px" onclick="addAccuseDocRow()">+ Ajouter un document</button>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="saveAccuse()">Enregistrer + Générer .docx</button>
+        <button class="btn btn-secondary" onclick="closeModal('modal-accuse-add')">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -602,7 +1108,12 @@ function switchTab(id, el) {
     journal: renderJournal, entretien: renderEntretien,
     chauffeurs: renderChauffeurs,
     'inv-general': renderInvGen,
-    'inv-activites': renderInvAct
+    'inv-activites': renderInvAct,
+    'inv-depart': renderInvD,
+    transferts: renderTransferts,
+    requisition: renderRequisitions,
+    courrier: renderCourrier,
+    accuses: renderAccuses,
   };
   if (renders[id]) renders[id]();
 }
