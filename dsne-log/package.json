@@ -1,6 +1,6 @@
 {
   "name": "dsne-logistique",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "DSNE — Logistique",
   "main": "main.js",
   "author": "DSNE",
@@ -11,9 +11,7 @@
   "build": {
     "appId": "ht.gouv.mspp.dsne.log",
     "productName": "DSNE Logistique",
-    "directories": {
-      "output": "dist"
-    },
+    "directories": { "output": "dist" },
     "win": {
       "target": "nsis",
       "icon": "assets/log.png"
@@ -24,6 +22,10 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true
     }
+  },
+  "dependencies": {
+    "docx": "^8.5.0",
+    "exceljs": "^4.4.0"
   },
   "devDependencies": {
     "electron": "^28.0.0",
