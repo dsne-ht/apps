@@ -1,4 +1,11 @@
 :root {
+  --c50: #E6EFF9;
+  --c100: #B0CEED;
+  --c200: #7AADE1;
+  --c400: #2B7DD0;
+  --c600: #185FA5;
+  --c800: #0F3E6E;
+  --c900: #0A2A4B;
   --o50: #FFF4E6;
   --o100: #FFD9A8;
   --o200: #FFBE6A;
@@ -21,11 +28,12 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; margin: 0; padding: 0; }
 body { font-family: var(--font); background: var(--g50); color: var(--g800); font-size: 14px; }
 
 /* ── TOPBAR */
 .topbar {
-  background: var(--o600);
+  background: var(--c600);
   padding: 0 1.5rem;
   height: 52px;
   display: flex;
@@ -109,7 +117,7 @@ body { font-family: var(--font); background: var(--g50); color: var(--g800); fon
 
 /* ── BUTTONS */
 .btn { padding: 9px 18px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; }
-.btn-primary { background: var(--o600); color: #fff; }
+.btn-primary { background: var(--c600); color: #fff; }
 .btn-primary:hover { background: var(--o800); }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-secondary { background: var(--g100); color: var(--g800); }
@@ -183,7 +191,7 @@ body { font-family: var(--font); background: var(--g50); color: var(--g800); fon
 .alert-error { background: var(--danger-bg); color: var(--danger); }
 
 /* ── LOGIN */
-.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--o600); }
+.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--c600); }
 .login-card { background: var(--white); padding: 2.5rem; width: 360px; }
 .login-logo { text-align: center; margin-bottom: 1.5rem; }
 .login-logo h2 { font-size: 20px; font-weight: 700; color: var(--o600); }
