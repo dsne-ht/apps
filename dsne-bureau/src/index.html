@@ -1127,6 +1127,21 @@ body {
         <div class="letter-preview" id="letter-preview"></div>
       </div>
     </div>
+
+    <!-- Courrier généré log -->
+    <div style="margin-top:24px">
+      <div class="section-title" style="margin-bottom:12px">Courrier généré</div>
+      <table class="data-table" style="width:100%">
+        <thead>
+          <tr>
+            <th>Date</th><th>Type</th><th>Destinataire</th><th>Objet</th><th>Référence</th><th>Format</th>
+          </tr>
+        </thead>
+        <tbody id="courrier-log-tbody">
+          <tr><td colspan="6" style="text-align:center;color:var(--ink-4);padding:20px">Aucun courrier généré.</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 
@@ -1771,6 +1786,7 @@ let activeTemplate = TEMPLATES[0];
 
 function initCourrier() {
   if(courrierInited) return; courrierInited=true;
+  renderCourrierLog();
   document.getElementById('l-date').value = new Date().toISOString().split('T')[0];
   renderTemplateList();
   loadTemplate(TEMPLATES[0]);
@@ -1910,6 +1926,10 @@ function printLetter() { window.print(); }
 
 function exportPDF() {
   const preview = document.getElementById('letter-preview');
+  const _dest  = document.getElementById('l-dest')?.value  || '';
+  const _objet = document.getElementById('l-objet')?.value || '';
+  const _ref   = document.getElementById('l-ref')?.value   || '';
+  saveCourrierEntry(activeTemplate ? activeTemplate.label : 'Lettre', _dest, _objet, _ref, 'PDF');
   const w = window.open('', '_blank');
   const css = [
     'body { font-family: "Times New Roman", serif; font-size: 12pt; margin: 2cm; color: #000; line-height: 1.8; }',
@@ -1931,6 +1951,50 @@ function exportPDF() {
   setTimeout(function(){ w.print(); }, 400);
 }
 
+
+
+/* ══ COURRIER LOG ══ */
+const COURRIER_LOG_KEY = 'dsne_bureau_courrier_log';
+
+function loadCourrierLog() {
+  try { return JSON.parse(localStorage.getItem(COURRIER_LOG_KEY) || '[]'); } catch(e) { return []; }
+}
+
+function saveCourrierEntry(type, dest, objet, ref, format) {
+  const log = loadCourrierLog();
+  log.unshift({
+    date: new Date().toISOString(),
+    type: type,
+    dest: dest,
+    objet: objet,
+    ref: ref,
+    format: format
+  });
+  localStorage.setItem(COURRIER_LOG_KEY, JSON.stringify(log.slice(0, 200)));
+  renderCourrierLog();
+}
+
+function renderCourrierLog() {
+  const log = loadCourrierLog();
+  const tbody = document.getElementById('courrier-log-tbody');
+  if (!tbody) return;
+  if (!log.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink-4);padding:20px">Aucun courrier généré.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = log.map(e => {
+    const d = new Date(e.date);
+    const dateStr = d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
+    return '<tr>' +
+      '<td style="font-size:11px;white-space:nowrap">' + dateStr + '</td>' +
+      '<td style="font-size:12px">' + (e.type||'—') + '</td>' +
+      '<td style="font-size:12px">' + (e.dest||'—') + '</td>' +
+      '<td style="font-size:12px">' + (e.objet||'—') + '</td>' +
+      '<td style="font-size:11px;color:var(--ink-3)">' + (e.ref||'—') + '</td>' +
+      '<td><span style="font-size:10px;font-weight:600;color:var(--teal)">' + (e.format||'DOC') + '</span></td>' +
+      '</tr>';
+  }).join('');
+}
 
 function exportDOCX() {
   const dest  = document.getElementById('l-dest').value  || '';
@@ -1966,6 +2030,7 @@ ${body.split('\n').map(l => `\\pard ${l}\\par`).join('\n')}
 \\pard Direction Sanitaire du Nord-Est\\par
 }`;
 
+  saveCourrierEntry(activeTemplate ? activeTemplate.label : 'Lettre', dest, objet, ref, 'DOC');
   const blob = new Blob([rtf], {type: 'application/rtf'});
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
