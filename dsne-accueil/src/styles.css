@@ -1,30 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+
 :root {
-  --c50: #E6EFF9;
-  --c100: #B0CEED;
-  --c200: #7AADE1;
-  --c400: #2B7DD0;
-  --c600: #185FA5;
-  --c800: #0F3E6E;
-  --c900: #0A2A4B;
-  --o50: #FFF4E6;
-  --o100: #FFD9A8;
-  --o200: #FFBE6A;
-  --o400: #F59500;
-  --o600: #C47200;
-  --o800: #7A4700;
-  --o900: #3D2300;
-  --g50: #F8F7F4;
-  --g100: #EBEBEB;
-  --g200: #D0CFCA;
-  --g400: #888780;
-  --g600: #5F5E5A;
-  --g800: #2C2C2A;
+  --c50: #e6f2f0;
+  --c100: #b3d9d3;
+  --c200: #7fc5bb;
+  --c400: #26a08a;
+  --c600: #005C4E;
+  --c800: #004038;
+  --c900: #002a25;
+  --o50: #e6f2f0;
+  --o100: #b3d9d3;
+  --o200: #7fc5bb;
+  --o400: #26a08a;
+  --o600: #005C4E;
+  --o800: #004038;
+  --o900: #002a25;
+  --g50: #f7f9f8;
+  --g100: #e6eeec;
+  --g200: #c8d8d4;
+  --g400: #7a9a94;
+  --g600: #5a7a74;
+  --g800: #1a3028;
   --white: #FFFFFF;
   --danger: #A32D2D;
   --danger-bg: #FCEBEB;
-  --success: #27500A;
-  --success-bg: #EAF3DE;
-  --font: 'Segoe UI', system-ui, sans-serif;
+  --success: #005C4E;
+  --success-bg: #e6f2f0;
+  --font: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -192,7 +194,7 @@ body { font-family: var(--font); background: var(--g50); color: var(--g800); fon
 
 /* ── LOGIN */
 .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--c600); }
-.login-card { background: var(--white); padding: 2.5rem; width: 360px; }
+.login-card { background: var(--white); padding: 2.5rem; width: 360px; border-top: 4px solid var(--c800); border-radius: 0; }
 .login-logo { text-align: center; margin-bottom: 1.5rem; }
 .login-logo h2 { font-size: 20px; font-weight: 700; color: var(--o600); }
 .login-logo p { font-size: 12px; color: var(--g400); margin-top: 4px; }
