@@ -22,7 +22,7 @@
           onkeydown="if(event.key==='Enter') submitCode()">
         <span style="font-size:11px;color:var(--g400)">Saisissez votre code personnel à 6 chiffres.</span>
       </div>
-      <button class="btn btn-primary btn-full" onclick="submitCode()">Continuer</button>
+      <button class="btn btn-primary btn-full" onclick="submitCode()" style="background:#005C4E;border-color:#005C4E;color:#fff;width:100%;padding:10px;font-size:13px;font-weight:500;border-radius:0;cursor:pointer;">Continuer</button>
     </div>
 
     <div id="step-activate" style="display:none">
@@ -42,7 +42,7 @@
         <input type="password" id="confirmPassword" placeholder="Répétez le mot de passe"
           onkeydown="if(event.key==='Enter') submitActivate()">
       </div>
-      <button class="btn btn-primary btn-full" onclick="submitActivate()">Activer mon compte</button>
+      <button class="btn btn-primary btn-full" onclick="submitActivate()" style="background:#005C4E;border-color:#005C4E;color:#fff;width:100%;padding:10px;font-size:13px;font-weight:500;border-radius:0;cursor:pointer;">Activer mon compte</button>
       <button class="btn btn-secondary btn-full" style="margin-top:8px" onclick="resetToCode()">Retour</button>
     </div>
 
@@ -55,7 +55,7 @@
         <input type="password" id="password" placeholder="Votre mot de passe"
           onkeydown="if(event.key==='Enter') submitLogin()">
       </div>
-      <button class="btn btn-primary btn-full" onclick="submitLogin()">Se connecter</button>
+      <button class="btn btn-primary btn-full" onclick="submitLogin()" style="background:#005C4E;border-color:#005C4E;color:#fff;width:100%;padding:10px;font-size:13px;font-weight:500;border-radius:0;cursor:pointer;">Se connecter</button>
       <button class="btn btn-secondary btn-full" style="margin-top:8px" onclick="resetToCode()">Retour</button>
     </div>
   </div>
