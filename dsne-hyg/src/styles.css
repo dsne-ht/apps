@@ -21,6 +21,7 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; margin: 0; padding: 0; }
 body { font-family: var(--font); background: var(--g50); color: var(--g800); font-size: 14px; }
 
 /* TOPBAR */
@@ -230,7 +231,7 @@ body { font-family: var(--font); background: var(--g50); color: var(--g800); fon
 
 /* ══ SIDEBAR (added) ══ */
 /* ══ SIDEBAR LAYOUT ══ */
-.app-layout {
+.app-layout { height: calc(100vh - 54px); overflow: hidden;
   display: flex;
   height: calc(100vh - 52px); /* full height minus topbar */
   overflow: hidden;
