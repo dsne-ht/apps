@@ -698,7 +698,7 @@ async function loadJournal() {
 
   list.innerHTML = all.map(row => {
     let d = {}; try { d = JSON.parse(row.data) } catch(e) {}
-    const date = new Date(d.timestamp || row.created_at)
+    const _raw = d.timestamp || row.created_at || ''; const date = new Date(_raw.includes('T') ? _raw : _raw.replace(' ', 'T') + '-05:00')
     const dateStr = date.toLocaleDateString('fr-HT', { day: '2-digit', month: '2-digit', year: 'numeric' })
     const heureStr = date.toLocaleTimeString('fr-HT', { hour: '2-digit', minute: '2-digit' })
     const isSynced = row.status === 'synced'
