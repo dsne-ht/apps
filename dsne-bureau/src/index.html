@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bureau de Direction | DSNE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
@@ -14,16 +14,16 @@
    TOKENS
 ═══════════════════════════════════════════ */
 :root {
-  --ink:       #0c1a2e;
-  --ink-2:     #2a3a50;
-  --ink-3:     #5a6a80;
-  --ink-4:     #8a9ab0;
-  --gold:      #b8972a;
-  --gold-lt:   #d4b24a;
+  --ink:       #0c1a14;
+  --ink-2:     #1a3028;
+  --ink-3:     #4a6a5a;
+  --ink-4:     #7a9a8a;
+  --gold:      #ffffff;
+  --gold-lt:   rgba(255,255,255,.15);
   --teal:      #005C4E;
   --teal-lt:   #e6f2f0;
-  --cream:     #f8f6f1;
-  --cream-dk:  #ede9e0;
+  --cream:     #f7f9f8;
+  --cream-dk:  #e6f0ed;
   --white:     #ffffff;
   --red:       #c0392b;
   --red-lt:    #fdf0ef;
@@ -31,12 +31,12 @@
   --green-lt:  #e6f4ec;
   --amber:     #b45309;
   --amber-lt:  #fff7e6;
-  --border:    rgba(12,26,46,.1);
-  --shadow:    0 2px 12px rgba(12,26,46,.08);
-  --shadow-lg: 0 8px 32px rgba(12,26,46,.12);
+  --border:    rgba(0,92,78,.12);
+  --shadow:    none;
+  --shadow-lg: none;
   --nav-w:     220px;
-  --nav-bg:    #0c1a2e;
-  --r:         6px;
+  --nav-bg:    #005C4E;
+  --r:         0px;
 }
 
 /* ═══════════════════════════════════════════
@@ -117,7 +117,7 @@ body {
 .nav-item.active {
   color: #fff;
   background: rgba(184,151,42,.12);
-  border-left-color: var(--gold);
+  border-left-color: #ffffff;
   font-weight: 500;
 }
 .nav-item .icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
@@ -255,7 +255,7 @@ body {
   font-weight: 700;
   letter-spacing: .16em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--teal);
   margin-bottom: 12px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--cream-dk);
