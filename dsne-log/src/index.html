@@ -8,7 +8,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
-<style>:root{--app-color:#5A1FA5;}</style>
+<style>:root{--app-color:#1A1A1A;}</style>
 
 <!-- TOPBAR -->
 <div class="topbar">
@@ -47,6 +47,9 @@
     <div class="sidebar-item" onclick="switchTab('requisition',this)">Réquisitions</div>
     <div class="sidebar-item" onclick="switchTab('courrier',this)">Courrier / Lettres</div>
     <div class="sidebar-item" onclick="switchTab('accuses',this)">Accusés réception</div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="sidebar-item" onclick="window.dsne.logout()">Déconnexion</div>
   </div>
 </div>
 <div class="main-area">
