@@ -20,7 +20,7 @@ function initDB() {
       activated INTEGER DEFAULT 0
     );
   `);
-  const seed = db.prepare("INSERT OR REPLACE INTO users (code, nom_complet, role) VALUES (?, ?, ?)");
+  const seed = db.prepare("INSERT OR IGNORE INTO users (code, nom_complet, role) VALUES (?, ?, ?)");
   seed.run('174839', 'Daisha Dorsainvil', 'admin');
   seed.run('629384', 'Elin Beauvin', 'logistique');
 }
