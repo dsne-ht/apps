@@ -1,11 +1,11 @@
 :root {
-  --c50:  #F3EEFB;
-  --c100: #D9C8F2;
-  --c200: #B899E8;
-  --c400: #7C3FCE;
-  --c600: #5A1FA5;
-  --c800: #3A1270;
-  --c900: #230B45;
+    --c50:#F5F5F5;
+  --c100:#E0E0E0;
+  --c200:#BDBDBD;
+  --c400:#757575;
+  --c600:#1A1A1A;
+  --c800:#0D0D0D;
+  --c900:#000000;
   --g50:  #F8F7F4;
   --g100: #EBEBEB;
   --g200: #D0CFCA;
@@ -288,7 +288,13 @@ body { font-family: var(--font); background: var(--g50); color: var(--g800); fon
 .tabs { display: none !important; }
 
 /* ══ LOGIN ══ */
-:root { --c50:#E6F4F1;--c100:#B3DED6;--c200:#80C8BB;--c400:#26A08A;--c600:#1A7A68;--c800:#0F4D41;--c900:#09362D; }
+:root {   --c50:#F5F5F5;
+  --c100:#E0E0E0;
+  --c200:#BDBDBD;
+  --c400:#757575;
+  --c600:#1A1A1A;
+  --c800:#0D0D0D;
+  --c900:#000000; }
 .login-wrap { min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--c600); }
 .login-card { background:#fff;padding:2.5rem;width:360px;border-radius:2px; }
 .login-logo { text-align:center;margin-bottom:1.5rem; }
