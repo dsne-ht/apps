@@ -1,23 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+
 :root {
-    --c50:#F5F5F5;
-  --c100:#E0E0E0;
-  --c200:#BDBDBD;
-  --c400:#757575;
-  --c600:#1A1A1A;
-  --c800:#0D0D0D;
-  --c900:#000000;
-  --g50:  #F8F7F4;
-  --g100: #EBEBEB;
-  --g200: #D0CFCA;
-  --g400: #888780;
-  --g600: #5F5E5A;
-  --g800: #2C2C2A;
+  --c50: #e6f2f0;
+  --c100: #b3d9d3;
+  --c200: #7fc5bb;
+  --c400: #26a08a;
+  --c600: #005C4E;
+  --c800: #004038;
+  --c900: #002a25;
+  --g50: #f7f9f8;
+  --g100: #e6eeec;
+  --g200: #c8d8d4;
+  --g400: #7a9a94;
+  --g600: #5a7a74;
+  --g800: #1a3028;
   --white: #FFFFFF;
   --danger: #A32D2D;
   --danger-bg: #FCEBEB;
-  --success: #27500A;
-  --success-bg: #EAF3DE;
-  --font: 'Segoe UI', system-ui, sans-serif;
+  --success: #005C4E;
+  --success-bg: #e6f2f0;
+  --font: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -296,7 +298,7 @@ body { font-family: var(--font); background: var(--g50); color: var(--g800); fon
   --c800:#0D0D0D;
   --c900:#000000; }
 .login-wrap { min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--c600); }
-.login-card { background:#fff;padding:2.5rem;width:360px;border-radius:2px; }
+.login-card { background:#fff;padding:2.5rem;width:360px;border-radius: 0; }
 .login-logo { text-align:center;margin-bottom:1.5rem; }
 .login-logo .login-dsne { font-size:28px;font-weight:800;color:var(--c600);letter-spacing:.05em; }
 .login-logo .login-appname { font-size:13px;color:var(--g400);margin-top:4px; }
