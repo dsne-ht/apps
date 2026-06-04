@@ -6,11 +6,11 @@
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="login-wrap">
-  <div class="login-card">
+<div class="login-wrap" style="background:#005C4E;min-height:100vh;display:flex;align-items:center;justify-content:center;">
+  <div class="login-card" style="background:#fff;padding:2.5rem;width:360px;border-top:4px solid #004038;border-radius:0;">
     <div class="login-logo">
-      <div class="login-dsne">DSNE</div>
-      <div class="login-appname">Enregistrement Visiteurs</div>
+      <div class="login-dsne" style="font-family:'Cormorant Garamond',Georgia,serif;font-size:32px;font-weight:700;color:#005C4E;text-align:center;letter-spacing:.05em;">DSNE</div>
+      <div class="login-appname" style="font-size:13px;color:#7a9a8a;text-align:center;margin-top:4px;margin-bottom:1.5rem;">Enregistrement Visiteurs</div>
     </div>
     <div id="alert" class="alert alert-error" style="display:none"></div>
     <div class="field" style="margin-bottom:1.5rem">
@@ -20,7 +20,7 @@
         style="font-size:22px;letter-spacing:0.3em;text-align:center">
       <span class="field-desc" style="text-align:center">Saisir votre code personnel à 6 chiffres.</span>
     </div>
-    <button class="btn btn-primary btn-full" id="loginBtn" onclick="doLogin()">Accéder</button>
+    <button class="btn btn-primary btn-full" id="loginBtn" onclick="doLogin()" style="background:#005C4E;border-color:#005C4E;color:#fff;width:100%;padding:10px;font-size:13px;font-weight:500;border-radius:0;cursor:pointer;">Accéder</button>
   </div>
 </div>
 <script>
