@@ -709,14 +709,14 @@ function switchTab(name, el) {
   if (name==='notes') renderNotes()
 }
 
-async async function doLogout() {
+async function doLogout() {
   sessionStorage.removeItem('user')
   await window.api.logout()
   window.api.navigate('login.html')
 }
 
 // ── UIDs
-async async function loadUIDs() {
+async function loadUIDs() {
   const uids = await window.api.getUids()
   const sel = document.getElementById('e_uid')
   sel.innerHTML = '<option value="">-- Sélectionner une carte --</option>'
