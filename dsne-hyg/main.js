@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
+const fs = require('fs');
 const Database = require('better-sqlite3');
 const https = require('https');
 
@@ -8,6 +9,38 @@ const APP_NAME  = 'Hygiène Publique';
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzTAOg78o7iWchNoqxsqR81vS6pxGGq5cEsbfyJd5u5agA9rOKfRgR_bg3hmzb81yIP/exec';
 
 let db, win;
+
+
+/* ── AUTO BACKUP ── */
+function autoBackupDB(dbPath, appName) {
+  try {
+    const docs = app.getPath('documents');
+    const backupDir = path.join(docs, 'DSNE-Backups', appName);
+    if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir, { recursive: true });
+
+    const today = new Date().toISOString().slice(0,10); // YYYY-MM-DD
+    const dest = path.join(backupDir, appName + '_' + today + '.db');
+
+    // Only backup once per day
+    if (!fs.existsSync(dest) && fs.existsSync(dbPath)) {
+      fs.copyFileSync(dbPath, dest);
+      console.log('DB backup created:', dest);
+    }
+
+    // Keep only last 5 backups
+    const files = fs.readdirSync(backupDir)
+      .filter(f => f.endsWith('.db'))
+      .sort()
+      .reverse();
+    if (files.length > 5) {
+      files.slice(5).forEach(f => {
+        try { fs.unlinkSync(path.join(backupDir, f)); } catch(e) {}
+      });
+    }
+  } catch(e) {
+    console.error('Backup failed (non-fatal):', e.message);
+  }
+}
 
 function initDB() {
   const userDataPath = app.getPath('userData');
@@ -66,7 +99,7 @@ function createWindow(page) {
   win.once('ready-to-show', () => win.show());
 }
 
-app.whenReady().then(() => { initDB(); createWindow(); });
+app.whenReady().then(() => { initDB(); autoBackupDB(path.join(app.getPath('userData'), 'dsne_hyg.db'), 'dsne-hyg'); createWindow(); });
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
 
 // ── CHECK CODE ──
