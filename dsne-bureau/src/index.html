@@ -705,7 +705,7 @@ body {
   </div>
 
   <div class="sidebar-footer">
-    <strong>Daïsha Dorsainvil</strong>
+    <strong id="bureau-user-name">Daïsha Dorsainvil</strong>
     Secrétaire de Direction
   </div>
 </nav>
@@ -2545,5 +2545,17 @@ let liveRPData = null;
 
 
 
+
+<script>
+(function() {
+  try {
+    var u = JSON.parse(sessionStorage.getItem('user') || '{}');
+    if (u.nom_complet) {
+      var el = document.getElementById('bureau-user-name');
+      if (el) el.textContent = u.nom_complet;
+    }
+  } catch(e) {}
+})();
+</script>
 </body>
 </html>
