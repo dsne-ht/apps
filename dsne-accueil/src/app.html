@@ -697,10 +697,22 @@ window.addEventListener('DOMContentLoaded', async () => {
   const userData = sessionStorage.getItem('user')
   if (!userData) { window.api.navigate('login.html'); return }
   currentUser = JSON.parse(userData)
-  document.getElementById('topbarUser').textContent = 'Bonjour ' + (user.nom_complet ? user.nom_complet.split(' ')[0] : user.code); loadVisitesPourDoc() }
+  loadVisitesPourDoc()
+})
+
+function switchTab(name, el) {
+  ['entree','sortie','visites','documents','uids','audit','notes','dsne'].forEach(t => {
+    const el2 = document.getElementById('tab-'+t)
+    if (el2) el2.style.display = t===name ? 'block' : 'none'
+  })
+  document.querySelectorAll('.sidebar-item').forEach(t => t.classList.remove('active'))
+  if (el) el.classList.add('active')
+  if (name==='sortie') loadVisitesActives()
+  if (name==='visites') loadRegistreVisites()
   if (name==='uids') loadAllUIDs()
   if (name==='dsne') dsneActivate()
   if (name==='audit') loadAudit()
+  if (name==='notes') renderNotes()
 }
 
 async function doLogout() {
