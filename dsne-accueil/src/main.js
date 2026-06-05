@@ -153,32 +153,6 @@ function initDB() {
       ('RH-SU463-5','RH','Carte Ressources Humaines 5'),
       ('RH-SU463-6','RH','Carte Ressources Humaines 6');
 
-  // Ensure cards exist (safety check after any DB wipe)
-  const cardCount = db.prepare('SELECT COUNT(*) as c FROM uid_cartes').get();
-  if (cardCount.c === 0) {
-    db.prepare(`INSERT OR REPLACE INTO uid_cartes (uid, service, description) VALUES
-      ('DIR-ME349-1','DIR','Carte Direction 1'),
-      ('DIR-ME349-2','DIR','Carte Direction 2'),
-      ('DIR-ME349-3','DIR','Carte Direction 3'),
-      ('DIR-ME349-4','DIR','Carte Direction 4'),
-      ('DIR-ME349-5','DIR','Carte Direction 5'),
-      ('DIR-ME349-6','DIR','Carte Direction 6'),
-      ('DIR-ME349-7','DIR','Carte Direction 7'),
-      ('DIR-ME349-8','DIR','Carte Direction 8'),
-      ('DIR-ME349-9','DIR','Carte Direction 9'),
-      ('DIR-ME349-10','DIR','Carte Direction 10'),
-      ('COMP-RA903-1','COMP','Carte Comptabilité 1'),
-      ('COMP-RA903-2','COMP','Carte Comptabilité 2'),
-      ('COMP-RA903-3','COMP','Carte Comptabilité 3'),
-      ('COMP-RA903-4','COMP','Carte Comptabilité 4'),
-      ('RH-SU463-1','RH','Carte Ressources Humaines 1'),
-      ('RH-SU463-2','RH','Carte Ressources Humaines 2'),
-      ('RH-SU463-3','RH','Carte Ressources Humaines 3'),
-      ('RH-SU463-4','RH','Carte Ressources Humaines 4'),
-      ('RH-SU463-5','RH','Carte Ressources Humaines 5'),
-      ('RH-SU463-6','RH','Carte Ressources Humaines 6')`).run();
-  }
-
   `)
 }
 
