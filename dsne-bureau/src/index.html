@@ -699,12 +699,15 @@ body {
     <span class="icon"></span> Documents
   </div>
 
+  <div class="nav-section">Notes</div>
+  <div class="nav-item" onclick="nav('notes',this)">Notes</div>
   <div class="nav-section">Système</div>
   <div class="nav-item" onclick="nav('parametres',this)">
     Paramètres
   </div>
 
-  <div class="sidebar-footer">
+  <div class="sidebar-footer" id="sidebarUser" style="font-size:11px;color:rgba(255,255,255,.5);padding:12px 20px 4px;"></div>
+<div class="sidebar-footer">
     <strong id="bureau-user-name">Daïsha Dorsainvil</strong>
     Secrétaire de Direction
   </div>
@@ -1457,6 +1460,7 @@ function nav(id, el) {
     logistique: initLogistique,
     rapportage: initRapportage,
     courrier: initCourrier,
+    notes: renderNotes,
     notes: initNotes,
     documents: initDocs,
     cm: initCM,
@@ -2098,6 +2102,15 @@ function setDocType(id, type) {
 
 /* ── BOOT ── */
 document.addEventListener('DOMContentLoaded', function() {
+  try {
+    var _u = sessionStorage.getItem('user');
+    if (_u) {
+      var _p = JSON.parse(_u);
+      var _el = document.getElementById('sidebarUser');
+      if (_el) _el.textContent = 'Bonjour, ' + (_p.nom_complet||'').split(' ')[0] + ' !';
+    }
+  } catch(e) {}
+
   initDsne();
   // Update HYG badge
   const p = HYG_DATA.filter(function(h){ return h.statut === "En attente d'approbation"; }).length;
@@ -2556,6 +2569,59 @@ let liveRPData = null;
     }
   } catch(e) {}
 })();
+
+
+/* NOTES */
+var _notes=[], _noteId=null;
+var _NKEY='dsne_notes';
+function _loadN(){try{_notes=JSON.parse(localStorage.getItem(_NKEY)||'[]');}catch(e){_notes=[];}}
+function _saveN(){localStorage.setItem(_NKEY,JSON.stringify(_notes));}
+function renderNotes(){
+  _loadN();
+  var l=document.getElementById('notes-list');
+  if(!l)return;
+  l.innerHTML=_notes.length?_notes.slice().sort(function(a,b){return b.updated.localeCompare(a.updated);}).map(function(n){
+    var act=_noteId===n.id;
+    return '<div onclick="openNote(\''+n.id+'\')" style="padding:10px 12px;cursor:pointer;border:1px solid '+(act?'var(--c600)':'var(--g100)')+';border-left:3px solid '+(act?'var(--c600)':'transparent')+';background:'+(act?'var(--c50)':'#fff')+'">'
+      +'<div style="font-size:12px;font-weight:600;color:var(--g800)">'+(n.title||'Sans titre')+'</div>'
+      +'<div style="font-size:10px;color:var(--g400);margin-top:3px">'+new Date(n.updated).toLocaleDateString('fr-FR')+'</div>'
+      +'</div>';
+  }).join(''):'<div style="font-size:12px;color:var(--g400);padding:10px">Aucune note.</div>';
+}
+function openNote(id){
+  _noteId=id;var n=_notes.find(function(x){return x.id===id;});
+  if(!n)return;
+  document.getElementById('note-title').value=n.title||'';
+  document.getElementById('note-body').value=n.body||'';
+  renderNotes();
+}
+function newNote(){
+  var id='n'+Date.now();
+  _loadN();_notes.unshift({id:id,title:'',body:'',updated:new Date().toISOString()});
+  _noteId=id;_saveN();
+  document.getElementById('note-title').value='';
+  document.getElementById('note-body').value='';
+  renderNotes();
+  setTimeout(function(){document.getElementById('note-title').focus();},50);
+}
+function saveActiveNote(){
+  if(!_noteId)return;_loadN();
+  var n=_notes.find(function(x){return x.id===_noteId;});
+  if(!n){newNote();return;}
+  n.title=document.getElementById('note-title').value.trim();
+  n.body=document.getElementById('note-body').value;
+  n.updated=new Date().toISOString();
+  _saveN();renderNotes();
+}
+function deleteActiveNote(){
+  if(!_noteId)return;_loadN();
+  _notes=_notes.filter(function(x){return x.id!==_noteId;});
+  _noteId=null;_saveN();
+  document.getElementById('note-title').value='';
+  document.getElementById('note-body').value='';
+  renderNotes();
+}
+
 </script>
 </body>
 </html>
