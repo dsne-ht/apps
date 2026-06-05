@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>DSNE — Enregistrement Visiteurs</title>
+<title>DSNE — Réception</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -13,7 +13,7 @@
   <div class="topbar-brand">
     <span class="topbar-dsne">DSNE</span>
     <span class="topbar-sep"></span>
-    <span class="topbar-name">Enregistrement Visiteurs</span>
+    <span class="topbar-name">Réception</span>
   </div>
   <div class="topbar-right">
     <div class="topbar-sync">
@@ -392,16 +392,7 @@ function dsneActivate(){
     <div class="form-grid">
       <div class="field">
         <label>Motif de la visite <span class="required">*</span></label>
-        <select id="e_motif" onchange="toggleMotifAutre()">
-          <option value="">-- Sélectionner --</option>
-          <option>Réunion ou rencontre</option>
-          <option>Dépôt de document</option>
-          <option>Retrait de document</option>
-          <option>Consultation ou demande d'information</option>
-          <option>Livraison</option>
-          <option>Visiteur a refusé de partager</option>
-          <option>Autre</option>
-        </select>
+        <input type="text" id="e_motif" placeholder="Objet ou raison de la visite">
         <div style="margin-top:8px;display:flex;align-items:center;gap:8px">
           <input type="checkbox" id="e_refuse_partager" style="width:auto;margin:0">
           <label for="e_refuse_partager" style="font-size:12px;color:var(--g600);margin:0;text-transform:none;letter-spacing:0;font-weight:400">Le visiteur a refusé de partager le motif</label>
@@ -418,7 +409,7 @@ function dsneActivate(){
   <div class="section-header">Section 4 — Autorisation d'accès</div>
   <div class="card">
     <p style="font-size:13px;color:var(--g600);margin-bottom:1rem;line-height:1.6">
-      Contacter le service destinataire avant de remplir cette section. Ne pas faire monter le visiteur avant confirmation de l'autorisation.
+      Contactez le service destinataire avant de remplir cette section. Ne pas faire monter le visiteur avant confirmation de l'autorisation.
     </p>
     <div class="auth-group">
       <div class="auth-btn auth-oui" id="btnOui" onclick="selectAuth('Oui — la visite est autorisée')">
@@ -718,13 +709,14 @@ function switchTab(name, el) {
   if (name==='notes') renderNotes()
 }
 
-async function doLogout() {
+async async function doLogout() {
   sessionStorage.removeItem('user')
   await window.api.logout()
+  window.api.navigate('login.html')
 }
 
 // ── UIDs
-async function loadUIDs() {
+async async function loadUIDs() {
   const uids = await window.api.getUids()
   const sel = document.getElementById('e_uid')
   sel.innerHTML = '<option value="">-- Sélectionner une carte --</option>'
