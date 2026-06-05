@@ -1278,8 +1278,6 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('rec-date').value = today;
 });
 </script>
-</div><!-- /main-area -->
-</div><!-- /app-layout -->
 
 <div id="tab-notes" class="content" style="display:none;padding:1.5rem">
   <div class="section-header" style="margin-top:0">Notes</div>
@@ -1290,6 +1288,8 @@ document.addEventListener('DOMContentLoaded', function() {
   <textarea id="note-contenu" placeholder="Contenu de la note..." rows="4" style="width:100%;padding:8px 10px;border:1px solid var(--g200);font-size:13px;border-radius:0;resize:vertical;box-sizing:border-box;margin-bottom:1rem"></textarea>
   <div id="notes-liste"></div>
 </div>
+</div><!-- /main-area -->
+</div><!-- /app-layout -->
 <script>
 var _notesKey = 'dsne_notes_' + window.location.pathname;
 var _notes = [];
@@ -1695,5 +1695,6 @@ function initCourrier_log() {
 }
 
 </script>
+
 </body>
 </html>
