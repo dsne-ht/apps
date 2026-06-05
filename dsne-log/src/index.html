@@ -70,6 +70,7 @@
     <div class="sidebar-item" onclick="switchTab('requisition',this)">Réquisitions</div>
     <div class="sidebar-item" onclick="switchTab('courrier',this)">Courrier / Lettres</div>
     <div class="sidebar-item" onclick="switchTab('accuses',this)">Accusés réception</div>
+    <div class="sidebar-item" onclick="switchTab('notes',this)">Notes</div>
   </div>
   <div class="sidebar-footer">
     <div class="sidebar-item" onclick="window.dsne.logout()">Déconnexion</div>
@@ -1218,6 +1219,7 @@ function switchTab(id, el) {
     requisition: renderRequisitions,
     courrier: renderCourrier,
     accuses: renderAccuses,
+    notes: renderNotes,
   };
   if (renders[id]) renders[id]();
 }
@@ -1262,5 +1264,51 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </div><!-- /main-area -->
 </div><!-- /app-layout -->
+
+<div id="tab-notes" class="content" style="display:none;padding:1.5rem">
+  <div class="section-header" style="margin-top:0">Notes</div>
+  <div style="display:flex;gap:12px;margin-bottom:1rem">
+    <input type="text" id="note-titre" placeholder="Titre de la note" style="flex:1;padding:8px 10px;border:1px solid var(--g200);font-size:13px;border-radius:0">
+    <button onclick="ajouterNote()" style="background:var(--c600);color:#fff;border:none;padding:8px 16px;font-size:13px;cursor:pointer;border-radius:0">+ Ajouter</button>
+  </div>
+  <textarea id="note-contenu" placeholder="Contenu de la note..." rows="4" style="width:100%;padding:8px 10px;border:1px solid var(--g200);font-size:13px;border-radius:0;resize:vertical;box-sizing:border-box;margin-bottom:1rem"></textarea>
+  <div id="notes-liste"></div>
+</div>
+<script>
+var _notesKey = 'dsne_notes_' + window.location.pathname;
+var _notes = [];
+try { _notes = JSON.parse(localStorage.getItem(_notesKey) || '[]'); } catch(e) {}
+function ajouterNote() {
+  var titre = document.getElementById('note-titre').value.trim();
+  var contenu = document.getElementById('note-contenu').value.trim();
+  if (!titre && !contenu) return;
+  _notes.unshift({ id: Date.now(), titre: titre || '(sans titre)', contenu: contenu, date: new Date().toISOString() });
+  localStorage.setItem(_notesKey, JSON.stringify(_notes));
+  document.getElementById('note-titre').value = '';
+  document.getElementById('note-contenu').value = '';
+  renderNotes();
+}
+function supprimerNote(id) {
+  _notes = _notes.filter(function(n){ return n.id !== id; });
+  localStorage.setItem(_notesKey, JSON.stringify(_notes));
+  renderNotes();
+}
+function renderNotes() {
+  var el = document.getElementById('notes-liste');
+  if (!el) return;
+  if (!_notes.length) { el.innerHTML = '<p style="color:var(--g400);font-size:13px">Aucune note.</p>'; return; }
+  el.innerHTML = _notes.map(function(n) {
+    var d = new Date(n.date);
+    var ds = d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
+    return '<div style="border:1px solid var(--g100);padding:12px 14px;margin-bottom:8px;background:#fff">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
+      '<strong style="font-size:13px;color:var(--g800)">' + n.titre + '</strong>' +
+      '<button onclick="supprimerNote(' + n.id + ')" style="background:none;border:none;color:var(--g400);cursor:pointer;font-size:16px">&times;</button>' +
+      '</div><div style="font-size:11px;color:var(--g400);margin:4px 0 8px">' + ds + '</div>' +
+      '<div style="font-size:13px;color:var(--g600);white-space:pre-wrap">' + n.contenu + '</div></div>';
+  }).join('');
+}
+document.addEventListener('DOMContentLoaded', renderNotes);
+</script>
 </body>
 </html>
