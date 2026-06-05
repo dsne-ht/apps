@@ -8,7 +8,29 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
-<style>:root{--app-color:#005C4E;}</style>
+<style>
+:root {
+  --app-color: #005C4E;
+  --c50: #e6f2f0;
+  --c100: #b3d9d3;
+  --c200: #7fc5bb;
+  --c400: #26a08a;
+  --c600: #005C4E;
+  --c800: #004038;
+  --c900: #002a25;
+  --g50: #f7f9f8;
+  --g100: #e6eeec;
+  --g200: #c8d8d4;
+  --g400: #7a9a94;
+  --g600: #5a7a74;
+  --g800: #1a3028;
+}
+/* Force sidebar and topbar colors */
+.sidebar { background: #004038 !important; }
+.topbar { background: #005C4E !important; }
+.card-header, .card-header-dark, [class*="card-header-"] { background: #005C4E !important; color: #fff !important; }
+.card-header h3, .card-header span { color: #fff !important; }
+</style>
 
 <!-- TOPBAR -->
 <div class="topbar">
