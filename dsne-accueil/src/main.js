@@ -191,7 +191,7 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false
     },
-    title: 'DSNE — Enregistrement Visiteurs',
+    title: 'DSNE — Réception',
     show: false
   })
   mainWindow.loadFile(path.join(__dirname, 'login.html'))
@@ -410,14 +410,14 @@ async function envoyerRapport(auth, type, date) {
     if (type === 'journalier') {
       visites = db.prepare("SELECT * FROM visites WHERE horodateur_entree LIKE ?").all(date+'%')
       documents = db.prepare("SELECT * FROM documents WHERE horodateur LIKE ?").all(date+'%')
-      sujet = `Rapport journalier DSNE Accueil — ${date}`
+      sujet = `Rapport journalier DSNE Réception — ${date}`
     } else {
       // Semaine dernière (lundi à dimanche)
       const lundi = new Date(); lundi.setDate(lundi.getDate() - 7)
       const lundiStr = lundi.toISOString().slice(0,10)
       visites = db.prepare("SELECT * FROM visites WHERE horodateur_entree >= ?").all(lundiStr+'T00:00:00')
       documents = db.prepare("SELECT * FROM documents WHERE horodateur >= ?").all(lundiStr+'T00:00:00')
-      sujet = `Rapport hebdomadaire DSNE Accueil — semaine du ${lundiStr}`
+      sujet = `Rapport hebdomadaire DSNE Réception — semaine du ${lundiStr}`
     }
 
     const entres = visites.filter(v => v.statut !== 'Refuse').length
@@ -445,7 +445,7 @@ ${visites.map(v => `• ${v.nom_complet} | ${v.service_destinataire.split(' — 
 ${documents.map(d => `• ${d.id_document} | ${d.remis_par} | ${d.type_document} | ${d.service_destinataire.split(' — ')[0]}`).join('\n') || 'Aucun document.'}
 
 ─────────────────────────────────────────
-Ce rapport a été généré automatiquement par le système DSNE Accueil.
+Ce rapport a été généré automatiquement par le système DSNE Réception.
     `.trim()
 
     const message = [
