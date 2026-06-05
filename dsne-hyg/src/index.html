@@ -740,7 +740,7 @@ function parseSQLiteDate(raw) {
   return new Date(s.replace(' ', 'T') + '-05:00');
 }
 
-function loadAudit() {
+async function loadAudit() {
   allAudit = await window.dsne.getAuditLog()
   filtrerAudit()
 }
