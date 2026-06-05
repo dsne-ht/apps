@@ -6,6 +6,38 @@ const Database = require('better-sqlite3');
 
 let db;
 
+
+/* ── AUTO BACKUP ── */
+function autoBackupDB(dbPath, appName) {
+  try {
+    const docs = app.getPath('documents');
+    const backupDir = path.join(docs, 'DSNE-Backups', appName);
+    if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir, { recursive: true });
+
+    const today = new Date().toISOString().slice(0,10); // YYYY-MM-DD
+    const dest = path.join(backupDir, appName + '_' + today + '.db');
+
+    // Only backup once per day
+    if (!fs.existsSync(dest) && fs.existsSync(dbPath)) {
+      fs.copyFileSync(dbPath, dest);
+      console.log('DB backup created:', dest);
+    }
+
+    // Keep only last 5 backups
+    const files = fs.readdirSync(backupDir)
+      .filter(f => f.endsWith('.db'))
+      .sort()
+      .reverse();
+    if (files.length > 5) {
+      files.slice(5).forEach(f => {
+        try { fs.unlinkSync(path.join(backupDir, f)); } catch(e) {}
+      });
+    }
+  } catch(e) {
+    console.error('Backup failed (non-fatal):', e.message);
+  }
+}
+
 function initDB() {
   const dbPath = path.join(app.getPath('userData'), 'dsne_log.db');
   db = new Database(dbPath);
@@ -78,6 +110,7 @@ function createWindow() {
 
 app.whenReady().then(() => {
   initDB();
+autoBackupDB(path.join(app.getPath('userData'), 'dsne_log.db'), 'dsne-log');
   initFolders();
   createWindow();
   autoUpdater.checkForUpdatesAndNotify();
