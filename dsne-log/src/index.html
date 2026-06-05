@@ -41,6 +41,7 @@
     <span class="topbar-name">Logistique</span>
   </div>
   <div class="topbar-right">
+    <span id="topbarUser" style="font-size:12px;color:rgba(255,255,255,.85)"></span>
     <span class="topbar-user">Fort-Liberté, Nord-Est</span>
   </div>
 </div>
@@ -1219,6 +1220,7 @@ function switchTab(id, el) {
     requisition: renderRequisitions,
     courrier: renderCourrier,
     accuses: renderAccuses,
+    notes: renderNotes,
     notes: renderNotes,
   };
   if (renders[id]) renders[id]();
