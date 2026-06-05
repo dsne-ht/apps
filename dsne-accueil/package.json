@@ -9,7 +9,7 @@
   },
   "build": {
     "appId": "ht.dsne.accueil",
-    "productName": "DSNE Accueil",
+    "productName": "DSNE Réception",
     "directories": {
       "output": "dist"
     },
