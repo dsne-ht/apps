@@ -20,7 +20,7 @@
       <span class="sync-dot" id="syncDot"></span>
       <span id="syncLabel">Vérification...</span>
     </div>
-    <span class="topbar-user" id="topbarUser"></span>
+    <span class="topbar-user" id="topbarUser" style="font-size:13px;color:rgba(255,255,255,.85)"></span>
     <button class="btn-logout" onclick="doLogout()">Déconnexion</button>
   </div>
 </div>
@@ -39,6 +39,7 @@
     <div class="sidebar-label">Administration</div>
     <div class="sidebar-item" onclick="switchTab('uids',this)">Gestion des UIDs</div>
     <div class="sidebar-item" onclick="switchTab('audit',this)">Journal d'audit</div>
+    <div class="sidebar-item" onclick="switchTab('notes',this)">Notes</div>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-label">Institution</div>
@@ -359,18 +360,28 @@ function dsneActivate(){
         <label>Service destinataire <span class="required">*</span></label>
         <select id="e_service">
           <option value="">-- Sélectionner --</option>
-          <option>DIR — Direction</option>
-          <option>ADM — Administration</option>
-          <option>COMP — Comptabilité</option>
-          <option>RH — Ressources Humaines</option>
-          <option>EPID — Épidémiologie</option>
-          <option>VIH — Programme VIH/SIDA</option>
-          <option>TB — Programme Tuberculose</option>
-          <option>SM — Santé Maternelle</option>
-          <option>LOG — Logistique</option>
-          <option>SI — Système d'Information</option>
-          <option>HP — Hygiène Publique</option>
-          <option>STAT — Statistiques</option>
+          <option>Direction</option>
+          <option>Administration</option>
+          <option>Comptabilité</option>
+          <option>Épidémiologie et Statistique</option>
+          <option>Ressources Humaines</option>
+          <option>SOSS</option>
+          <option>UAS Fort-Liberté</option>
+          <option>Santé Maternelle</option>
+          <option>Soins Infantiles</option>
+          <option>PEV</option>
+          <option>Soins Infirmiers (Santé Communautaire, Santé Mentale)</option>
+          <option>Sécurité</option>
+          <option>Réception</option>
+          <option>Hygiène Publique</option>
+          <option>Pharmacie</option>
+          <option>VIH</option>
+          <option>TB</option>
+          <option>Malaria</option>
+          <option>Conseil Technique</option>
+          <option>Laboratoire</option>
+          <option>Archives</option>
+          <option>TIC</option>
         </select>
       </div>
       <div class="field">
@@ -390,6 +401,10 @@ function dsneActivate(){
           <option>Livraison</option>
           <option>Autre</option>
         </select>
+        <div style="margin-top:8px;display:flex;align-items:center;gap:8px">
+          <input type="checkbox" id="e_refuse_partager" style="width:auto;margin:0">
+          <label for="e_refuse_partager" style="font-size:12px;color:var(--g600);margin:0;text-transform:none;letter-spacing:0;font-weight:400">Le visiteur a refusé de partager le motif</label>
+        </div>
       </div>
       <div class="field" id="motifAutreField" style="display:none">
         <label>Préciser le motif</label>
@@ -661,21 +676,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const userData = sessionStorage.getItem('user')
   if (!userData) { window.api.navigate('login.html'); return }
   currentUser = JSON.parse(userData)
-  document.getElementById('topbarUser').textContent = 'Salut ' + currentUser.nom_complet.split(' ')[0] + ' !'
-  await loadUIDs()
-  await updateSyncStatus()
-  setInterval(updateSyncStatus, 30000)
-})
-
-function switchTab(name, el) {
-  ['dsne','entree','sortie','visites','documents','uids','audit'].forEach(t => {
-    document.getElementById('tab-'+t).style.display = t===name ? 'block' : 'none'
-  })
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
-  el.classList.add('active')
-  if (name==='sortie') loadVisitesActives()
-  if (name==='visites') loadRegistreVisites()
-  if (name==='documents') { loadRegistreDocuments(); loadVisitesPourDoc() }
+  document.getElementById('topbarUser').textContent = 'Bonjour ' + (user.nom_complet ? user.nom_complet.split(' ')[0] : user.code); loadVisitesPourDoc() }
   if (name==='uids') loadAllUIDs()
   if (name==='dsne') dsneActivate()
   if (name==='audit') loadAudit()
@@ -1056,5 +1057,53 @@ function filtrerAudit() {
 </script>
 </div><!-- /main-area -->
 </div><!-- /app-layout -->
+
+<!-- ══ NOTES ══ -->
+<div id="tab-notes" class="content" style="display:none;padding:1.5rem">
+  <div class="section-header" style="margin-top:0">Notes</div>
+  <div style="display:flex;gap:12px;margin-bottom:1rem">
+    <input type="text" id="note-titre" placeholder="Titre de la note" style="flex:1;padding:8px 10px;border:1px solid var(--g200);font-size:13px;border-radius:0">
+    <button onclick="ajouterNote()" style="background:var(--c600);color:#fff;border:none;padding:8px 16px;font-size:13px;cursor:pointer;border-radius:0">+ Ajouter</button>
+  </div>
+  <textarea id="note-contenu" placeholder="Contenu de la note..." rows="4" style="width:100%;padding:8px 10px;border:1px solid var(--g200);font-size:13px;border-radius:0;resize:vertical;box-sizing:border-box;margin-bottom:1rem"></textarea>
+  <div id="notes-liste"></div>
+</div>
+<script>
+// NOTES MODULE
+let dsneNotes = JSON.parse(localStorage.getItem("dsne_accueil_notes") || "[]");
+function ajouterNote() {
+  const titre = document.getElementById("note-titre").value.trim();
+  const contenu = document.getElementById("note-contenu").value.trim();
+  if (!titre && !contenu) return;
+  dsneNotes.unshift({ id: Date.now(), titre: titre || "(sans titre)", contenu, date: new Date().toISOString() });
+  localStorage.setItem("dsne_accueil_notes", JSON.stringify(dsneNotes));
+  document.getElementById("note-titre").value = "";
+  document.getElementById("note-contenu").value = "";
+  renderNotes();
+}
+function supprimerNote(id) {
+  dsneNotes = dsneNotes.filter(n => n.id !== id);
+  localStorage.setItem("dsne_accueil_notes", JSON.stringify(dsneNotes));
+  renderNotes();
+}
+function renderNotes() {
+  const el = document.getElementById("notes-liste");
+  if (!el) return;
+  if (!dsneNotes.length) { el.innerHTML = '<p style="color:var(--g400);font-size:13px">Aucune note.</p>'; return; }
+  el.innerHTML = dsneNotes.map(n => {
+    const d = new Date(n.date);
+    const ds = d.toLocaleDateString("fr-FR") + " " + d.toLocaleTimeString("fr-FR", {hour:"2-digit",minute:"2-digit"});
+    return `<div style="border:1px solid var(--g100);padding:12px 14px;margin-bottom:8px;background:#fff">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <strong style="font-size:13px;color:var(--g800)">${n.titre}</strong>
+        <button onclick="supprimerNote(${n.id})" style="background:none;border:none;color:var(--g400);cursor:pointer;font-size:16px;line-height:1">&times;</button>
+      </div>
+      <div style="font-size:11px;color:var(--g400);margin:4px 0 8px">${ds}</div>
+      <div style="font-size:13px;color:var(--g600);white-space:pre-wrap">${n.contenu}</div>
+    </div>`;
+  }).join("");
+}
+document.addEventListener("DOMContentLoaded", renderNotes);
+</script>
 </body>
 </html>
