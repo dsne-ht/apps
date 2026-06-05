@@ -684,6 +684,8 @@ let allVisites = []
 let allDocuments = []
 
 window.addEventListener('DOMContentLoaded', async () => {
+  loadUIDs();
+
   const _u = sessionStorage.getItem('user');
   if (_u) {
     try {
@@ -707,6 +709,7 @@ function switchTab(name, el) {
   })
   document.querySelectorAll('.sidebar-item').forEach(t => t.classList.remove('active'))
   if (el) el.classList.add('active')
+  if (name==='entree') loadUIDs()
   if (name==='sortie') loadVisitesActives()
   if (name==='visites') loadRegistreVisites()
   if (name==='uids') loadAllUIDs()
