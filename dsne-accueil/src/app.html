@@ -399,6 +399,7 @@ function dsneActivate(){
           <option>Retrait de document</option>
           <option>Consultation ou demande d'information</option>
           <option>Livraison</option>
+          <option>Visiteur a refusé de partager</option>
           <option>Autre</option>
         </select>
         <div style="margin-top:8px;display:flex;align-items:center;gap:8px">
@@ -553,18 +554,28 @@ function dsneActivate(){
         <label>Service destinataire <span class="required">*</span></label>
         <select id="d_service">
           <option value="">-- Sélectionner --</option>
-          <option>DIR — Direction</option>
-          <option>ADM — Administration</option>
-          <option>COMP — Comptabilité</option>
-          <option>RH — Ressources Humaines</option>
-          <option>EPID — Épidémiologie</option>
-          <option>VIH — Programme VIH/SIDA</option>
-          <option>TB — Programme Tuberculose</option>
-          <option>SM — Santé Maternelle</option>
-          <option>LOG — Logistique</option>
-          <option>SI — Système d'Information</option>
-          <option>HP — Hygiène Publique</option>
-          <option>STAT — Statistiques</option>
+          <option>Direction</option>
+          <option>Administration</option>
+          <option>Comptabilité</option>
+          <option>Épidémiologie et Statistique</option>
+          <option>Ressources Humaines</option>
+          <option>SOSS</option>
+          <option>UAS Fort-Liberté</option>
+          <option>Santé Maternelle</option>
+          <option>Soins Infantiles</option>
+          <option>PEV</option>
+          <option>Soins Infirmiers (Santé Communautaire, Santé Mentale)</option>
+          <option>Sécurité</option>
+          <option>Réception</option>
+          <option>Hygiène Publique</option>
+          <option>Pharmacie</option>
+          <option>VIH</option>
+          <option>Tuberculose</option>
+          <option>Malaria</option>
+          <option>Conseil Technique</option>
+          <option>Laboratoire</option>
+          <option>Archives</option>
+          <option>TIC</option>
         </select>
       </div>
     </div>
@@ -673,6 +684,16 @@ let allVisites = []
 let allDocuments = []
 
 window.addEventListener('DOMContentLoaded', async () => {
+  const _u = sessionStorage.getItem('user');
+  if (_u) {
+    try {
+      const _user = JSON.parse(_u);
+      const _prenom = (_user.nom_complet || '').split(' ')[0];
+      const _el = document.getElementById('topbarUser');
+      if (_el) _el.textContent = 'Bonjour, ' + _prenom + ' !';
+    } catch(e) {}
+  }
+
   const userData = sessionStorage.getItem('user')
   if (!userData) { window.api.navigate('login.html'); return }
   currentUser = JSON.parse(userData)
