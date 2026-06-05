@@ -1,3 +1,12 @@
+
+function parseSQLiteDate(raw) {
+  if (!raw) return new Date();
+  // SQLite returns "YYYY-MM-DD HH:MM:SS", JS needs "YYYY-MM-DDTHH:MM:SS-05:00" for EST
+  var s = String(raw).trim();
+  if (s.includes('T')) return new Date(s);
+  return new Date(s.replace(' ', 'T') + '-05:00');
+}
+
 const STORAGE_KEY = 'dsne_logistique';
 
 function loadData() {
