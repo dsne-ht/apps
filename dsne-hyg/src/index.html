@@ -762,54 +762,131 @@ function toast(msg, type='info') {
   t.textContent = msg; t.className = `show ${type}`
   setTimeout(() => t.className = '', 4000)
 }
+
+
+/* ══ NOTES MODULE ══ */
+(function() {
+  var NKEY = 'dsne_notes_v2';
+  var _notes = [];
+  var _activeId = null;
+  var _saveTimer = null;
+
+  function loadNotes() {
+    try { _notes = JSON.parse(localStorage.getItem(NKEY) || '[]'); } catch(e) { _notes = []; }
+  }
+
+  function saveNotes() {
+    localStorage.setItem(NKEY, JSON.stringify(_notes));
+  }
+
+  function fmtDate(iso) {
+    var d = new Date(iso);
+    return d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
+  }
+
+  window.renderNotes = function() {
+    loadNotes();
+    var list = document.getElementById('notes-list');
+    if (!list) return;
+    if (!_notes.length) {
+      list.innerHTML = '<div style="padding:20px;font-size:12px;color:#8a9a94;text-align:center">Aucune note.<br>Cliquez sur + pour commencer.</div>';
+      return;
+    }
+    var sorted = _notes.slice().sort(function(a,b){ return b.updated.localeCompare(a.updated); });
+    list.innerHTML = sorted.map(function(n) {
+      var act = _activeId === n.id;
+      var preview = (n.body || '').replace(/\n/g,' ').slice(0, 60);
+      return '<div class="notes-list-item' + (act?' active':'') + '" onclick="openNote(\'' + n.id + '\')">' +
+        '<div class="n-title">' + (n.title || 'Sans titre') + '</div>' +
+        '<div class="n-date">' + fmtDate(n.updated) + '</div>' +
+        (preview ? '<div class="n-preview">' + preview + '</div>' : '') +
+        '</div>';
+    }).join('');
+  };
+
+  window.openNote = function(id) {
+    loadNotes();
+    _activeId = id;
+    var n = _notes.find(function(x){ return x.id === id; });
+    if (!n) return;
+    document.getElementById('notes-empty').style.display = 'none';
+    document.getElementById('notes-edit-area').style.display = 'flex';
+    document.getElementById('note-title').value = n.title || '';
+    document.getElementById('note-body').value = n.body || '';
+    document.getElementById('note-meta').textContent = 'Modifiée le ' + fmtDate(n.updated);
+    window.renderNotes();
+  };
+
+  window.newNote = function() {
+    loadNotes();
+    var id = 'note_' + Date.now();
+    var now = new Date().toISOString();
+    _notes.unshift({ id: id, title: '', body: '', created: now, updated: now });
+    saveNotes();
+    window.openNote(id);
+    setTimeout(function(){ var t=document.getElementById('note-title'); if(t) t.focus(); }, 50);
+  };
+
+  window.autoSaveNote = function() {
+    if (!_activeId) return;
+    if (_saveTimer) clearTimeout(_saveTimer);
+    _saveTimer = setTimeout(function() {
+      loadNotes();
+      var n = _notes.find(function(x){ return x.id === _activeId; });
+      if (!n) return;
+      n.title = document.getElementById('note-title').value.trim();
+      n.body = document.getElementById('note-body').value;
+      n.updated = new Date().toISOString();
+      saveNotes();
+      document.getElementById('note-meta').textContent = 'Modifiée le ' + fmtDate(n.updated);
+      window.renderNotes();
+    }, 600);
+  };
+
+  window.deleteActiveNote = function() {
+    if (!_activeId) return;
+    if (!confirm('Supprimer cette note ?')) return;
+    loadNotes();
+    _notes = _notes.filter(function(x){ return x.id !== _activeId; });
+    saveNotes();
+    _activeId = null;
+    document.getElementById('notes-empty').style.display = 'flex';
+    document.getElementById('notes-edit-area').style.display = 'none';
+    document.getElementById('note-title').value = '';
+    document.getElementById('note-body').value = '';
+    window.renderNotes();
+  };
+})();
+
 </script>
 </div><!-- /main-area -->
 </div><!-- /app-layout -->
 
-<div id="tab-notes" class="content" style="display:none;padding:1.5rem">
-  <div class="section-header" style="margin-top:0">Notes</div>
-  <div style="display:flex;gap:12px;margin-bottom:1rem">
-    <input type="text" id="note-titre" placeholder="Titre de la note" style="flex:1;padding:8px 10px;border:1px solid var(--g200);font-size:13px;border-radius:0">
-    <button onclick="ajouterNote()" style="background:var(--c600);color:#fff;border:none;padding:8px 16px;font-size:13px;cursor:pointer;border-radius:0">+ Ajouter</button>
+<div id="tab-notes" class="content" style="display:none;padding:0;flex-direction:column">
+  <div class="section-header" style="margin:0;border-radius:0">Notes</div>
+  <style>/* Notes module */.notes-layout{display:grid;grid-template-columns:240px 1fr;height:calc(100vh - 160px);overflow:hidden}.notes-sidebar{border-right:1px solid var(--g100);overflow-y:auto;background:#fff}.notes-sidebar-header{padding:12px 14px;border-bottom:1px solid var(--g100);display:flex;align-items:center;justify-content:space-between}.notes-sidebar-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--g600)}.notes-new-btn{background:var(--c600);color:#fff;border:none;width:22px;height:22px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}.notes-list{display:flex;flex-direction:column}.notes-list-item{padding:10px 14px;border-bottom:1px solid var(--g100);cursor:pointer;transition:background .1s}.notes-list-item:hover{background:var(--c50)}.notes-list-item.active{background:var(--c50);border-left:3px solid var(--c600)}.notes-list-item .n-title{font-size:12px;font-weight:600;color:var(--g800);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.notes-list-item .n-date{font-size:10px;color:var(--g400)}.notes-list-item .n-preview{font-size:11px;color:var(--g400);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}.notes-editor{display:flex;flex-direction:column;padding:20px}.notes-editor-empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--g400);font-size:13px;font-style:italic}.notes-title-input{font-size:18px;font-weight:600;color:var(--g800);border:none;outline:none;padding:0;margin-bottom:12px;font-family:var(--font);background:transparent;width:100%}.notes-meta{font-size:10px;color:var(--g400);margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--g100)}.notes-body-input{flex:1;border:none;outline:none;font-size:13px;line-height:1.7;color:var(--g800);resize:none;font-family:var(--font);background:transparent;min-height:300px}.notes-actions{display:flex;justify-content:flex-end;gap:8px;padding-top:12px;border-top:1px solid var(--g100);margin-top:12px}</style>
+  <div class="notes-layout">
+    <div class="notes-sidebar">
+      <div class="notes-sidebar-header">
+        <span class="notes-sidebar-title">Mes notes</span>
+        <button class="notes-new-btn" onclick="newNote()" title="Nouvelle note">+</button>
+      </div>
+      <div class="notes-list" id="notes-list">
+        <div style="padding:20px;font-size:12px;color:var(--g400);text-align:center">Aucune note.<br>Cliquez sur + pour commencer.</div>
+      </div>
+    </div>
+    <div class="notes-editor" id="notes-editor">
+      <div class="notes-editor-empty" id="notes-empty">Sélectionnez ou créez une note</div>
+      <div id="notes-edit-area" style="display:none;flex:1;display:flex;flex-direction:column">
+        <input class="notes-title-input" id="note-title" placeholder="Titre" oninput="autoSaveNote()">
+        <div class="notes-meta" id="note-meta"></div>
+        <textarea class="notes-body-input" id="note-body" placeholder="Commencez à écrire..." oninput="autoSaveNote()"></textarea>
+        <div class="notes-actions">
+          <button class="btn btn-secondary btn-sm" onclick="deleteActiveNote()">Supprimer</button>
+        </div>
+      </div>
+    </div>
   </div>
-  <textarea id="note-contenu" placeholder="Contenu de la note..." rows="4" style="width:100%;padding:8px 10px;border:1px solid var(--g200);font-size:13px;border-radius:0;resize:vertical;box-sizing:border-box;margin-bottom:1rem"></textarea>
-  <div id="notes-liste"></div>
 </div>
-<script>
-var _notesKey = 'dsne_notes_' + window.location.pathname;
-var _notes = [];
-try { _notes = JSON.parse(localStorage.getItem(_notesKey) || '[]'); } catch(e) {}
-function ajouterNote() {
-  var titre = document.getElementById('note-titre').value.trim();
-  var contenu = document.getElementById('note-contenu').value.trim();
-  if (!titre && !contenu) return;
-  _notes.unshift({ id: Date.now(), titre: titre || '(sans titre)', contenu: contenu, date: new Date().toISOString() });
-  localStorage.setItem(_notesKey, JSON.stringify(_notes));
-  document.getElementById('note-titre').value = '';
-  document.getElementById('note-contenu').value = '';
-  renderNotes();
-}
-function supprimerNote(id) {
-  _notes = _notes.filter(function(n){ return n.id !== id; });
-  localStorage.setItem(_notesKey, JSON.stringify(_notes));
-  renderNotes();
-}
-function renderNotes() {
-  var el = document.getElementById('notes-liste');
-  if (!el) return;
-  if (!_notes.length) { el.innerHTML = '<p style="color:var(--g400);font-size:13px">Aucune note.</p>'; return; }
-  el.innerHTML = _notes.map(function(n) {
-    var d = new Date(n.date);
-    var ds = d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
-    return '<div style="border:1px solid var(--g100);padding:12px 14px;margin-bottom:8px;background:#fff">' +
-      '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
-      '<strong style="font-size:13px;color:var(--g800)">' + n.titre + '</strong>' +
-      '<button onclick="supprimerNote(' + n.id + ')" style="background:none;border:none;color:var(--g400);cursor:pointer;font-size:16px">&times;</button>' +
-      '</div><div style="font-size:11px;color:var(--g400);margin:4px 0 8px">' + ds + '</div>' +
-      '<div style="font-size:13px;color:var(--g600);white-space:pre-wrap">' + n.contenu + '</div></div>';
-  }).join('');
-}
-document.addEventListener('DOMContentLoaded', renderNotes);
-</script>
 </body>
 </html>
