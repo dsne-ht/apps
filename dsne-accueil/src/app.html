@@ -816,7 +816,9 @@ async function soumettrEntree() {
   if (result.ok) {
     window.api.logAction({ user: currentUser.nom_complet, action: 'entree', details: result.id_visite + ' — ' + fields.nom_complet })
     showAlert('alertEntree', 'success', `Entrée enregistrée — ${result.id_visite} · Statut : ${result.statut === 'Entre' ? 'Entré' : 'Refusé'}`)
+    showToast('✓ Entrée enregistrée — ' + result.id_visite + ' · ' + fields.nom_complet)
     resetEntreeForm()
+    document.getElementById('tab-entree').scrollTo(0, 0)
     await updateSyncStatus()
   } else {
     showAlert('alertEntree', 'error', result.message)
@@ -1084,6 +1086,17 @@ function filtrerAudit() {
 
 
 
+
+function showToast(msg, type) {
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.style.display = 'block';
+  t.style.background = type === 'error' ? '#b83232' : 'var(--c600)';
+  t.style.borderLeftColor = type === 'error' ? '#8a1a1a' : 'var(--c800)';
+  setTimeout(function() { t.style.display = 'none'; }, 4000);
+}
+
 /* ══ NOTES MODULE ══ */
 (function() {
   var NKEY = 'dsne_notes_v2';
@@ -1210,6 +1223,10 @@ function filtrerAudit() {
 </div><!-- /main-area -->
 </div><!-- /app-layout -->
 
+
+
+<div id="toast" style="position:fixed;bottom:24px;right:24px;background:var(--c600);color:#fff;padding:12px 20px;font-size:13px;display:none;z-index:9999;border-left:4px solid var(--c800);max-width:400px">
+</div>
 
 </body>
 </html>
