@@ -1254,17 +1254,19 @@ function switchTab(id, el) {
   document.getElementById('tab-' + id).style.display = 'block';
   if (el) el.classList.add('active');
   const renders = {
-    tableau: renderTableau, flotte: renderFlotte,
-    journal: renderJournal, entretien: renderEntretien,
-    chauffeurs: renderChauffeurs,
-    'inv-general': renderInvGen,
-    'inv-activites': renderInvAct,
-    'inv-depart': renderInvD,
-    transferts: renderTransferts,
-    requisition: renderRequisitions,
-    courrier: initCourrier_log,
-    accuses: renderAccuses,
-    notes: renderNotes,
+    tableau: function() { renderTableau(); },
+    flotte: function() { renderFlotte(); },
+    journal: function() { renderJournal(); },
+    entretien: function() { renderEntretien(); },
+    chauffeurs: function() { renderChauffeurs(); },
+    'inv-general': function() { renderInvGen(); },
+    'inv-activites': function() { renderInvAct(); },
+    'inv-depart': function() { renderInvD(); },
+    transferts: function() { renderTransferts(); },
+    requisition: function() { renderRequisitions(); },
+    courrier: function() { if(typeof initCourrier_log==='function') initCourrier_log(); },
+    accuses: function() { renderAccuses(); },
+    notes: function() { if(typeof renderNotes==='function') renderNotes(); },
   };
   if (renders[id]) renders[id]();
 }
