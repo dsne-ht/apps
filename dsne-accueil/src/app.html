@@ -818,7 +818,7 @@ async function soumettrEntree() {
     showAlert('alertEntree', 'success', `Entrée enregistrée — ${result.id_visite} · Statut : ${result.statut === 'Entre' ? 'Entré' : 'Refusé'}`)
     showToast('✓ Entrée enregistrée — ' + result.id_visite + ' · ' + fields.nom_complet)
     resetEntreeForm()
-    document.getElementById('tab-entree').scrollTo(0, 0)
+    document.querySelector('.main-area').scrollTo(0, 0)
     await updateSyncStatus()
   } else {
     showAlert('alertEntree', 'error', result.message)
