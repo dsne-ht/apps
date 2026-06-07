@@ -81,6 +81,7 @@
 
 <!-- ══ TABLEAU DE BORD ══ -->
 <div id="tab-tableau" class="content">
+  <div id="tableau-date" style="font-size:13px;color:var(--g400);margin-bottom:12px"></div>
   <div class="kpi-row" id="tableau-kpis"></div>
   <div class="two-col">
     <div>
@@ -490,6 +491,8 @@
               <input id="l-objet" placeholder="Objet de la lettre" oninput="renderLetter()" style="width:100%;padding:7px 9px;border:1px solid var(--g200);font-size:13px"></div>
             <div><label style="font-size:10px;font-weight:600;color:var(--g600);display:block;margin-bottom:4px">Référence</label>
               <input id="l-ref" placeholder="ex. DSNE/LOG/L/…" oninput="renderLetter()" style="width:100%;padding:7px 9px;border:1px solid var(--g200);font-size:13px"></div>
+            <div style="grid-column:span 2"><label style="font-size:10px;font-weight:600;color:var(--g600);display:block;margin-bottom:4px">Copie à (CC)</label>
+              <input id="f_cc" placeholder="Noms des personnes en copie (optionnel)" oninput="renderLetter()" style="width:100%;padding:7px 9px;border:1px solid var(--g200);font-size:13px"></div>
           </div>
         </div>
         <div id="template-fields-wrap" style="background:#fff;border:1px solid var(--g100);padding:14px">
@@ -1261,8 +1264,6 @@ function switchTab(id, el) {
     requisition: renderRequisitions,
     courrier: initCourrier_log,
     accuses: renderAccuses,
-    notes: renderNotes,
-    courrier: initCourrier_log,
     notes: renderNotes,
   };
   if (renders[id]) renders[id]();
