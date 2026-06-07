@@ -878,7 +878,7 @@ async function soumettreSortie() {
 }
 
 // ── REGISTRE VISITES
-async async function loadRegistreVisites() {
+async function loadRegistreVisites() {
   const periode = document.getElementById('filterPeriode')?.value || 'jour'
   allVisites = periode === 'jour'
     ? await window.api.getVisitesJour()
