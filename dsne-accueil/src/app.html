@@ -943,7 +943,7 @@ function filtrerVisites() {
 }
 
 async function enregistrerSortieRapide(idVisite) {
-  var result = await window.api.enregistrerSortie({ id_visite: idVisite, observations: '' })
+  var result = await window.api.enregistrerSortie({ id_visite: idVisite, carte_recuperee: 'Oui', agent_sortie: currentUser.nom_complet })
   if (result.ok) {
     showToast('✓ Sortie enregistrée — ' + idVisite)
     window.api.logAction({ user: currentUser.nom_complet, action: 'sortie', details: idVisite })
@@ -1121,7 +1121,7 @@ async function enregistrerDocument() {
 
 async function loadDocuments() {
   try {
-    var docs = await window.api.getDocuments()
+    var docs = await window.api.getAllDocuments()
     filtrerDocuments(docs)
   } catch(e) {}
 }
