@@ -394,7 +394,7 @@ function dsneActivate(){
         <label>Motif de la visite <span class="required">*</span></label>
         <input type="text" id="e_motif" placeholder="Objet ou raison de la visite">
         <div style="margin-top:8px;display:flex;align-items:center;gap:8px">
-          <input type="checkbox" id="e_refuse_partager" style="width:auto;margin:0">
+          <input type="checkbox" id="e_refuse_partager" onchange="toggleRefusePartager()" style="width:auto;margin:0">
           <label for="e_refuse_partager" style="font-size:12px;color:var(--g600);margin:0;text-transform:none;letter-spacing:0;font-weight:400">Le visiteur a refusé de partager le motif</label>
         </div>
       </div>
@@ -878,7 +878,7 @@ async function soumettreSortie() {
 }
 
 // ── REGISTRE VISITES
-async function loadRegistreVisites() {
+async async function loadRegistreVisites() {
   const periode = document.getElementById('filterPeriode')?.value || 'jour'
   allVisites = periode === 'jour'
     ? await window.api.getVisitesJour()
@@ -887,100 +887,56 @@ async function loadRegistreVisites() {
   const stats = await window.api.getStatsJour()
   document.getElementById('statsRow').innerHTML = `
     <div class="stat-card"><div class="stat-n">${stats.total}</div><div class="stat-l">Aujourd'hui</div></div>
-    <div class="stat-card"><div class="stat-n green">${stats.entres}</div><div class="stat-l">Dans les locaux</div></div>
-    <div class="stat-card"><div class="stat-n gray">${stats.sortis}</div><div class="stat-l">Sortis</div></div>
-    <div class="stat-card"><div class="stat-n red">${stats.refuses}</div><div class="stat-l">Refusés</div></div>
+    <div class="stat-card"><div class="stat-n" style="color:#005C4E">${stats.entres}</div><div class="stat-l">Dans les locaux</div></div>
+    <div class="stat-card"><div class="stat-n" style="color:#7a9a94">${stats.sortis}</div><div class="stat-l">Sortis</div></div>
+    <div class="stat-card"><div class="stat-n" style="color:#b83232">${stats.refuses}</div><div class="stat-l">Refusés</div></div>
   `
   filtrerVisites()
 }
 
 function filtrerVisites() {
   const q = (document.getElementById('searchVisites')?.value || '').toLowerCase()
-  const fs = document.getElementById('filterStatut')?.value || ''
-  let liste = allVisites.filter(v => {
-    const match = !q || v.nom_complet.toLowerCase().includes(q) ||
-      v.service_destinataire.toLowerCase().includes(q) ||
-      v.id_visite.toLowerCase().includes(q)
-    const sMatch = !fs || v.statut === fs
-    return match && sMatch
-  })
-  const list = document.getElementById('journalList')
-  if (!liste.length) { list.innerHTML = '<div class="empty">Aucune visite correspondante.</div>'; return }
-  list.innerHTML = liste.map(v => {
-    const heure = new Date(v.horodateur_entree).toLocaleTimeString('fr-HT', {hour:'2-digit',minute:'2-digit'})
-    const date = new Date(v.horodateur_entree).toLocaleDateString('fr-HT', {day:'2-digit',month:'2-digit'})
-    const statutClass = v.statut === 'Entre' ? '' : v.statut === 'Sorti' ? 'sorti' : 'refuse'
-    const statutLabel = v.statut === 'Entre' ? 'Entré' : v.statut === 'Sorti' ? 'Sorti' : 'Refusé'
-    const badgeClass = v.statut === 'Entre' ? 'badge-entre' : v.statut === 'Sorti' ? 'badge-sorti' : 'badge-refuse'
-    return `
-      <div class="visit-card ${statutClass}">
-        <div class="vc-top">
-          <div>
-            <div class="vc-name">${v.nom_complet}</div>
-            <div class="vc-id">${v.uid_carte || ''} · ${v.id_visite}</div>
-          </div>
-          <div class="vc-time">${date} · ${heure}</div>
-        </div>
-        <div class="vc-meta">
-          <span class="badge badge-svc">${v.service_destinataire.split(' — ')[0]}</span>
-          <span class="badge ${badgeClass}">${statutLabel}</span>
-          <span class="badge" style="background:var(--g100);color:var(--g600)">${v.motif_visite}</span>
-          ${v.agent_accueil ? `<span class="badge" style="background:var(--g100);color:var(--g600)">${v.agent_accueil}</span>` : ''}
-          ${!v.synced ? '<span class="badge" style="background:var(--o50);color:var(--o800)">Non sync.</span>' : ''}
-        </div>
-      </div>`
+  const filtre = document.getElementById('filterStatut')?.value || ''
+  const liste = allVisites.filter(v =>
+    (!q || v.nom_complet.toLowerCase().includes(q) || v.id_visite.toLowerCase().includes(q) || (v.service_destinataire||'').toLowerCase().includes(q)) &&
+    (!filtre || v.statut === filtre)
+  )
+  const tbody = document.getElementById('visiteTbody')
+  if (!tbody) return
+  if (!liste.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty">Aucune visite trouvée.</td></tr>'; return }
+  tbody.innerHTML = liste.map(function(v) {
+    var hEntree = v.horodateur_entree ? new Date(v.horodateur_entree.replace(' ','T')+'-05:00') : null
+    var hSortie = v.horodateur_sortie ? new Date(v.horodateur_sortie.replace(' ','T')+'-05:00') : null
+    var heureE = hEntree ? hEntree.toLocaleTimeString('fr-HT',{hour:'2-digit',minute:'2-digit'}) : '—'
+    var heureS = hSortie ? hSortie.toLocaleTimeString('fr-HT',{hour:'2-digit',minute:'2-digit'}) : '—'
+    var dateE = hEntree ? hEntree.toLocaleDateString('fr-HT',{day:'2-digit',month:'2-digit',year:'numeric'}) : '—'
+    var statutColor = v.statut === 'Entre' ? '#005C4E' : v.statut === 'Sorti' ? '#7a9a94' : '#b83232'
+    var statutBg = v.statut === 'Entre' ? '#e6f2f0' : v.statut === 'Sorti' ? '#f7f9f8' : '#fdf0f0'
+    var statutLabel = v.statut === 'Entre' ? 'Entré' : v.statut === 'Sorti' ? 'Sorti' : 'Refusé'
+    var sortieBtn = v.statut === 'Entre'
+      ? '<button onclick="enregistrerSortieRapide(\'' + v.id_visite + '\')" style="padding:3px 10px;font-size:11px;background:#005C4E;color:#fff;border:none;cursor:pointer">Sortie</button>'
+      : heureS
+    return '<tr>' +
+      '<td style="font-size:11px;font-weight:500">' + v.id_visite + '</td>' +
+      '<td>' + v.nom_complet + '</td>' +
+      '<td style="font-size:12px">' + (v.service_destinataire||'—') + '</td>' +
+      '<td style="font-size:12px">' + (v.motif_visite||'—') + '</td>' +
+      '<td style="font-size:11px">' + dateE + ' ' + heureE + '</td>' +
+      '<td style="text-align:center">' + sortieBtn + '</td>' +
+      '<td><span style="display:inline-block;padding:2px 8px;font-size:10px;font-weight:600;background:' + statutBg + ';color:' + statutColor + '">' + statutLabel + '</span></td>' +
+      '</tr>'
   }).join('')
 }
 
-// ── REGISTRE DOCUMENTS
-async function loadVisitesPourDoc() {
-  const visites = await window.api.getVisitesActives()
-  const sel = document.getElementById('d_visite_liee')
-  sel.innerHTML = '<option value="">-- Aucune visite liée --</option>'
-  visites.forEach(v => {
-    const opt = document.createElement('option')
-    const heure = new Date(v.horodateur_entree).toLocaleTimeString('fr-HT', {hour:'2-digit',minute:'2-digit'})
-    opt.value = v.id_visite
-    opt.textContent = v.nom_complet + ' — ' + v.service_destinataire.split(' — ')[0] + ' — ' + heure
-    sel.appendChild(opt)
-  })
-}
-
-async function enregistrerDocument() {
-  const data = {
-    remis_par: document.getElementById('d_remis_par').value.trim(),
-    id_visite_lie: document.getElementById('d_visite_liee').value,
-    type_document: document.getElementById('d_type').value,
-    description: document.getElementById('d_description').value.trim(),
-    service_destinataire: document.getElementById('d_service').value,
-    notes: document.getElementById('d_notes').value.trim(),
-    agent_accueil: currentUser.nom_complet
-  }
-  if (!data.remis_par || !data.type_document || !data.description || !data.service_destinataire) {
-    showAlert('alertDoc', 'error', 'Tous les champs obligatoires doivent être remplis.'); return
-  }
-  const btn = document.getElementById('btnDoc')
-  btn.disabled = true; btn.textContent = 'Enregistrement...'
-  const result = await window.api.enregistrerDocument(data)
+async function enregistrerSortieRapide(idVisite) {
+  var result = await window.api.enregistrerSortie({ id_visite: idVisite, observations: '' })
   if (result.ok) {
-    window.api.logAction({ user: currentUser.nom_complet, action: 'document', details: result.id_document + ' — ' + data.description })
-    showAlert('alertDoc', 'success', `Document enregistré — ${result.id_document}`)
-    ;['d_remis_par','d_description','d_notes'].forEach(id => document.getElementById(id).value = '')
-    ;['d_visite_liee','d_type','d_service'].forEach(id => document.getElementById(id).value = '')
-    await loadRegistreDocuments()
-    await updateSyncStatus()
+    showToast('✓ Sortie enregistrée — ' + idVisite)
+    window.api.logAction({ user: currentUser.nom_complet, action: 'sortie', details: idVisite })
+    loadRegistreVisites()
   } else {
-    showAlert('alertDoc', 'error', result.message)
+    showToast('Erreur: ' + result.message, 'error')
   }
-  btn.disabled = false; btn.textContent = 'Enregistrer le document'
-}
-
-async function loadRegistreDocuments() {
-  const periode = document.getElementById('filterDocPeriode')?.value || 'jour'
-  allDocuments = periode === 'jour'
-    ? await window.api.getDocumentsJour()
-    : await window.api.getAllDocuments()
-  filtrerDocuments()
 }
 
 function filtrerDocuments() {
@@ -1071,21 +1027,36 @@ function filtrerAudit() {
   const list = document.getElementById('auditList')
   if (!liste.length) { list.innerHTML = '<div class="empty">Aucune action enregistrée.</div>'; return }
   list.innerHTML = liste.map(a => {
-    const ts = new Date(a.timestamp)
+    const ts = new Date((a.created_at || '').replace(' ', 'T') + '-05:00')
     const date = ts.toLocaleDateString('fr-HT', {day:'2-digit',month:'2-digit',year:'numeric'})
     const heure = ts.toLocaleTimeString('fr-HT', {hour:'2-digit',minute:'2-digit'})
-    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#fff;border:1px solid var(--g100);border-left:3px solid var(--o400);margin-bottom:4px">
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#fff;border:1px solid var(--g100);border-left:3px solid var(--c600);margin-bottom:4px">
       <div>
-        <div style="font-size:13px;font-weight:600;color:var(--g800)">\${a.action}</div>
-        <div style="font-size:11px;color:var(--g400);margin-top:1px">\${a.user}\${a.details ? ' · ' + a.details : ''}</div>
+        <div style="font-size:13px;font-weight:600;color:var(--g800)">${a.action}</div>
+        <div style="font-size:11px;color:var(--g400);margin-top:1px">${a.user}${a.details ? ' · ' + a.details : ''}</div>
       </div>
-      <div style="font-size:11px;color:var(--g400);text-align:right;white-space:nowrap;margin-left:12px">\${date}<br>\${heure}</div>
+      <div style="font-size:11px;color:var(--g400);text-align:right;white-space:nowrap;margin-left:12px">${date}<br>${heure}</div>
     </div>`
   }).join('')
 }
 
 
 
+
+
+function toggleRefusePartager() {
+  var cb = document.getElementById('e_refuse_partager');
+  var motif = document.getElementById('e_motif');
+  if (cb && cb.checked) {
+    motif.value = 'Visiteur a refusé de partager le motif';
+    motif.readOnly = true;
+    motif.style.background = 'var(--g50)';
+  } else {
+    motif.value = '';
+    motif.readOnly = false;
+    motif.style.background = '';
+  }
+}
 
 function showToast(msg, type) {
   var t = document.getElementById('toast');
