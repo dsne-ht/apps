@@ -675,6 +675,8 @@ let allVisites = []
 let allDocuments = []
 
 window.addEventListener('DOMContentLoaded', async () => {
+  loadVisitesPourDoc();
+
   loadUIDs();
 
   const _u = sessionStorage.getItem('user');
@@ -707,6 +709,7 @@ function switchTab(name, el) {
   if (name==='dsne') dsneActivate()
   if (name==='audit') loadAudit()
   if (name==='notes') renderNotes()
+  if (name==='documents') { loadVisitesPourDoc(); loadDocuments() }
 }
 
 async function doLogout() {
@@ -828,18 +831,22 @@ async function soumettrEntree() {
 }
 
 function resetEntreeForm() {
-  ['e_uid','e_type_piece','e_service','e_motif'].forEach(id => document.getElementById(id).value = '')
-  ['e_nom','e_num_piece','e_tel','e_org','e_personne','e_motif_autre','e_autorisateur','e_motif_refus'].forEach(id => document.getElementById(id).value = '')
-  selectedAuth = null
-  document.getElementById('btnOui').classList.remove('selected')
-  document.getElementById('btnNon').classList.remove('selected')
-  document.getElementById('champAutorisateur').style.display = 'none'
-  document.getElementById('champRefus').style.display = 'none'
-  document.getElementById('motifAutreField').style.display = 'none'
-  var cb = document.getElementById('e_refuse_partager')
-  if (cb) { cb.checked = false }
-  var motif = document.getElementById('e_motif')
-  if (motif) { motif.readOnly = false; motif.style.background = '' }
+  try {
+    ['e_uid','e_type_piece','e_service','e_motif'].forEach(function(id) {
+      var el = document.getElementById(id); if (el) el.value = ''
+    })
+    ;['e_nom','e_num_piece','e_tel','e_org','e_personne','e_motif_autre','e_autorisateur','e_motif_refus'].forEach(function(id) {
+      var el = document.getElementById(id); if (el) el.value = ''
+    })
+    selectedAuth = null
+    var oui = document.getElementById('btnOui'); if (oui) oui.classList.remove('selected')
+    var non = document.getElementById('btnNon'); if (non) non.classList.remove('selected')
+    var ca = document.getElementById('champAutorisateur'); if (ca) ca.style.display = 'none'
+    var cr = document.getElementById('champRefus'); if (cr) cr.style.display = 'none'
+    var ma = document.getElementById('motifAutreField'); if (ma) ma.style.display = 'none'
+    var cb = document.getElementById('e_refuse_partager'); if (cb) cb.checked = false
+    var motif = document.getElementById('e_motif'); if (motif) { motif.readOnly = false; motif.style.background = '' }
+  } catch(e) { console.error('resetEntreeForm:', e) }
 }
 
 // ── SORTIE
@@ -1034,7 +1041,7 @@ function filtrerAudit() {
   const list = document.getElementById('auditList')
   if (!liste.length) { list.innerHTML = '<div class="empty">Aucune action enregistrée.</div>'; return }
   list.innerHTML = liste.map(a => {
-    const ts = new Date((a.created_at || '').replace(' ', 'T') + '-05:00')
+    var raw = a.timestamp || a.created_at || ''; var ts = new Date(raw.includes('T') ? raw : raw.replace(' ', 'T') + '-05:00')
     const date = ts.toLocaleDateString('fr-HT', {day:'2-digit',month:'2-digit',year:'numeric'})
     const heure = ts.toLocaleTimeString('fr-HT', {hour:'2-digit',minute:'2-digit'})
     return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#fff;border:1px solid var(--g100);border-left:3px solid var(--c600);margin-bottom:4px">
@@ -1073,6 +1080,65 @@ function showToast(msg, type) {
   t.style.background = type === 'error' ? '#b83232' : 'var(--c600)';
   t.style.borderLeftColor = type === 'error' ? '#8a1a1a' : 'var(--c800)';
   setTimeout(function() { t.style.display = 'none'; }, 4000);
+}
+
+
+async function enregistrerDocument() {
+  var fields = {
+    remis_par: (document.getElementById('d_remis_par').value || '').trim(),
+    id_visite_lie: document.getElementById('d_visite_liee').value || '',
+    type_document: document.getElementById('d_type').value || '',
+    service_destinataire: document.getElementById('d_service').value || '',
+    description: (document.getElementById('d_description').value || '').trim(),
+    notes: (document.getElementById('d_notes').value || '').trim(),
+    agent_accueil: currentUser.nom_complet
+  }
+  if (!fields.remis_par || !fields.type_document || !fields.service_destinataire || !fields.description) {
+    showToast('Champ requis manquant', 'error'); return
+  }
+  var btn = document.getElementById('btnDoc')
+  btn.disabled = true; btn.textContent = 'Enregistrement...'
+  try {
+    var result = await window.api.enregistrerDocument(fields)
+    if (result.ok) {
+      window.api.logAction({ user: currentUser.nom_complet, action: 'document', details: fields.type_document + ' — ' + fields.description })
+      showToast('✓ Document enregistré — ' + (result.id_document || ''))
+      ;['d_remis_par','d_description','d_notes'].forEach(function(id) {
+        var el = document.getElementById(id); if (el) el.value = ''
+      })
+      ;['d_visite_liee','d_type','d_service'].forEach(function(id) {
+        var el = document.getElementById(id); if (el) el.selectedIndex = 0
+      })
+      await loadDocuments()
+    } else {
+      showToast('Erreur: ' + (result.message || 'Echec'), 'error')
+    }
+  } catch(e) {
+    showToast('Erreur: ' + e.message, 'error')
+  }
+  btn.disabled = false; btn.textContent = 'Enregistrer le document'
+}
+
+async function loadDocuments() {
+  try {
+    var docs = await window.api.getDocuments()
+    filtrerDocuments(docs)
+  } catch(e) {}
+}
+
+async function loadVisitesPourDoc() {
+  try {
+    var visites = await window.api.getVisitesActives()
+    var sel = document.getElementById('d_visite_liee')
+    if (!sel) return
+    sel.innerHTML = '<option value="">— Aucune visite liée —</option>'
+    visites.forEach(function(v) {
+      var opt = document.createElement('option')
+      opt.value = v.id_visite
+      opt.textContent = v.nom_complet + ' — ' + (v.service_destinataire || '') + ' — ' + v.id_visite
+      sel.appendChild(opt)
+    })
+  } catch(e) {}
 }
 
 /* ══ NOTES MODULE ══ */
