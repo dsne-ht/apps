@@ -806,9 +806,9 @@ async function soumettrEntree() {
   const required = ['uid_carte','nom_complet','type_piece','numero_piece','telephone',
     'organisation','service_destinataire','personne_a_visiter','motif_visite']
   for (const f of required) {
-    if (!fields[f]) { showAlert('alertEntree', 'error', 'Tous les champs sont obligatoires.'); return }
+    if (!fields[f]) { showToast('Champ requis manquant', 'error'); return }
   }
-  if (!selectedAuth) { showAlert('alertEntree', 'error', "Sélectionner l'autorisation (Oui ou Non)."); return }
+  if (!selectedAuth) { showToast('Veuillez autoriser ou refuser la visite', 'error'); return }
 
   const btn = document.getElementById('btnEntree')
   btn.disabled = true; btn.textContent = 'Enregistrement...'
@@ -835,6 +835,10 @@ function resetEntreeForm() {
   document.getElementById('champAutorisateur').style.display = 'none'
   document.getElementById('champRefus').style.display = 'none'
   document.getElementById('motifAutreField').style.display = 'none'
+  var cb = document.getElementById('e_refuse_partager')
+  if (cb) { cb.checked = false }
+  var motif = document.getElementById('e_motif')
+  if (motif) { motif.readOnly = false; motif.style.background = '' }
 }
 
 // ── SORTIE
