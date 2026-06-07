@@ -876,7 +876,7 @@ function filtrerAudit() {
   const list = document.getElementById('auditList')
   if (!liste.length) { list.innerHTML = '<div class="empty">Aucune action enregistree.</div>'; return }
   list.innerHTML = liste.map(function(a) {
-    const ts = new Date(a.created_at)
+    var raw = a.created_at || a.timestamp || ''; var ts = new Date(raw.includes('T') ? raw : raw.replace(' ','T') + '-05:00')
     const date = ts.toLocaleDateString('fr-HT', {day:'2-digit',month:'2-digit',year:'numeric'})
     const heure = ts.toLocaleTimeString('fr-HT', {hour:'2-digit',minute:'2-digit'})
     return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#fff;border:1px solid var(--g100);border-left:3px solid var(--c600);margin-bottom:4px"><div><div style="font-size:13px;font-weight:600;color:var(--g800)">' + a.action + '</div><div style="font-size:11px;color:var(--g400);margin-top:1px">' + a.user + (a.details ? ' · ' + a.details : '') + '</div></div><div style="font-size:11px;color:var(--g400);text-align:right;white-space:nowrap;margin-left:12px">' + date + '<br>' + heure + '</div></div>'
