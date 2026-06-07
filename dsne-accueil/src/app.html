@@ -1121,9 +1121,9 @@ async function enregistrerDocument() {
 
 async function loadDocuments() {
   try {
-    var docs = await window.api.getAllDocuments()
-    filtrerDocuments(docs)
-  } catch(e) {}
+    allDocuments = await window.api.getAllDocuments()
+    filtrerDocuments()
+  } catch(e) { console.error('loadDocuments:', e) }
 }
 
 async function loadVisitesPourDoc() {
