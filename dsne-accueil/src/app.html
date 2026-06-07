@@ -490,7 +490,7 @@ function dsneActivate(){
       <option value="Sorti">Sorti</option>
       <option value="Refuse">Refusé</option>
     </select>
-    <select id="filterPeriode" onchange="filtrerVisites()"
+    <select id="filterPeriode" onchange="loadRegistreVisites()"
       style="padding:7px 10px;border:1px solid var(--g200);font-size:13px;background:#fff">
       <option value="jour">Aujourd'hui</option>
       <option value="tout">Tout l'historique</option>
@@ -819,6 +819,7 @@ async function soumettrEntree() {
     showToast('✓ Entrée enregistrée — ' + result.id_visite + ' · ' + fields.nom_complet)
     resetEntreeForm()
     document.querySelector('.main-area').scrollTo(0, 0)
+    await loadRegistreVisites()
     await updateSyncStatus()
   } else {
     showAlert('alertEntree', 'error', result.message)
@@ -899,36 +900,38 @@ async function loadRegistreVisites() {
 }
 
 function filtrerVisites() {
-  const q = (document.getElementById('searchVisites')?.value || '').toLowerCase()
-  const filtre = document.getElementById('filterStatut')?.value || ''
-  const liste = allVisites.filter(v =>
-    (!q || v.nom_complet.toLowerCase().includes(q) || v.id_visite.toLowerCase().includes(q) || (v.service_destinataire||'').toLowerCase().includes(q)) &&
-    (!filtre || v.statut === filtre)
-  )
-  const tbody = document.getElementById('visiteTbody')
-  if (!tbody) return
-  if (!liste.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty">Aucune visite trouvée.</td></tr>'; return }
-  tbody.innerHTML = liste.map(function(v) {
-    var hEntree = v.horodateur_entree ? new Date(v.horodateur_entree.replace(' ','T')+'-05:00') : null
-    var hSortie = v.horodateur_sortie ? new Date(v.horodateur_sortie.replace(' ','T')+'-05:00') : null
-    var heureE = hEntree ? hEntree.toLocaleTimeString('fr-HT',{hour:'2-digit',minute:'2-digit'}) : '—'
-    var heureS = hSortie ? hSortie.toLocaleTimeString('fr-HT',{hour:'2-digit',minute:'2-digit'}) : '—'
-    var dateE = hEntree ? hEntree.toLocaleDateString('fr-HT',{day:'2-digit',month:'2-digit',year:'numeric'}) : '—'
+  var q = (document.getElementById('searchVisites') ? document.getElementById('searchVisites').value : '').toLowerCase()
+  var filtre = document.getElementById('filterStatut') ? document.getElementById('filterStatut').value : ''
+  var liste = allVisites.filter(function(v) {
+    return (!q || v.nom_complet.toLowerCase().includes(q) || v.id_visite.toLowerCase().includes(q) || (v.service_destinataire||'').toLowerCase().includes(q)) &&
+      (!filtre || v.statut === filtre)
+  })
+  var el = document.getElementById('journalList')
+  if (!el) return
+  if (!liste.length) { el.innerHTML = '<div class="empty" style="padding:20px;text-align:center;color:var(--g400)">Aucune visite trouvée.</div>'; return }
+  el.innerHTML = liste.map(function(v) {
+    var hE = v.horodateur_entree ? new Date(v.horodateur_entree.replace(' ','T')) : null
+    var hS = v.horodateur_sortie ? new Date(v.horodateur_sortie.replace(' ','T')) : null
+    var heureE = hE ? hE.toLocaleTimeString('fr-HT',{hour:'2-digit',minute:'2-digit'}) : ''
+    var heureS = hS ? hS.toLocaleTimeString('fr-HT',{hour:'2-digit',minute:'2-digit'}) : ''
+    var dateE = hE ? hE.toLocaleDateString('fr-HT',{day:'2-digit',month:'2-digit',year:'numeric'}) : ''
     var statutColor = v.statut === 'Entre' ? '#005C4E' : v.statut === 'Sorti' ? '#7a9a94' : '#b83232'
     var statutBg = v.statut === 'Entre' ? '#e6f2f0' : v.statut === 'Sorti' ? '#f7f9f8' : '#fdf0f0'
-    var statutLabel = v.statut === 'Entre' ? 'Entré' : v.statut === 'Sorti' ? 'Sorti' : 'Refusé'
+    var statutLabel = v.statut === 'Entre' ? 'Entré — dans les locaux' : v.statut === 'Sorti' ? 'Sorti' : 'Refusé'
     var sortieBtn = v.statut === 'Entre'
-      ? '<button onclick="enregistrerSortieRapide(\'' + v.id_visite + '\')" style="padding:3px 10px;font-size:11px;background:#005C4E;color:#fff;border:none;cursor:pointer">Sortie</button>'
-      : heureS
-    return '<tr>' +
-      '<td style="font-size:11px;font-weight:500">' + v.id_visite + '</td>' +
-      '<td>' + v.nom_complet + '</td>' +
-      '<td style="font-size:12px">' + (v.service_destinataire||'—') + '</td>' +
-      '<td style="font-size:12px">' + (v.motif_visite||'—') + '</td>' +
-      '<td style="font-size:11px">' + dateE + ' ' + heureE + '</td>' +
-      '<td style="text-align:center">' + sortieBtn + '</td>' +
-      '<td><span style="display:inline-block;padding:2px 8px;font-size:10px;font-weight:600;background:' + statutBg + ';color:' + statutColor + '">' + statutLabel + '</span></td>' +
-      '</tr>'
+      ? ' <button onclick="enregistrerSortieRapide(\'' + v.id_visite + '\')" style="padding:4px 12px;font-size:11px;background:#005C4E;color:#fff;border:none;cursor:pointer;margin-left:8px">Enregistrer sortie</button>'
+      : ''
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fff;border:1px solid var(--g100);border-left:3px solid ' + statutColor + ';margin-bottom:4px">' +
+      '<div style="flex:1">' +
+        '<div style="font-size:13px;font-weight:600;color:var(--g800)">' + v.nom_complet + ' <span style="font-size:11px;font-weight:400;color:var(--g400)">(' + v.id_visite + ')</span></div>' +
+        '<div style="font-size:11px;color:var(--g400);margin-top:2px">' + (v.service_destinataire||'') + ' · ' + (v.motif_visite||'') + '</div>' +
+      '</div>' +
+      '<div style="display:flex;align-items:center;gap:8px">' +
+        '<span style="display:inline-block;padding:3px 10px;font-size:10px;font-weight:600;background:' + statutBg + ';color:' + statutColor + '">' + statutLabel + '</span>' +
+        sortieBtn +
+      '</div>' +
+      '<div style="font-size:11px;color:var(--g400);text-align:right;margin-left:12px;white-space:nowrap">' + dateE + '<br>' + heureE + (heureS ? ' → ' + heureS : '') + '</div>' +
+    '</div>'
   }).join('')
 }
 
@@ -937,7 +940,7 @@ async function enregistrerSortieRapide(idVisite) {
   if (result.ok) {
     showToast('✓ Sortie enregistrée — ' + idVisite)
     window.api.logAction({ user: currentUser.nom_complet, action: 'sortie', details: idVisite })
-    loadRegistreVisites()
+    await loadRegistreVisites()
   } else {
     showToast('Erreur: ' + result.message, 'error')
   }
