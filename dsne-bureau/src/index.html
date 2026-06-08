@@ -1930,7 +1930,7 @@ async function submitRpSaisie() {
   btn.disabled = true; btn.textContent = 'Envoi...';
   msg.style.display = 'none';
   try {
-    var RP_URL = 'https://script.google.com/macros/s/AKfycbxSyzDmIpcy7fkZvcnXmuUMH1M_2411voRmSXQqIyw-3_qp88X2E7xgCNH7hHFNZKEJ/exec';
+    var RP_URL = 'https://script.google.com/macros/s/AKfycbze1VK4e8v-168YSgsAGms-hVBkUZj7nc9tjzjeORPqyNYiD_HML4_5yDAzALAqzAEW/exec';
     var url = RP_URL + '?action=update&inst=' + encodeURIComponent(inst) + '&month=' + encodeURIComponent(month) + '&val=' + encodeURIComponent(val);
     var r = await fetch(url);
     var d = await r.json();
@@ -2301,7 +2301,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const b = document.getElementById('badge-hyg');
   if(b) b.textContent = p;
   // Auto-fetch live RP data in background on every load
-  const RP_URL = 'https://script.google.com/macros/s/AKfycbxSyzDmIpcy7fkZvcnXmuUMH1M_2411voRmSXQqIyw-3_qp88X2E7xgCNH7hHFNZKEJ/exec';
+  const RP_URL = 'https://script.google.com/macros/s/AKfycbze1VK4e8v-168YSgsAGms-hVBkUZj7nc9tjzjeORPqyNYiD_HML4_5yDAzALAqzAEW/exec';
   fetch(RP_URL + '?action=read')
     .then(function(r){ return r.json(); })
     .then(function(data){
@@ -2456,7 +2456,7 @@ function readData(ss) {
 }`;
 
 const DEFAULT_SOURCES = [
-  {id:'rp',        name:'Suivi des Rapports',    sheet:'Suivi_des_rapports',    url:'https://script.google.com/macros/s/AKfycbxSyzDmIpcy7fkZvcnXmuUMH1M_2411voRmSXQqIyw-3_qp88X2E7xgCNH7hHFNZKEJ/exec', status:'configuré'},
+  {id:'rp',        name:'Suivi des Rapports',    sheet:'Suivi_des_rapports',    url:'https://script.google.com/macros/s/AKfycbze1VK4e8v-168YSgsAGms-hVBkUZj7nc9tjzjeORPqyNYiD_HML4_5yDAzALAqzAEW/exec', status:'configuré'},
   {id:'hyg',       name:'Certificats Hygiène',   sheet:'Suivi_Certificats_HYG', url:'https://script.google.com/macros/s/AKfycbzH60zFGdC7lc38r0zuXiG5_FUZSbUM3rNq9_kZYvnubE0q781cLhowtnZWM7s7kxJxHQ/exec', status:'configuré'},
   {id:'cm',        name:'Cliniques Mobiles',      sheet:'CM_Activites',          url:'https://script.google.com/macros/s/AKfycbxONixZLRyADT8fYULu_7uZ9E9sST67jPdTZdlXYULwK34EaJucmlYJ3_ukFfj4E2ze/exec', status:'configuré'},
   {id:'visites',   name:'Registre de Visites',    sheet:'Registre_Visites',      url:'https://script.google.com/macros/s/AKfycbwNKa2FfXqVXp9hUmeQsIH11eFC3DjCIiBHCDR28UOso4281yiwSXxDUG2C-rZgI-Xq9w/exec', status:'configuré'},
