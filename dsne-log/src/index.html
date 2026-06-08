@@ -153,6 +153,11 @@
       </thead>
       <tbody id="journal-tbody"></tbody>
     </table>
+
+  <div class="sync-bar">
+    <div class="sync-info"><span class="sync-dot" id="syncDot-j"></span><span id="syncLabel-j">Vérification...</span></div>
+    <button class="btn btn-sm btn-primary" onclick="syncLog()">Synchroniser</button>
+  </div>
   </div>
 </div>
 
@@ -174,6 +179,11 @@
       </thead>
       <tbody id="entretien-tbody"></tbody>
     </table>
+
+  <div class="sync-bar">
+    <div class="sync-info"><span class="sync-dot" id="syncDot-e"></span><span id="syncLabel-e">Vérification...</span></div>
+    <button class="btn btn-sm btn-primary" onclick="syncLog()">Synchroniser</button>
+  </div>
   </div>
 </div>
 
@@ -1307,6 +1317,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('m-date').value = today;
   document.getElementById('e-date').value = today;
   document.getElementById('rec-date').value = today;
+  updateLogSyncStatus();
 });
 
 
