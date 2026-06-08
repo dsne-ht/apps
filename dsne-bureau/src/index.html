@@ -906,13 +906,14 @@ body {
       <div class="meta">Gestion des activités départementales · DSNE</div>
     </div>
   </div>
-  <div class="page-body" style="display:flex;flex-direction:column;gap:14px;padding:14px;background:#f9f9f9;overflow-y:auto;">
+  <div class="page-body" style="display:flex;flex-direction:column;gap:14px;padding:14px;background:#f9f9f9;overflow-y:auto;height:100%;">
     
-    <!-- DASHBOARD VIEW -->
-    <div id="dashboardView">
+    <!-- ROLE-BASED DASHBOARD -->
+    <div id="dashboard">
+      <!-- KPI Cards (all roles) -->
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;">
         <div style="background:white;padding:12px;border-radius:4px;border-left:3px solid #005c4e;">
-          <div style="font-size:11px;color:#666;margin-bottom:4px;">Total Activités</div>
+          <div style="font-size:11px;color:#666;margin-bottom:4px;">Total</div>
           <div style="font-size:20px;font-weight:600;color:#005c4e;">12</div>
         </div>
         <div style="background:white;padding:12px;border-radius:4px;border-left:3px solid #40b89c;">
@@ -929,46 +930,52 @@ body {
         </div>
       </div>
 
-      <div style="display:flex;gap:10px;margin-bottom:14px;">
-        <button id="newActivityBtn" style="background:#005c4e;color:white;padding:10px 14px;border:none;border-radius:4px;cursor:pointer;font-weight:500;display:none;" onclick="startNewActivity()">+ Nouvelle Activité</button>
-        <div id="roleWarning" style="background:#fff3cd;color:#856404;padding:10px 14px;border-radius:4px;font-size:12px;display:none;">Seule la Secrétaire (174838) peut créer des activités</div>
+      <!-- Dory: New Activity Button -->
+      <div id="dorypanel" style="display:none;margin-bottom:14px;">
+        <button style="background:#005c4e;color:white;padding:10px 14px;border:none;border-radius:4px;cursor:pointer;font-weight:500;width:100%;" onclick="startNewActivity()">+ Nouvelle Activité</button>
       </div>
 
+      <!-- Activities List -->
       <div style="background:white;border-radius:4px;overflow:hidden;border:0.5px solid #ddd;">
         <div style="background:#005c4e;color:white;padding:12px;font-weight:600;font-size:12px;">Activités</div>
-        <div style="padding:14px;font-size:12px;">
-          <div id="activitiesList" style="display:flex;flex-direction:column;gap:8px;">
-            <div onclick="loadActivity('ACT-2026-001')" style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 0.5fr;gap:12px;padding:10px;background:#f9f9f9;border-radius:3px;cursor:pointer;border:0.5px solid #ddd;align-items:center;">
-              <div><strong style="color:#005c4e;">Formation hygiène publique</strong></div>
-              <div>Dr. Eddy P.</div>
-              <div>12,500 HTG</div>
-              <div><span style="background:#fff3cd;color:#856404;padding:3px 8px;border-radius:3px;font-size:11px;">F3</span></div>
-              <div style="text-align:center;">→</div>
-            </div>
-          </div>
+        <div id="activitiesList" style="padding:0;">
+          <!-- Populated by JavaScript based on role -->
         </div>
       </div>
     </div>
 
-    <!-- FORM VIEW: F1-F7 Workflow -->
+    <!-- FORM VIEW (hidden until activity selected) -->
     <div id="formView" style="display:none;flex-direction:column;gap:12px;height:100%;">
       <div style="background:white;padding:12px;border-radius:4px;border:0.5px solid #ddd;display:flex;justify-content:space-between;align-items:center;">
         <div>
-          <h3 id="formTitle" style="color:#005c4e;margin:0;">F1: Soumission TDR</h3>
-          <div id="formSubtitle" style="font-size:11px;color:#666;margin-top:4px;">Étape 1 de 7</div>
+          <h3 id="formTitle" style="color:#005c4e;margin:0;">Activity Form</h3>
+          <div id="formSubtitle" style="font-size:11px;color:#666;margin-top:4px;"></div>
         </div>
         <button style="background:none;border:none;cursor:pointer;font-size:16px;font-weight:600;" onclick="backToDashboard()">✕</button>
       </div>
 
-      <!-- Form Content -->
-      <div id="formContent" style="background:white;padding:14px;border-radius:4px;border:0.5px solid #ddd;flex:1;overflow-y:auto;">
-        <!-- Will be populated by JavaScript -->
+      <!-- Tab Navigation: Show all F stages, highlight ones user can edit -->
+      <div style="background:white;border-radius:4px;border:0.5px solid #ddd;overflow:hidden;">
+        <div style="display:flex;border-bottom:0.5px solid #ddd;background:#f9f9f9;">
+          <button class="f-tab" data-f="f1" onclick="switchF('f1')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-size:11px;font-weight:500;color:#999;transition:all 0.2s;">F1</button>
+          <button class="f-tab" data-f="f2" onclick="switchF('f2')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-size:11px;font-weight:500;color:#999;transition:all 0.2s;">F2</button>
+          <button class="f-tab" data-f="f3" onclick="switchF('f3')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-size:11px;font-weight:500;color:#999;transition:all 0.2s;">F3</button>
+          <button class="f-tab" data-f="f4" onclick="switchF('f4')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-size:11px;font-weight:500;color:#999;transition:all 0.2s;">F4</button>
+          <button class="f-tab" data-f="f5" onclick="switchF('f5')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-size:11px;font-weight:500;color:#999;transition:all 0.2s;">F5</button>
+          <button class="f-tab" data-f="f6" onclick="switchF('f6')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-size:11px;font-weight:500;color:#999;transition:all 0.2s;">F6</button>
+          <button class="f-tab" data-f="f7" onclick="switchF('f7')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-size:11px;font-weight:500;color:#999;transition:all 0.2s;">F7</button>
+        </div>
+
+        <!-- Form Content Area -->
+        <div id="formContent" style="padding:14px;min-height:300px;max-height:500px;overflow-y:auto;">
+          <!-- Populated dynamically -->
+        </div>
       </div>
 
-      <!-- Navigation Buttons -->
-      <div style="display:flex;gap:10px;background:white;padding:12px;border-radius:4px;border:0.5px solid #ddd;">
-        <button id="prevBtn" style="flex:1;background:white;border:0.5px solid #ddd;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;display:none;" onclick="prevStep()">← Retour</button>
-        <button id="nextBtn" style="flex:1;background:#005c4e;color:white;border:none;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;" onclick="nextStep()">Suivant →</button>
+      <!-- Action Buttons -->
+      <div id="formActions" style="display:flex;gap:10px;background:white;padding:12px;border-radius:4px;border:0.5px solid #ddd;">
+        <button style="flex:1;background:white;border:0.5px solid #ddd;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;" onclick="backToDashboard()">← Retour au tableau</button>
+        <button id="submitBtn" style="flex:1;background:#005c4e;color:white;border:none;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;display:none;" onclick="submitCurrentForm()">Soumettre</button>
       </div>
     </div>
 
@@ -981,307 +988,173 @@ body {
     #p-activites input:focus, #p-activites select:focus, #p-activites textarea:focus {
       outline: none; border-color: #005c4e; box-shadow: 0 0 0 2px rgba(0,92,78,0.1);
     }
-    #p-activites input.error { border-color: #dc2626; }
-    #p-activites textarea { resize: vertical; min-height: 60px; }
     .form-section { margin-bottom: 16px; }
     .form-section-title { font-size: 12px; font-weight: 600; color: #005c4e; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid #005c4e; }
     .field-group { margin-bottom: 12px; }
     .field-label { display: block; font-size: 12px; font-weight: 500; color: #333; margin-bottom: 4px; }
     .field-required { color: #dc2626; }
-    .error-msg { color: #dc2626; font-size: 11px; margin-top: 3px; }
     .radio-group, .checkbox-group { display: flex; flex-direction: column; gap: 6px; }
     .radio-item, .checkbox-item { display: flex; gap: 6px; align-items: flex-start; }
     .radio-item input, .checkbox-item input { margin-top: 2px; flex-shrink: 0; }
     .radio-item label, .checkbox-item label { font-size: 12px; cursor: pointer; }
+    .readonly { background: #f5f5f5; color: #999; }
+    .f-tab.active { color: #005c4e !important; border-bottom-color: #005c4e !important; }
+    .f-tab.editable { color: #333 !important; }
+    .f-content { display: none; }
+    .f-content.active { display: block; }
   </style>
 
   <script>
-    let currentStage = 'f1';
-    let activityData = {};
+    let currentUser = '174838';
+    let currentActivity = null;
+    let currentF = 'f1';
 
-    // Check if Dory (174838) on load
+    // Detect user on load
     window.addEventListener('load', function() {
-      checkUserAccess();
+      const pin = window.currentUserPin || '174838';
+      currentUser = pin;
+      initializeDashboard();
     });
 
-    function checkUserAccess() {
-      const pin = window.currentUserPin || '174838';
-      if (pin === '174838') {
-        document.getElementById('newActivityBtn').style.display = 'block';
-      } else {
-        document.getElementById('roleWarning').style.display = 'block';
+    function initializeDashboard() {
+      const activities = getActivitiesForUser();
+      renderActivityList(activities);
+      
+      // Show role-specific elements
+      if (currentUser === '174838') { // Dory
+        document.getElementById('dorypanel').style.display = 'block';
       }
     }
 
-    function startNewActivity() {
-      const id = 'ACT-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 1000)).padStart(3, '0');
-      activityData = { id: id };
-      currentStage = 'f1';
-      document.getElementById('dashboardView').style.display = 'none';
-      document.getElementById('formView').style.display = 'flex';
-      renderForm('f1');
+    function getActivitiesForUser() {
+      // Mock data - will be replaced with Google Sheets API call
+      const allActivities = [
+        { id: 'ACT-2026-001', title: 'Formation hygiène', responsible: 'Dr. Eddy P.', amount: '12,500 HTG', currentF: 'f3', status: 'En cours' }
+      ];
+
+      // Filter by role
+      if (currentUser === '560037') { // COMP - only F7
+        return allActivities.filter(a => parseInt(a.currentF.substring(1)) >= 7);
+      } else if (currentUser === '879992') { // LOG - only F3
+        return allActivities.filter(a => a.currentF === 'f3');
+      }
+      // Dory and ADM see all
+      return allActivities;
     }
 
-    function loadActivity(id) {
-      document.getElementById('dashboardView').style.display = 'none';
+    function renderActivityList(activities) {
+      const list = document.getElementById('activitiesList');
+      if (activities.length === 0) {
+        list.innerHTML = '<div style="padding:14px;text-align:center;color:#999;font-size:12px;">Aucune activité assignée à votre rôle</div>';
+        return;
+      }
+
+      list.innerHTML = activities.map(a => `
+        <div onclick="loadActivity('${a.id}')" style="padding:12px 14px;border-bottom:0.5px solid #eee;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#f9f9f9'" onmouseout="this.style.background='transparent';">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div>
+              <div style="font-weight:500;color:#005c4e;font-size:12px;">${a.title}</div>
+              <div style="font-size:11px;color:#666;margin-top:4px;">${a.responsible} · ${a.amount}</div>
+            </div>
+            <span style="background:#fff3cd;color:#856404;padding:3px 8px;border-radius:3px;font-size:10px;font-weight:500;">${a.currentF.toUpperCase()} ${a.status}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function loadActivity(activityId) {
+      currentActivity = activityId;
+      document.getElementById('dashboard').style.display = 'none';
       document.getElementById('formView').style.display = 'flex';
-      currentStage = 'f3';
-      renderForm('f3');
+      document.getElementById('formTitle').textContent = 'ACT-2026-001: Formation hygiène publique';
+      document.getElementById('formSubtitle').textContent = 'Dr. Eddy Pierre · 12,500 HTG';
+      
+      // Highlight editable F stages for current user
+      updateFTabsForUser();
+      switchF('f1');
+    }
+
+    function updateFTabsForUser() {
+      const tabs = document.querySelectorAll('.f-tab');
+      tabs.forEach(tab => {
+        tab.classList.remove('editable');
+        tab.style.color = '#999';
+      });
+
+      // Mark editable F stages based on role
+      if (currentUser === '174838') { // Dory
+        document.querySelector('[data-f="f1"]').classList.add('editable');
+        document.querySelector('[data-f="f5"]').classList.add('editable');
+      } else if (currentUser === '678079') { // ADM
+        document.querySelector('[data-f="f2"]').classList.add('editable');
+        document.querySelector('[data-f="f4"]').classList.add('editable');
+        document.querySelector('[data-f="f6"]').classList.add('editable');
+      } else if (currentUser === '879992') { // LOG
+        document.querySelector('[data-f="f3"]').classList.add('editable');
+      } else if (currentUser === '560037') { // COMP
+        document.querySelector('[data-f="f7"]').classList.add('editable');
+      }
+    }
+
+    function switchF(f) {
+      currentF = f;
+      document.querySelectorAll('.f-tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`[data-f="${f}"]`).classList.add('active');
+      
+      const isEditable = document.querySelector(`[data-f="${f}"]`).classList.contains('editable');
+      document.getElementById('submitBtn').style.display = isEditable ? 'block' : 'none';
+      
+      renderFForm(f, isEditable);
+    }
+
+    function renderFForm(f, isEditable) {
+      const content = document.getElementById('formContent');
+      const fMap = {
+        f1: { title: 'F1: Soumission TDR', form: getFForm },
+        f2: { title: 'F2: Validation Admin', form: getFForm },
+        f3: { title: 'F3: Logistique', form: getFForm },
+        f4: { title: 'F4: Signature Director', form: getFForm },
+        f5: { title: 'F5: Rapport Activité', form: getFForm },
+        f6: { title: 'F6: Feu vert Admin', form: getFForm },
+        f7: { title: 'F7: Clôture Comptabilité', form: getFForm }
+      };
+
+      content.innerHTML = fMap[f].form(isEditable);
+    }
+
+    function getFForm(isEditable) {
+      const readonlyStyle = isEditable ? '' : 'style="background:#f5f5f5;cursor:not-allowed;" readonly disabled';
+      return `
+        <div class="form-section">
+          <div class="form-section-title">${currentF.toUpperCase()} Details</div>
+          <div class="field-group">
+            <label class="field-label">Field 1 ${isEditable ? '<span class="field-required">*</span>' : ''}</label>
+            <input type="text" placeholder="Value" ${readonlyStyle}>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Field 2</label>
+            <input type="text" placeholder="Value" ${readonlyStyle}>
+          </div>
+          ${isEditable ? '<div style="background:#d1e7dd;padding:10px;border-radius:4px;font-size:11px;color:#0f5132;">✓ You can edit this stage</div>' : '<div style="background:#e6f1fb;padding:10px;border-radius:4px;font-size:11px;color:#042c53;">📖 Read-only view - Not your responsibility</div>'}
+        </div>
+      `;
+    }
+
+    function submitCurrentForm() {
+      alert(`✓ ${currentF.toUpperCase()} submitted to Google Sheets`);
+      // Google Sheets API call would go here
+    }
+
+    function startNewActivity() {
+      alert('Creating new activity - Form will open at F1');
+      currentActivity = 'ACT-NEW-' + Date.now();
+      loadActivity(currentActivity);
     }
 
     function backToDashboard() {
       document.getElementById('formView').style.display = 'none';
-      document.getElementById('dashboardView').style.display = 'block';
-    }
-
-    function renderForm(stage) {
-      const stageMap = {
-        f1: { title: 'F1: Soumission TDR', step: 'Étape 1 de 7', form: getF1Form },
-        f2: { title: 'F2: Validation Administration', step: 'Étape 2 de 7', form: getF2Form },
-        f3: { title: 'F3: Logistique', step: 'Étape 3 de 7', form: getF3Form },
-        f4: { title: 'F4: Signature Direction', step: 'Étape 4 de 7', form: getF4Form },
-        f5: { title: 'F5: Rapport d\'activité', step: 'Étape 5 de 7', form: getF5Form },
-        f6: { title: 'F6: Feu vert Administration', step: 'Étape 6 de 7', form: getF6Form },
-        f7: { title: 'F7: Clôture Comptabilité', step: 'Étape 7 de 7', form: getF7Form }
-      };
-
-      const info = stageMap[stage];
-      document.getElementById('formTitle').textContent = info.title;
-      document.getElementById('formSubtitle').textContent = info.step;
-      document.getElementById('formContent').innerHTML = info.form();
-
-      document.getElementById('prevBtn').style.display = stage === 'f1' ? 'none' : 'block';
-      document.getElementById('nextBtn').textContent = stage === 'f7' ? 'Clôturer' : 'Suivant →';
-      currentStage = stage;
-    }
-
-    function getF1Form() {
-      return `
-        <div class="form-section">
-          <div class="form-section-title">Informations de base</div>
-          <div class="field-group">
-            <label class="field-label">Titre de l'activité <span class="field-required">*</span></label>
-            <input type="text" placeholder="Ex: Formation hygiène publique">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Montant estimé (HTG) <span class="field-required">*</span></label>
-            <input type="number" placeholder="12500">
-          </div>
-        </div>
-        <div class="form-section">
-          <div class="form-section-title">Responsable</div>
-          <div class="field-group">
-            <label class="field-label">Nom du responsable <span class="field-required">*</span></label>
-            <input type="text" placeholder="Dr. Eddy Pierre">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Email <span class="field-required">*</span></label>
-            <input type="email" placeholder="eddy@dsne.ht">
-          </div>
-        </div>
-        <div class="form-section">
-          <div class="form-section-title">Dates et lieu</div>
-          <div class="field-group">
-            <label class="field-label">Date prévue <span class="field-required">*</span></label>
-            <input type="date">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Lieu <span class="field-required">*</span></label>
-            <input type="text" placeholder="Fort-Liberté">
-          </div>
-        </div>
-        <div class="form-section">
-          <div class="form-section-title">Documents</div>
-          <div class="field-group">
-            <label class="field-label">Upload TDR (PDF) <span class="field-required">*</span></label>
-            <input type="file">
-          </div>
-        </div>
-      `;
-    }
-
-    function getF2Form() {
-      return `
-        <div class="form-section">
-          <div class="form-section-title">Validation budgétaire</div>
-          <div class="field-group">
-            <label class="field-label">Montant à approuver: <strong>12,500 HTG</strong></label>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Solde C1 - Fonctionnement: <strong style="color:#40b89c;">45,000 HTG</strong></label>
-            <div style="font-size:11px;color:#666;margin-top:4px;">✓ Fonds disponibles</div>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Type de financement <span class="field-required">*</span></label>
-            <div class="radio-group">
-              <div class="radio-item"><input type="radio" name="funding" value="avant" checked> <label>AVANT</label></div>
-              <div class="radio-item"><input type="radio" name="funding" value="apres"> <label>APRES</label></div>
-              <div class="radio-item"><input type="radio" name="funding" value="propres"> <label>Fonds propres</label></div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function getF3Form() {
-      return `
-        <div class="form-section">
-          <div class="form-section-title">Matériels requis</div>
-          <div class="field-group">
-            <label class="field-label">Matériels nécessaires? <span class="field-required">*</span></label>
-            <div class="radio-group">
-              <div class="radio-item"><input type="radio" name="materials" value="no" checked> <label>Non</label></div>
-              <div class="radio-item"><input type="radio" name="materials" value="yes"> <label>Oui, certains manquent</label></div>
-            </div>
-          </div>
-        </div>
-        <div class="form-section">
-          <div class="form-section-title">Véhicules</div>
-          <div class="field-group">
-            <label class="field-label">Véhicule requis? <span class="field-required">*</span></label>
-            <div class="radio-group">
-              <div class="radio-item"><input type="radio" name="vehicle" value="no" checked> <label>Non</label></div>
-              <div class="radio-item"><input type="radio" name="vehicle" value="yes"> <label>Oui</label></div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function getF4Form() {
-      return `
-        <div class="form-section">
-          <div class="form-section-title">Signature Director</div>
-          <div class="field-group">
-            <label class="field-label">Toutes les conditions réunies? <span class="field-required">*</span></label>
-            <div class="checkbox-group">
-              <div class="checkbox-item"><input type="checkbox" checked> <label>F1: TDR reçu</label></div>
-              <div class="checkbox-item"><input type="checkbox" checked> <label>F2: Budget approuvé</label></div>
-              <div class="checkbox-item"><input type="checkbox" checked> <label>F3: Logistique validée</label></div>
-            </div>
-          </div>
-        </div>
-        <div class="form-section">
-          <div class="form-section-title">Signature</div>
-          <div class="field-group">
-            <label class="field-label">Signé par <span class="field-required">*</span></label>
-            <input type="text" value="Dr. Jean Clervain Dorsainvil" readonly style="background:#f5f5f5;">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Date <span class="field-required">*</span></label>
-            <input type="date">
-          </div>
-        </div>
-        <div style="background:#d1e7dd;padding:10px;border-radius:4px;font-size:11px;color:#0f5132;">✓ Feuille de route générée automatiquement</div>
-      `;
-    }
-
-    function getF5Form() {
-      return `
-        <div class="form-section">
-          <div class="form-section-title">Rapport d'activité</div>
-          <div class="field-group">
-            <label class="field-label">Date début <span class="field-required">*</span></label>
-            <input type="date">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Date fin <span class="field-required">*</span></label>
-            <input type="date">
-          </div>
-        </div>
-        <div class="form-section">
-          <div class="form-section-title">Documents</div>
-          <div class="field-group">
-            <label class="field-label">Rapport (PDF/Word) <span class="field-required">*</span></label>
-            <input type="file">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Feuille de présence <span class="field-required">*</span></label>
-            <input type="file">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Justificatifs <span class="field-required">*</span></label>
-            <input type="file">
-          </div>
-        </div>
-      `;
-    }
-
-    function getF6Form() {
-      return `
-        <div style="background:#e6f1fb;padding:10px;border-radius:4px;border-left:2px solid #185fa5;font-size:11px;color:#042c53;margin-bottom:12px;">
-          <strong>Conditionnel:</strong> N'apparaît que si financement APRES
-        </div>
-        <div class="form-section">
-          <div class="form-section-title">Vérification justificatifs</div>
-          <div class="field-group">
-            <label class="field-label">Justificatifs conformes? <span class="field-required">*</span></label>
-            <div class="radio-group">
-              <div class="radio-item"><input type="radio" name="compliant" value="yes" checked> <label>Oui</label></div>
-              <div class="radio-item"><input type="radio" name="compliant" value="no"> <label>Non</label></div>
-            </div>
-          </div>
-        </div>
-        <div class="form-section">
-          <div class="form-section-title">Approbation</div>
-          <div class="field-group">
-            <label class="field-label">Décaissement autorisé? <span class="field-required">*</span></label>
-            <div class="radio-group">
-              <div class="radio-item"><input type="radio" name="approve" value="yes" checked> <label>Approuvé</label></div>
-              <div class="radio-item"><input type="radio" name="approve" value="no"> <label>Rejeté</label></div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function getF7Form() {
-      return `
-        <div class="form-section">
-          <div class="form-section-title">Décaissement</div>
-          <div class="field-group">
-            <label class="field-label">Montant (HTG) <span class="field-required">*</span></label>
-            <input type="number" value="12500" readonly style="background:#f5f5f5;">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Date <span class="field-required">*</span></label>
-            <input type="date">
-          </div>
-          <div class="field-group">
-            <label class="field-label">Compte <span class="field-required">*</span></label>
-            <select>
-              <option>C1 - Fonctionnement</option>
-              <option>C2 - Fonds Externes</option>
-              <option>C3 - Réserve</option>
-              <option>C4 - Autre</option>
-            </select>
-          </div>
-          <div class="field-group">
-            <label class="field-label">Transaction # <span class="field-required">*</span></label>
-            <input type="text" placeholder="CHQ-2026-0045">
-          </div>
-        </div>
-        <div style="background:#d1e7dd;padding:10px;border-radius:4px;font-size:11px;color:#0f5132;">✓ Activité sera clôturée après soumission</div>
-      `;
-    }
-
-    function nextStep() {
-      const stages = ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7'];
-      const idx = stages.indexOf(currentStage);
-      if (idx < 6) {
-        renderForm(stages[idx + 1]);
-      } else {
-        alert('✓ Activité clôturée!');
-        backToDashboard();
-      }
-    }
-
-    function prevStep() {
-      const stages = ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7'];
-      const idx = stages.indexOf(currentStage);
-      if (idx > 0) {
-        renderForm(stages[idx - 1]);
-      }
+      document.getElementById('dashboard').style.display = 'block';
+      currentActivity = null;
     }
   </script>
 </div>
