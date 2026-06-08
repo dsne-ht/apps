@@ -1550,6 +1550,7 @@ function applyPermissions() {
   var roleEl = document.getElementById('bureau-user-role');
   if (nameEl && _USER.nom_complet) nameEl.textContent = _USER.nom_complet;
   if (roleEl) roleEl.textContent = _ROLE_LABELS[_ROLE] || 'Bureau';
+  document.body.classList.add('role-' + _ROLE);
   if (_ROLE === 'test') {
     var sw = document.getElementById('test-switcher');
     if (sw) sw.style.display = 'block';
@@ -1571,6 +1572,8 @@ function testSwitch(viewRole) {
   var btn = document.getElementById('test-btn-' + viewRole);
   if (btn) btn.classList.add('active');
   rpInited = false;
+  document.body.className = document.body.className.replace(/\brole-\w+\b/g,'').trim() + ' role-' + viewRole;
+  if (document.getElementById('p-rapportage') && document.getElementById('p-rapportage').classList.contains('active')) { initRapportage(); }
   var roleEl = document.getElementById('bureau-user-role');
   if (roleEl) roleEl.textContent = 'Vue : ' + (_ROLE_LABELS[viewRole] || viewRole);
 }
@@ -1844,7 +1847,7 @@ function initCompta() {
 let rpInited = false;
 function initRapportage() {
   if(rpInited) return; rpInited=true;
-  var _showCols = (_viewRole === 'comp') ? ['FIN'] : ['FIN','RH','EPI'];
+  var _showCols = (_ROLE === 'comp' || _viewRole === 'comp') ? ['FIN'] : ['FIN','RH','EPI'];
   // Use live data from Apps Script if available, otherwise fall back to embedded
   const rawData = (typeof liveRPData !== 'undefined' && liveRPData && liveRPData.length) ? liveRPData : RP_DATA;
   const liveLabel = (typeof liveRPData !== 'undefined' && liveRPData) ? ' · Données en direct' : ' · Snapshot Avr 2026';
@@ -1903,7 +1906,7 @@ function initRapportage() {
   // Show saisie form for comp role
   var saisie = document.getElementById('rp-saisie');
   if (saisie) {
-    if (_viewRole === 'comp') {
+    if (_ROLE === 'comp' || _viewRole === 'comp') {
       saisie.style.display = 'block';
       var instSel = document.getElementById('rp-s-inst');
       if (instSel && instSel.options.length <= 1) {
