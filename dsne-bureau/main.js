@@ -61,6 +61,8 @@ function initDB() {
     .run('678079', 'Pierre Décius', 'adm');
   db.prepare("INSERT OR IGNORE INTO users (code, nom_complet, role) VALUES (?, ?, ?)")
     .run('560037', 'Voldking Jean Prospere', 'comp');
+  db.prepare("INSERT OR IGNORE INTO users (code, nom_complet, role) VALUES (?, ?, ?)")
+    .run('174838', 'Vue Test', 'test');
 }
 
 function createWindow() {
