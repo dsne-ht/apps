@@ -8,6 +8,7 @@ function parseSQLiteDate(raw) {
 }
 
 const STORAGE_KEY = 'dsne_logistique';
+const LOG_DOPOST_URL = 'REPLACE_WITH_DEPLOYED_URL'; // ← Paste your Apps Script exec URL here
 
 function loadData() {
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -332,6 +333,7 @@ function saveMission() {
   }
   saveData(); closeModal('modal-mission'); renderJournal();
   document.getElementById('m-edit-id').value = '';
+  updateLogSyncStatus(); if (navigator.onLine) syncLog();
 }
 
 /* ── ENTRETIEN ── */
@@ -392,6 +394,7 @@ function saveEntretien() {
   }
   saveData(); closeModal('modal-entretien'); renderEntretien();
   document.getElementById('e-edit-id').value = '';
+  updateLogSyncStatus(); if (navigator.onLine) syncLog();
 }
 
 /* ── CHAUFFEURS ── */
@@ -2194,3 +2197,80 @@ function downloadInvTemplate(type) {
   }
   toast('Modele telecharge.', 'success');
 }
+
+
+/* ══════════════════════════════════════════════════════════
+   SYNC — GOOGLE SHEETS (JOURNAL DE BORD + ENTRETIEN)
+   Stores synced record IDs in localStorage under 'dsne_log_synced'.
+   Each mission gets key  m_<id>,  each entretien  e_<id>.
+   On every save (or manual button), unsynced records are POSTed
+   to the Apps Script doPost on the Logistique sheet.
+   Note: edits to existing records are NOT re-synced automatically.
+══════════════════════════════════════════════════════════ */
+function getSyncedSet() {
+  try { return new Set(JSON.parse(localStorage.getItem('dsne_log_synced') || '[]')); }
+  catch(e) { return new Set(); }
+}
+function saveSyncedSet(s) {
+  localStorage.setItem('dsne_log_synced', JSON.stringify([...s]));
+}
+function getSyncPendingCount() {
+  const synced = getSyncedSet();
+  return DB.missions.filter(m => !synced.has('m_' + m.id)).length
+       + DB.entretiens.filter(e => !synced.has('e_' + e.id)).length;
+}
+async function syncLog() {
+  if (!LOG_DOPOST_URL || LOG_DOPOST_URL === 'REPLACE_WITH_DEPLOYED_URL') {
+    updateLogSyncStatus(); return;
+  }
+  const synced = getSyncedSet();
+  const pm = DB.missions.filter(m => !synced.has('m_' + m.id));
+  const pe = DB.entretiens.filter(e => !synced.has('e_' + e.id));
+  let errors = 0;
+  for (const m of pm) {
+    try {
+      const res = await fetch(LOG_DOPOST_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'journal', ...m })
+      });
+      if (res.ok) synced.add('m_' + m.id); else errors++;
+    } catch(err) { errors++; }
+  }
+  for (const e of pe) {
+    try {
+      const res = await fetch(LOG_DOPOST_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'entretien', ...e })
+      });
+      if (res.ok) synced.add('e_' + e.id); else errors++;
+    } catch(err) { errors++; }
+  }
+  saveSyncedSet(synced);
+  updateLogSyncStatus();
+  const total = pm.length + pe.length;
+  if (total > 0) {
+    const label = errors === 0
+      ? `${total} enregistrement(s) synchronisé(s).`
+      : `${errors} enregistrement(s) non synchronisé(s).`;
+    if (typeof toast === 'function') toast(label, errors === 0 ? 'success' : 'error');
+  }
+}
+function updateLogSyncStatus() {
+  const n = getSyncPendingCount();
+  const online = navigator.onLine;
+  ['syncDot-j', 'syncDot-e'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.className = 'sync-dot' + (n > 0 ? ' pending' : '');
+  });
+  const label = n > 0
+    ? n + ' en attente'
+    : (online ? 'Synchronisé' : 'Hors ligne — données sauvegardées localement');
+  ['syncLabel-j', 'syncLabel-e'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = label;
+  });
+}
+window.addEventListener('online',  () => { updateLogSyncStatus(); syncLog(); });
+window.addEventListener('offline', updateLogSyncStatus);
