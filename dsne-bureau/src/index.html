@@ -999,137 +999,68 @@ body {
     .f1-readonly { background: #f3f4f6; cursor: not-allowed; }
   </style>
 
-  <div id="f1-form">
-    <div class="f1-section">
-      <div class="f1-section-title">Informations de base</div>
-      
-      <div class="f1-grid">
-        <div class="f1-field">
-          <label class="f1-label">Date réception *</label>
-          <input type="date" id="f1-date-reception" class="f1-input">
-        </div>
-        <div class="f1-field">
-          <label class="f1-label">Type d'activité *</label>
-          <select id="f1-type" class="f1-select">
-            <option value="">Sélectionner...</option>
-            <option>Formation</option>
-            <option>Supervision</option>
-            <option>Atelier</option>
-            <option>Réunion</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="f1-field">
-        <label class="f1-label">Titre de l'activité *</label>
-        <input type="text" id="f1-titre" class="f1-input" placeholder="Formation hygiène publique">
-      </div>
-
-      <div class="f1-grid">
-        <div class="f1-field">
-          <label class="f1-label">Montant (HTG) *</label>
-          <input type="number" id="f1-montant" class="f1-input" placeholder="12500">
-        </div>
-        <div class="f1-field">
-          <label class="f1-label">Service organisateur *</label>
-          <input type="text" id="f1-service" class="f1-input" placeholder="Communication">
-        </div>
-      </div>
-    </div>
-
-    <div class="f1-section">
-      <div class="f1-section-title">Responsable</div>
-      
-      <div class="f1-grid">
-        <div class="f1-field">
-          <label class="f1-label">Nom *</label>
-          <input type="text" id="f1-responsable" class="f1-input" placeholder="Dr. Eddy Pierre">
-        </div>
-        <div class="f1-field">
-          <label class="f1-label">Email *</label>
-          <input type="email" id="f1-email" class="f1-input" placeholder="eddy@dsne.ht">
-        </div>
-      </div>
-    </div>
-
-    <div class="f1-section">
-      <div class="f1-section-title">Exécution</div>
-      
-      <div class="f1-grid">
-        <div class="f1-field">
-          <label class="f1-label">Date prévue *</label>
-          <input type="date" id="f1-date-prevue" class="f1-input">
-        </div>
-        <div class="f1-field">
-          <label class="f1-label">Lieu *</label>
-          <input type="text" id="f1-lieu" class="f1-input" placeholder="Fort-Liberté">
-        </div>
-      </div>
-
-      <div class="f1-grid">
-        <div class="f1-field">
-          <label class="f1-label">Participants *</label>
-          <input type="number" id="f1-participants" class="f1-input" placeholder="25">
-        </div>
-        <div class="f1-field">
-          <label class="f1-label">Durée (jours) *</label>
-          <input type="number" id="f1-duree" class="f1-input" placeholder="1" step="0.5">
-        </div>
-      </div>
-    </div>
-
-    <div class="f1-section">
-      <div class="f1-section-title">Calendriers à notifier</div>
-      <div class="f1-checkbox-group">
-        <div class="f1-checkbox-item"><input type="checkbox" value="soss"><label>SOSS</label></div>
-        <div class="f1-checkbox-item"><input type="checkbox" value="tb"><label>TB</label></div>
-        <div class="f1-checkbox-item"><input type="checkbox" value="epidem"><label>Épidém</label></div>
-        <div class="f1-checkbox-item"><input type="checkbox" value="labo"><label>Labo</label></div>
-        <div class="f1-checkbox-item"><input type="checkbox" value="malaria"><label>Malaria</label></div>
-        <div class="f1-checkbox-item"><input type="checkbox" value="nutrition"><label>Nutrition</label></div>
-        <div class="f1-checkbox-item"><input type="checkbox" value="pev"><label>PEV</label></div>
-        <div class="f1-checkbox-item"><input type="checkbox" value="pharmacie"><label>Pharmacie</label></div>
-        <div class="f1-checkbox-item"><input type="checkbox" value="communautaire"><label>S. Communautaire</label></div>
-        <div class="f1-checkbox-item"><input type="checkbox" value="maternelle"><label>S. Maternelle</label></div>
-        <div class="f1-checkbox-item"><input type="checkbox" value="vih"><label>VIH</label></div>
-      </div>
-    </div>
-
-    <div class="f1-section">
-      <div class="f1-section-title">TDR et vérification</div>
-      
-      <div class="f1-field">
-        <label class="f1-label">Upload TDR (PDF ou Word) *</label>
-        <input type="file" id="f1-tdr" class="f1-input" accept=".pdf,.doc,.docx">
-      </div>
-
-      <div class="f1-field">
-        <label class="f1-label">Le TDR contient *</label>
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <div class="f1-checkbox-item"><input type="checkbox" value="budget"><label>Budget détaillé</label></div>
-          <div class="f1-checkbox-item"><input type="checkbox" value="participants"><label>Liste participants</label></div>
-          <div class="f1-checkbox-item"><input type="checkbox" value="programme"><label>Programme/agenda</label></div>
-          <div class="f1-checkbox-item"><input type="checkbox" value="justification"><label>Justification</label></div>
-        </div>
-      </div>
-
-      <div class="f1-field">
-        <label class="f1-label">Si manquants: Préciser</label>
-        <textarea id="f1-manquants" class="f1-textarea" placeholder="(Laisser vide si tous les éléments sont présents)"></textarea>
-      </div>
-    </div>
-
-    <div class="f1-section" style="border-bottom: none;">
-      <div class="f1-field">
-        <label class="f1-label">Enregistré par</label>
-        <input type="text" class="f1-input f1-readonly" value="Daisha Dorsainvil" readonly>
-      </div>
-    </div>
-
-    <button class="f1-submit" onclick="alert('✓ F1 enregistrée
-
-En attente F2 - Administration')">Soumettre à F2 →</button>
+  <div id="f1-form" style="padding:20px;">
+  <h3 style="margin:0 0 20px 0; font-size:14px; color:#005c4e;">F1: Soumission TDR</h3>
+  
+  <div style="margin-bottom:16px;">
+    <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Titre de l'activité *</label>
+    <input type="text" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="Formation hygiène publique">
   </div>
+
+  <div style="margin-bottom:16px;">
+    <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Montant (HTG) *</label>
+    <input type="number" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="12500">
+  </div>
+
+  <div style="margin-bottom:16px;">
+    <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Responsable *</label>
+    <input type="text" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="Dr. Eddy Pierre">
+  </div>
+
+  <div style="margin-bottom:16px;">
+    <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Email *</label>
+    <input type="email" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="eddy@dsne.ht">
+  </div>
+
+  <div style="margin-bottom:16px;">
+    <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Date prévue *</label>
+    <input type="date" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;">
+  </div>
+
+  <div style="margin-bottom:16px;">
+    <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Lieu *</label>
+    <input type="text" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="Fort-Liberté">
+  </div>
+
+  <div style="margin-bottom:16px;">
+    <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Participants *</label>
+    <input type="number" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="25">
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <label style="display:block; margin-bottom:8px; font-size:12px; font-weight:500;">Calendriers à notifier</label>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px;">
+      <div><input type="checkbox"> <label>SOSS</label></div>
+      <div><input type="checkbox"> <label>TB</label></div>
+      <div><input type="checkbox"> <label>Épidém</label></div>
+      <div><input type="checkbox"> <label>Labo</label></div>
+      <div><input type="checkbox"> <label>Malaria</label></div>
+      <div><input type="checkbox"> <label>Nutrition</label></div>
+      <div><input type="checkbox"> <label>PEV</label></div>
+      <div><input type="checkbox"> <label>Pharmacie</label></div>
+      <div><input type="checkbox"> <label>S. Communautaire</label></div>
+      <div><input type="checkbox"> <label>S. Maternelle</label></div>
+      <div><input type="checkbox"> <label>VIH</label></div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:16px;">
+    <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Upload TDR *</label>
+    <input type="file" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" accept=".pdf,.doc,.docx">
+  </div>
+
+  <button style="background:#005c4e; color:white; padding:10px; border:none; border-radius:4px; cursor:pointer; font-weight:600; font-size:12px; width:100%;" onclick="alert('✓ F1 soumise')">Soumettre à F2 →</button>
+</div>
 </div>
 </div>
 </div>
