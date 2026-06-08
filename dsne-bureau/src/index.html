@@ -1126,6 +1126,54 @@ body {
         </div>
       </div>
     </div>
+    <div id="rp-saisie" style="display:none">
+      <div class="section-title">Saisie FIN</div>
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end">
+            <div>
+              <label style="font-size:11px;font-weight:600;color:var(--g600);display:block;margin-bottom:5px">Institution</label>
+              <select id="rp-s-inst" style="width:100%;font-size:12px;padding:6px 8px;border:1px solid var(--g100);background:#fff">
+                <option value="">-- Choisir --</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:11px;font-weight:600;color:var(--g600);display:block;margin-bottom:5px">Mois</label>
+              <select id="rp-s-month" style="width:100%;font-size:12px;padding:6px 8px;border:1px solid var(--g100);background:#fff">
+                <option value="Dec">Décembre</option>
+                <option value="Jan">Janvier</option>
+                <option value="Fev">Février</option>
+                <option value="Mar">Mars</option>
+                <option value="Avr">Avril</option>
+                <option value="Mai">Mai</option>
+                <option value="Juin">Juin</option>
+                <option value="Juil">Juillet</option>
+                <option value="Aout">Août</option>
+                <option value="Sep">Septembre</option>
+                <option value="Oct">Octobre</option>
+                <option value="Nov">Novembre</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:11px;font-weight:600;color:var(--g600);display:block;margin-bottom:5px">Statut FIN</label>
+              <select id="rp-s-val" style="width:100%;font-size:12px;padding:6px 8px;border:1px solid var(--g100);background:#fff">
+                <option value="Reçu">Reçu</option>
+                <option value="En retard">En retard</option>
+                <option value="Manquant">Manquant</option>
+                <option value="N/A">N/A</option>
+              </select>
+            </div>
+            <div>
+              <button onclick="submitRpSaisie()" id="rp-s-btn"
+                style="background:var(--c600,#005C4E);color:#fff;border:none;padding:7px 18px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">
+                Enregistrer
+              </button>
+            </div>
+          </div>
+          <div id="rp-s-msg" style="margin-top:10px;font-size:12px;display:none"></div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1851,6 +1899,56 @@ function initRapportage() {
   });
   var html = heatHtml + '</tbody>';
   document.getElementById('rp-heatmap').innerHTML = html;
+
+  // Show saisie form for comp role
+  var saisie = document.getElementById('rp-saisie');
+  if (saisie) {
+    if (_viewRole === 'comp') {
+      saisie.style.display = 'block';
+      var instSel = document.getElementById('rp-s-inst');
+      if (instSel && instSel.options.length <= 1) {
+        data.forEach(function(inst) {
+          var opt = document.createElement('option');
+          opt.value = inst.inst;
+          opt.textContent = inst.inst;
+          instSel.appendChild(opt);
+        });
+      }
+    } else {
+      saisie.style.display = 'none';
+    }
+  }
+}
+
+async function submitRpSaisie() {
+  var inst  = document.getElementById('rp-s-inst').value;
+  var month = document.getElementById('rp-s-month').value;
+  var val   = document.getElementById('rp-s-val').value;
+  var msg   = document.getElementById('rp-s-msg');
+  var btn   = document.getElementById('rp-s-btn');
+  if (!inst) { msg.textContent = 'Veuillez choisir une institution.'; msg.style.color='#c0392b'; msg.style.display='block'; return; }
+  btn.disabled = true; btn.textContent = 'Envoi...';
+  msg.style.display = 'none';
+  try {
+    var RP_URL = 'https://script.google.com/macros/s/AKfycbxSyzDmIpcy7fkZvcnXmuUMH1M_2411voRmSXQqIyw-3_qp88X2E7xgCNH7hHFNZKEJ/exec';
+    var url = RP_URL + '?action=update&inst=' + encodeURIComponent(inst) + '&month=' + encodeURIComponent(month) + '&val=' + encodeURIComponent(val);
+    var r = await fetch(url);
+    var d = await r.json();
+    if (d.ok) {
+      msg.textContent = '✓ Enregistré : ' + inst + ' · ' + month + ' · ' + val;
+      msg.style.color = '#27ae60';
+      rpInited = false;
+      setTimeout(initRapportage, 800);
+    } else {
+      msg.textContent = 'Erreur : ' + (d.error || 'Inconnue');
+      msg.style.color = '#c0392b';
+    }
+  } catch(e) {
+    msg.textContent = 'Erreur réseau. Vérifiez la connexion.';
+    msg.style.color = '#c0392b';
+  }
+  msg.style.display = 'block';
+  btn.disabled = false; btn.textContent = 'Enregistrer';
 }
 
 /* ══════════════════════════════════════════
