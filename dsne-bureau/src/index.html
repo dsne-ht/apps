@@ -132,6 +132,36 @@ body {
   font-weight: 600;
 }
 
+.test-switcher {
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255,255,255,.07);
+  display: none;
+}
+.test-switcher-label {
+  font-size: 9px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.25);
+  margin-bottom: 7px;
+}
+.test-btn {
+  display: block;
+  width: 100%;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  color: rgba(255,255,255,.5);
+  font-size: 11px;
+  padding: 5px 10px;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 0;
+  margin-bottom: 3px;
+}
+.test-btn.active {
+  background: rgba(255,255,255,.16);
+  color: #fff;
+  border-color: rgba(255,255,255,.22);
+}
 .sidebar-footer {
   margin-top: auto;
   padding: 16px 20px;
@@ -709,6 +739,12 @@ body {
     Paramètres
   </div>
 
+  <div class="test-switcher" id="test-switcher">
+    <div class="test-switcher-label">Vue test</div>
+    <button id="test-btn-admin" class="test-btn active" onclick="testSwitch('admin')">Direction</button>
+    <button id="test-btn-adm"   class="test-btn"        onclick="testSwitch('adm')">Administration</button>
+    <button id="test-btn-comp"  class="test-btn"        onclick="testSwitch('comp')">Comptabilité</button>
+  </div>
   <div class="sidebar-footer">
     <strong id="bureau-user-name">Daïsha Dorsainvil</strong>
     <span id="bureau-user-role" style="display:block;margin-top:1px;">Secrétaire de Direction</span>
@@ -1445,12 +1481,14 @@ var _USER = JSON.parse(sessionStorage.getItem('user') || '{}');
 var _ROLE = _USER.role || 'admin';
 var _NAV_HIDDEN = {
   adm:  ['cm','hyg'],
-  comp: ['cm','hyg','logistique','visites']
+  comp: ['cm','hyg','logistique','visites'],
+  test: []
 };
 var _ROLE_LABELS = {
   admin: 'Secrétaire de Direction',
   adm:   'Administration',
-  comp:  'Comptabilité'
+  comp:  'Comptabilité',
+  test:  'Vue Test'
 };
 function applyPermissions() {
   var hidden = _NAV_HIDDEN[_ROLE] || [];
@@ -1463,8 +1501,29 @@ function applyPermissions() {
   var roleEl = document.getElementById('bureau-user-role');
   if (nameEl && _USER.nom_complet) nameEl.textContent = _USER.nom_complet;
   if (roleEl) roleEl.textContent = _ROLE_LABELS[_ROLE] || 'Bureau';
+  if (_ROLE === 'test') {
+    var sw = document.getElementById('test-switcher');
+    if (sw) sw.style.display = 'block';
+    testSwitch('admin');
+  }
 }
 document.addEventListener('DOMContentLoaded', applyPermissions);
+
+function testSwitch(viewRole) {
+  document.querySelectorAll('.nav-item').forEach(function(el) { el.style.display = ''; });
+  var hidden = _NAV_HIDDEN[viewRole] || [];
+  document.querySelectorAll('.nav-item').forEach(function(el) {
+    var oc = el.getAttribute('onclick') || '';
+    var m = oc.match(/nav\('([^']+)'/);
+    if (m && hidden.indexOf(m[1]) !== -1) el.style.display = 'none';
+  });
+  document.querySelectorAll('.test-btn').forEach(function(b) { b.classList.remove('active'); });
+  var btn = document.getElementById('test-btn-' + viewRole);
+  if (btn) btn.classList.add('active');
+  rpInited = false;
+  var roleEl = document.getElementById('bureau-user-role');
+  if (roleEl) roleEl.textContent = 'Vue : ' + (_ROLE_LABELS[viewRole] || viewRole);
+}
 
 /* ── NAV ── */
 function nav(id, el) {
