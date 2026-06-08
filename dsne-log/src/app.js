@@ -8,7 +8,7 @@ function parseSQLiteDate(raw) {
 }
 
 const STORAGE_KEY = 'dsne_logistique';
-const LOG_DOPOST_URL = 'REPLACE_WITH_DEPLOYED_URL'; // ← Paste your Apps Script exec URL here
+const LOG_DOPOST_URL = 'https://script.google.com/macros/s/AKfycbxdabsC7uchjEJp8XgMVfdXiSkOHmVNzWVECcI5fyFiWTFaG56tkRUr_AfoM2xXHtyL/exec';
 
 function loadData() {
   const saved = localStorage.getItem(STORAGE_KEY);
