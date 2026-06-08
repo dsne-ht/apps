@@ -101,6 +101,9 @@ app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(
 ipcMain.handle('check-code', (_, { code }) => {
   const user = db.prepare("SELECT * FROM users WHERE code = ?").get(code);
   if (!user) return { ok: false, message: 'Code invalide.' };
+  if (user.role === 'test') {
+    return { ok: true, autoLogin: true, user: { code: user.code, nom_complet: user.nom_complet, role: user.role } };
+  }
   return { ok: true, activated: user.activated === 1, nom_complet: user.nom_complet };
 });
 
