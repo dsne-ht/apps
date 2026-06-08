@@ -906,581 +906,386 @@ body {
       <div class="meta">Gestion des activités départementales · DSNE</div>
     </div>
   </div>
-  <div class="page-body" style="display:flex;flex-direction:column;gap:14px;padding:14px;background:#f9f9f9;height:100%;">
+  <div class="page-body" style="display:flex;flex-direction:column;gap:14px;padding:14px;background:#f9f9f9;overflow-y:auto;">
     
-    <!-- Dashboard View -->
-    <div id="dashboardView" style="display:flex;flex-direction:column;gap:14px;height:100%;">
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+    <!-- DASHBOARD VIEW -->
+    <div id="dashboardView">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;">
         <div style="background:white;padding:12px;border-radius:4px;border-left:3px solid #005c4e;">
           <div style="font-size:11px;color:#666;margin-bottom:4px;">Total Activités</div>
-          <div style="font-size:20px;font-weight:600;color:#005c4e;" id="totalCount">12</div>
+          <div style="font-size:20px;font-weight:600;color:#005c4e;">12</div>
         </div>
         <div style="background:white;padding:12px;border-radius:4px;border-left:3px solid #40b89c;">
           <div style="font-size:11px;color:#666;margin-bottom:4px;">Complétées</div>
-          <div style="font-size:20px;font-weight:600;color:#40b89c;" id="completedCount">8</div>
+          <div style="font-size:20px;font-weight:600;color:#40b89c;">8</div>
         </div>
         <div style="background:white;padding:12px;border-radius:4px;border-left:3px solid #fbbf24;">
           <div style="font-size:11px;color:#666;margin-bottom:4px;">En cours</div>
-          <div style="font-size:20px;font-weight:600;color:#fbbf24;" id="inProgressCount">3</div>
+          <div style="font-size:20px;font-weight:600;color:#fbbf24;">3</div>
         </div>
         <div style="background:white;padding:12px;border-radius:4px;border-left:3px solid #dc2626;">
           <div style="font-size:11px;color:#666;margin-bottom:4px;">Bloquées</div>
-          <div style="font-size:20px;font-weight:600;color:#dc2626;" id="blockedCount">1</div>
+          <div style="font-size:20px;font-weight:600;color:#dc2626;">1</div>
         </div>
       </div>
 
-      <div style="background:white;border-radius:4px;overflow:hidden;border:0.5px solid #ddd;flex:1;display:flex;flex-direction:column;">
+      <div style="display:flex;gap:10px;margin-bottom:14px;">
+        <button id="newActivityBtn" style="background:#005c4e;color:white;padding:10px 14px;border:none;border-radius:4px;cursor:pointer;font-weight:500;display:none;" onclick="startNewActivity()">+ Nouvelle Activité</button>
+        <div id="roleWarning" style="background:#fff3cd;color:#856404;padding:10px 14px;border-radius:4px;font-size:12px;display:none;">Seule la Secrétaire (174838) peut créer des activités</div>
+      </div>
+
+      <div style="background:white;border-radius:4px;overflow:hidden;border:0.5px solid #ddd;">
         <div style="background:#005c4e;color:white;padding:12px;font-weight:600;font-size:12px;">Activités</div>
-        <div style="flex:1;overflow-y:auto;padding:14px;font-size:12px;">
-          <div id="activitiesList">
-            <div style="text-align:center;color:#999;padding:20px;">Aucune activité</div>
+        <div style="padding:14px;font-size:12px;">
+          <div id="activitiesList" style="display:flex;flex-direction:column;gap:8px;">
+            <div onclick="loadActivity('ACT-2026-001')" style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 0.5fr;gap:12px;padding:10px;background:#f9f9f9;border-radius:3px;cursor:pointer;border:0.5px solid #ddd;align-items:center;">
+              <div><strong style="color:#005c4e;">Formation hygiène publique</strong></div>
+              <div>Dr. Eddy P.</div>
+              <div>12,500 HTG</div>
+              <div><span style="background:#fff3cd;color:#856404;padding:3px 8px;border-radius:3px;font-size:11px;">F3</span></div>
+              <div style="text-align:center;">→</div>
+            </div>
           </div>
         </div>
-      </div>
-
-      <div id="newActivityBtnContainer" style="display:none;">
-        <button style="background:#005c4e;color:white;padding:10px 14px;border:none;border-radius:4px;cursor:pointer;margin-top:12px;font-weight:500;width:100%;" onclick="startNewActivity()">+ Créer une nouvelle activité</button>
       </div>
     </div>
 
-    <!-- Activity Creation/Edit View -->
-    <div id="activityFormView" style="display:none;flex-direction:column;gap:12px;height:100%;overflow:hidden;">
-      <div style="background:white;padding:12px;border-radius:4px;border:0.5px solid #ddd;">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div>
-            <h3 style="color:#005c4e;margin:0;" id="activityTitle">Nouvelle activité</h3>
-            <div style="font-size:11px;color:#666;margin-top:4px;" id="activityMeta">F1: Soumission TDR</div>
-          </div>
-          <div style="display:flex;gap:8px;">
-            <button style="background:none;border:none;cursor:pointer;font-size:12px;color:#999;padding:4px;" onclick="backToDashboard()">← Retour</button>
-          </div>
+    <!-- FORM VIEW: F1-F7 Workflow -->
+    <div id="formView" style="display:none;flex-direction:column;gap:12px;height:100%;">
+      <div style="background:white;padding:12px;border-radius:4px;border:0.5px solid #ddd;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <h3 id="formTitle" style="color:#005c4e;margin:0;">F1: Soumission TDR</h3>
+          <div id="formSubtitle" style="font-size:11px;color:#666;margin-top:4px;">Étape 1 de 7</div>
         </div>
+        <button style="background:none;border:none;cursor:pointer;font-size:16px;font-weight:600;" onclick="backToDashboard()">✕</button>
       </div>
 
-      <!-- Progress indicator -->
-      <div style="background:white;padding:10px;border-radius:4px;border:0.5px solid #ddd;">
-        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;font-size:10px;">
-          <div id="fProgress-1" class="f-progress active" style="text-align:center;padding:8px;background:#005c4e;color:white;border-radius:3px;cursor:pointer;" onclick="switchToF(1)">F1</div>
-          <div id="fProgress-2" class="f-progress" style="text-align:center;padding:8px;background:#f0f0f0;border-radius:3px;cursor:pointer;" onclick="switchToF(2)">F2</div>
-          <div id="fProgress-3" class="f-progress" style="text-align:center;padding:8px;background:#f0f0f0;border-radius:3px;cursor:pointer;" onclick="switchToF(3)">F3</div>
-          <div id="fProgress-4" class="f-progress" style="text-align:center;padding:8px;background:#f0f0f0;border-radius:3px;cursor:pointer;" onclick="switchToF(4)">F4</div>
-          <div id="fProgress-5" class="f-progress" style="text-align:center;padding:8px;background:#f0f0f0;border-radius:3px;cursor:pointer;" onclick="switchToF(5)">F5</div>
-          <div id="fProgress-6" class="f-progress" style="text-align:center;padding:8px;background:#f0f0f0;border-radius:3px;cursor:pointer;" onclick="switchToF(6)">F6</div>
-          <div id="fProgress-7" class="f-progress" style="text-align:center;padding:8px;background:#f0f0f0;border-radius:3px;cursor:pointer;" onclick="switchToF(7)">F7</div>
-        </div>
+      <!-- Form Content -->
+      <div id="formContent" style="background:white;padding:14px;border-radius:4px;border:0.5px solid #ddd;flex:1;overflow-y:auto;">
+        <!-- Will be populated by JavaScript -->
       </div>
 
-      <!-- Forms Container -->
-      <div style="background:white;border-radius:4px;border:0.5px solid #ddd;flex:1;overflow-y:auto;padding:14px;">
-        
-        <!-- F1: Soumission TDR -->
-        <div id="f1-form" class="f-form" style="display:block;">
-          <div style="font-size:12px;font-weight:600;color:#005c4e;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #005c4e;">F1: Soumission TDR</div>
-          
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Date de réception TDR <span style="color:#dc2626;">*</span></label>
-            <input type="date" id="f1-date-reception" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Titre de l'activité <span style="color:#dc2626;">*</span></label>
-            <input type="text" id="f1-titre" placeholder="Ex: Formation hygiène publique" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Montant estimé (HTG) <span style="color:#dc2626;">*</span></label>
-            <input type="number" id="f1-montant" placeholder="12500" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Type d'activité <span style="color:#dc2626;">*</span></label>
-            <select id="f1-type" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-              <option value="">Sélectionner...</option>
-              <option value="formation">Formation</option>
-              <option value="supervision">Supervision</option>
-              <option value="atelier">Atelier</option>
-              <option value="reunion">Réunion</option>
-              <option value="autre">Autre</option>
-            </select>
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Service organisateur <span style="color:#dc2626;">*</span></label>
-            <input type="text" id="f1-service" placeholder="Ex: Communication & Planification" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Responsable de l'activité <span style="color:#dc2626;">*</span></label>
-            <input type="text" id="f1-responsable" placeholder="Nom complet" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Email du responsable <span style="color:#dc2626;">*</span></label>
-            <input type="email" id="f1-email" placeholder="eddy.pierre@dsne.ht" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Date prévue <span style="color:#dc2626;">*</span></label>
-            <input type="date" id="f1-date-prevue" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Lieu <span style="color:#dc2626;">*</span></label>
-            <input type="text" id="f1-lieu" placeholder="Fort-Liberté ou autre lieu" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Nombre de participants <span style="color:#dc2626;">*</span></label>
-            <input type="number" id="f1-nb-participants" placeholder="25" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Durée (en jours) <span style="color:#dc2626;">*</span></label>
-            <input type="number" id="f1-duree" placeholder="1" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Upload TDR <span style="color:#dc2626;">*</span></label>
-            <input type="file" id="f1-tdr-file" accept=".pdf,.docx" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-          </div>
-
-          <div style="display:flex;gap:10px;margin-top:16px;padding-top:12px;border-top:0.5px solid #ddd;">
-            <button style="flex:1;background:#005c4e;color:white;padding:8px;border:none;border-radius:4px;cursor:pointer;font-weight:500;" onclick="validateAndNext(1)">Suivant → F2</button>
-          </div>
-        </div>
-
-        <!-- F2: Administration -->
-        <div id="f2-form" class="f-form" style="display:none;">
-          <div style="font-size:12px;font-weight:600;color:#005c4e;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #005c4e;">F2: Validation Administration</div>
-          
-          <div style="background:#e6f1fb;padding:10px;border-radius:4px;margin-bottom:12px;font-size:11px;color:#042c53;">
-            Vérification des soldes et disponibilité des fonds
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Solde C1 (Fonctionnement)</label>
-            <input type="number" value="45000" readonly style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;background:#f5f5f5;">
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Fonds disponibles? <span style="color:#dc2626;">*</span></label>
-            <div style="display:flex;gap:12px;">
-              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
-                <input type="radio" name="f2-fonds" value="oui" checked>
-                <span style="font-size:12px;">Oui</span>
-              </label>
-              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
-                <input type="radio" name="f2-fonds" value="non">
-                <span style="font-size:12px;">Non</span>
-              </label>
-            </div>
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Source de financement <span style="color:#dc2626;">*</span></label>
-            <select id="f2-financement" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-              <option value="">Sélectionner...</option>
-              <option value="avant">AVANT (fonds partenaire pré-versés)</option>
-              <option value="apres">APRES (fonds à verser après activité)</option>
-              <option value="propres">Fonds propres DSNE</option>
-            </select>
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Notes Admin</label>
-            <textarea id="f2-notes" placeholder="Observations..." style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;min-height:60px;font-family:inherit;font-size:11px;"></textarea>
-          </div>
-
-          <div style="display:flex;gap:10px;margin-top:16px;padding-top:12px;border-top:0.5px solid #ddd;">
-            <button style="flex:1;background:white;border:0.5px solid #ddd;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;" onclick="switchToF(1)">← Retour F1</button>
-            <button style="flex:1;background:#005c4e;color:white;padding:8px;border:none;border-radius:4px;cursor:pointer;font-weight:500;" onclick="validateAndNext(2)">Suivant → F3</button>
-          </div>
-        </div>
-
-        <!-- F3: Logistique -->
-        <div id="f3-form" class="f-form" style="display:none;">
-          <div style="font-size:12px;font-weight:600;color:#005c4e;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #005c4e;">F3: Logistique</div>
-          
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Matériels requis? <span style="color:#dc2626;">*</span></label>
-            <div style="display:flex;gap:12px;">
-              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
-                <input type="radio" name="f3-materiels" value="non" checked onchange="toggleF3Materials(false)">
-                <span style="font-size:12px;">Non</span>
-              </label>
-              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
-                <input type="radio" name="f3-materiels" value="oui" onchange="toggleF3Materials(true)">
-                <span style="font-size:12px;">Oui</span>
-              </label>
-            </div>
-          </div>
-
-          <div id="f3-materials-section" style="display:none;background:#f0f9f7;padding:10px;border-radius:4px;margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#005c4e;margin-bottom:6px;">Items à prendre</label>
-            <textarea id="f3-materials-list" placeholder="HYG-001: 50 paires gants&#10;HYG-002: 100 masques..." style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;min-height:60px;font-family:inherit;font-size:11px;"></textarea>
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Véhicule requis?</label>
-            <div style="display:flex;gap:12px;">
-              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
-                <input type="radio" name="f3-vehicule" value="non" checked onchange="toggleF3Vehicle(false)">
-                <span style="font-size:12px;">Non</span>
-              </label>
-              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
-                <input type="radio" name="f3-vehicule" value="oui" onchange="toggleF3Vehicle(true)">
-                <span style="font-size:12px;">Oui</span>
-              </label>
-            </div>
-          </div>
-
-          <div id="f3-vehicle-section" style="display:none;">
-            <input type="text" id="f3-vehicle-name" placeholder="Véhicule assigné" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;margin-bottom:12px;">
-            <input type="text" id="f3-driver" placeholder="Chauffeur" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;margin-bottom:12px;">
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Notes Logistique</label>
-            <textarea id="f3-notes" placeholder="Observations..." style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;min-height:60px;font-family:inherit;font-size:11px;"></textarea>
-          </div>
-
-          <div style="display:flex;gap:10px;margin-top:16px;padding-top:12px;border-top:0.5px solid #ddd;">
-            <button style="flex:1;background:white;border:0.5px solid #ddd;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;" onclick="switchToF(2)">← Retour F2</button>
-            <button style="flex:1;background:#005c4e;color:white;padding:8px;border:none;border-radius:4px;cursor:pointer;font-weight:500;" onclick="validateAndNext(3)">Suivant → F4</button>
-          </div>
-        </div>
-
-        <!-- F4: Direction Signature -->
-        <div id="f4-form" class="f-form" style="display:none;">
-          <div style="font-size:12px;font-weight:600;color:#005c4e;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #005c4e;">F4: Direction Signature</div>
-          
-          <div style="background:#e6f1fb;padding:10px;border-radius:4px;margin-bottom:12px;font-size:11px;color:#042c53;">
-            Signature du Directeur Départemental. Génération automatique de la feuille de route.
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Tous les critères sont satisfaits? <span style="color:#dc2626;">*</span></label>
-            <div style="display:flex;gap:12px;">
-              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
-                <input type="radio" name="f4-criteres" value="oui" checked>
-                <span style="font-size:12px;">Oui</span>
-              </label>
-              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
-                <input type="radio" name="f4-criteres" value="non">
-                <span style="font-size:12px;">Non</span>
-              </label>
-            </div>
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Date de signature <span style="color:#dc2626;">*</span></label>
-            <input type="date" id="f4-date-sig" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Notes Direction</label>
-            <textarea id="f4-notes" placeholder="Observations..." style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;min-height:60px;font-family:inherit;font-size:11px;"></textarea>
-          </div>
-
-          <div style="background:#f0f9f7;padding:10px;border-radius:4px;margin-bottom:12px;font-size:11px;color:#005c4e;">
-            ✓ Feuille de route sera générée automatiquement et envoyée au Secrétariat
-          </div>
-
-          <div style="display:flex;gap:10px;margin-top:16px;padding-top:12px;border-top:0.5px solid #ddd;">
-            <button style="flex:1;background:white;border:0.5px solid #ddd;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;" onclick="switchToF(3)">← Retour F3</button>
-            <button style="flex:1;background:#005c4e;color:white;padding:8px;border:none;border-radius:4px;cursor:pointer;font-weight:500;" onclick="validateAndNext(4)">Signer et soumettre → F5</button>
-          </div>
-        </div>
-
-        <!-- F5: Rapport -->
-        <div id="f5-form" class="f-form" style="display:none;">
-          <div style="font-size:12px;font-weight:600;color:#005c4e;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #005c4e;">F5: Rapport d'activité (après exécution)</div>
-          
-          <div style="background:#fef3c7;padding:10px;border-radius:4px;margin-bottom:12px;font-size:11px;color:#856404;">
-            ⏳ Cette étape se complète après que l'activité soit exécutée
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Date de début <span style="color:#dc2626;">*</span></label>
-            <input type="date" id="f5-date-debut" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Date de fin <span style="color:#dc2626;">*</span></label>
-            <input type="date" id="f5-date-fin" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Upload rapport <span style="color:#dc2626;">*</span></label>
-            <input type="file" id="f5-rapport" accept=".pdf,.docx" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Upload feuille de présence <span style="color:#dc2626;">*</span></label>
-            <input type="file" id="f5-presence" accept=".pdf,.jpg,.png" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Notes</label>
-            <textarea id="f5-notes" placeholder="Observations..." style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;min-height:60px;font-family:inherit;font-size:11px;"></textarea>
-          </div>
-
-          <div style="display:flex;gap:10px;margin-top:16px;padding-top:12px;border-top:0.5px solid #ddd;">
-            <button style="flex:1;background:white;border:0.5px solid #ddd;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;" onclick="switchToF(4)">← Retour F4</button>
-            <button style="flex:1;background:#005c4e;color:white;padding:8px;border:none;border-radius:4px;cursor:pointer;font-weight:500;" onclick="validateAndNext(5)">Soumettre rapport → F6/F7</button>
-          </div>
-        </div>
-
-        <!-- F6: Feu Vert (Conditionnel) -->
-        <div id="f6-form" class="f-form" style="display:none;">
-          <div style="font-size:12px;font-weight:600;color:#005c4e;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #005c4e;">F6: Feu Vert Administration (si financement APRES)</div>
-          
-          <div style="background:#e6f1fb;padding:10px;border-radius:4px;margin-bottom:12px;font-size:11px;color:#042c53;">
-            Cette étape s'affiche seulement si le financement est APRES (F2)
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Justificatifs conformes? <span style="color:#dc2626;">*</span></label>
-            <div style="display:flex;gap:12px;">
-              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
-                <input type="radio" name="f6-conformes" value="oui" checked>
-                <span style="font-size:12px;">Oui</span>
-              </label>
-              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
-                <input type="radio" name="f6-conformes" value="non">
-                <span style="font-size:12px;">Non</span>
-              </label>
-            </div>
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Autoriser le décaissement? <span style="color:#dc2626;">*</span></label>
-            <div style="display:flex;gap:12px;">
-              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
-                <input type="radio" name="f6-autorise" value="oui" checked>
-                <span style="font-size:12px;">Oui</span>
-              </label>
-              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
-                <input type="radio" name="f6-autorise" value="non">
-                <span style="font-size:12px;">Non</span>
-              </label>
-            </div>
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Notes Admin</label>
-            <textarea id="f6-notes" placeholder="Observations..." style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;min-height:60px;font-family:inherit;font-size:11px;"></textarea>
-          </div>
-
-          <div style="display:flex;gap:10px;margin-top:16px;padding-top:12px;border-top:0.5px solid #ddd;">
-            <button style="flex:1;background:white;border:0.5px solid #ddd;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;" onclick="switchToF(5)">← Retour F5</button>
-            <button style="flex:1;background:#005c4e;color:white;padding:8px;border:none;border-radius:4px;cursor:pointer;font-weight:500;" onclick="validateAndNext(6)">Approuver → F7</button>
-          </div>
-        </div>
-
-        <!-- F7: Clôture Comptabilité -->
-        <div id="f7-form" class="f-form" style="display:none;">
-          <div style="font-size:12px;font-weight:600;color:#005c4e;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #005c4e;">F7: Clôture Comptabilité</div>
-          
-          <div style="background:#e6f1fb;padding:10px;border-radius:4px;margin-bottom:12px;font-size:11px;color:#042c53;">
-            Enregistrement final des décaissements et clôture de l'activité
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Montant décaissé (HTG) <span style="color:#dc2626;">*</span></label>
-            <input type="number" id="f7-montant" placeholder="12500" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Date de décaissement <span style="color:#dc2626;">*</span></label>
-            <input type="date" id="f7-date-decaisse" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Compte bancaire <span style="color:#dc2626;">*</span></label>
-            <select id="f7-compte" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-              <option value="">Sélectionner...</option>
-              <option value="c1">C1 - Fonctionnement</option>
-              <option value="c2">C2 - Fonds Externes</option>
-              <option value="c3">C3 - Réserve</option>
-              <option value="c4">C4 - Autre</option>
-            </select>
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Numéro transaction/chèque <span style="color:#dc2626;">*</span></label>
-            <input type="text" id="f7-transaction" placeholder="CHQ-2026-0045 ou TRX-12345" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Justificatifs archivés?</label>
-            <div style="display:flex;gap:12px;">
-              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
-                <input type="radio" name="f7-archives" value="oui" checked>
-                <span style="font-size:12px;">Oui</span>
-              </label>
-              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
-                <input type="radio" name="f7-archives" value="non">
-                <span style="font-size:12px;">Non</span>
-              </label>
-            </div>
-          </div>
-
-          <div style="margin-bottom:12px;">
-            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Notes de clôture</label>
-            <textarea id="f7-notes" placeholder="Observations..." style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;min-height:60px;font-family:inherit;font-size:11px;"></textarea>
-          </div>
-
-          <div style="background:#d1e7dd;padding:10px;border-radius:4px;margin-bottom:12px;font-size:11px;color:#0f5132;">
-            ✓ Activité sera marquée comme CLÔTURÉE après soumission
-          </div>
-
-          <div style="display:flex;gap:10px;margin-top:16px;padding-top:12px;border-top:0.5px solid #ddd;">
-            <button style="flex:1;background:white;border:0.5px solid #ddd;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;" onclick="switchToF(6)">← Retour F6</button>
-            <button style="flex:1;background:#005c4e;color:white;padding:8px;border:none;border-radius:4px;cursor:pointer;font-weight:500;" onclick="closeActivity()">Clôturer l'activité ✓</button>
-          </div>
-        </div>
-
+      <!-- Navigation Buttons -->
+      <div style="display:flex;gap:10px;background:white;padding:12px;border-radius:4px;border:0.5px solid #ddd;">
+        <button id="prevBtn" style="flex:1;background:white;border:0.5px solid #ddd;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;display:none;" onclick="prevStep()">← Retour</button>
+        <button id="nextBtn" style="flex:1;background:#005c4e;color:white;border:none;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;" onclick="nextStep()">Suivant →</button>
       </div>
     </div>
 
   </div>
 
-  <script>
-    let currentActivity = null;
-    let activities = JSON.parse(localStorage.getItem('activities') || '[]');
-    let userPin = window.currentUserPin || '174838'; // From Bureau main.js
-
-    // Check if user can create activities
-    function checkCreatePermission() {
-      if (userPin === '174838') {
-        document.getElementById('newActivityBtnContainer').style.display = 'block';
-      }
+  <style>
+    #p-activites input[type="text"], #p-activites input[type="email"], #p-activites input[type="date"], #p-activites input[type="number"], #p-activites select, #p-activites textarea {
+      width: 100%; padding: 7px 9px; font-size: 12px; border: 0.5px solid #ddd; border-radius: 4px; font-family: inherit;
     }
+    #p-activites input:focus, #p-activites select:focus, #p-activites textarea:focus {
+      outline: none; border-color: #005c4e; box-shadow: 0 0 0 2px rgba(0,92,78,0.1);
+    }
+    #p-activites input.error { border-color: #dc2626; }
+    #p-activites textarea { resize: vertical; min-height: 60px; }
+    .form-section { margin-bottom: 16px; }
+    .form-section-title { font-size: 12px; font-weight: 600; color: #005c4e; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid #005c4e; }
+    .field-group { margin-bottom: 12px; }
+    .field-label { display: block; font-size: 12px; font-weight: 500; color: #333; margin-bottom: 4px; }
+    .field-required { color: #dc2626; }
+    .error-msg { color: #dc2626; font-size: 11px; margin-top: 3px; }
+    .radio-group, .checkbox-group { display: flex; flex-direction: column; gap: 6px; }
+    .radio-item, .checkbox-item { display: flex; gap: 6px; align-items: flex-start; }
+    .radio-item input, .checkbox-item input { margin-top: 2px; flex-shrink: 0; }
+    .radio-item label, .checkbox-item label { font-size: 12px; cursor: pointer; }
+  </style>
 
-    // Load activities on init
-    function loadActivitiesList() {
-      const list = document.getElementById('activitiesList');
-      if (activities.length === 0) {
-        list.innerHTML = '<div style="text-align:center;color:#999;padding:20px;">Aucune activité</div>';
+  <script>
+    let currentStage = 'f1';
+    let activityData = {};
+
+    // Check if Dory (174838) on load
+    window.addEventListener('load', function() {
+      checkUserAccess();
+    });
+
+    function checkUserAccess() {
+      const pin = window.currentUserPin || '174838';
+      if (pin === '174838') {
+        document.getElementById('newActivityBtn').style.display = 'block';
       } else {
-        list.innerHTML = activities.map((a, i) => `
-          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 0.5fr;gap:12px;padding:8px 0;border-bottom:0.5px solid #eee;align-items:center;">
-            <div style="cursor:pointer;color:#005c4e;" onclick="loadActivity(${i})"><strong>${a.titre || 'Sans titre'}</strong></div>
-            <div style="font-size:11px;color:#666;">${a.responsable || '-'}</div>
-            <div style="font-size:11px;color:#666;">${a.montant || '-'} HTG</div>
-            <div><span style="background:#d1e7dd;color:#0f5132;padding:3px 8px;border-radius:3px;font-size:11px;">F${a.stage || 1}</span></div>
-            <div><button style="background:none;border:none;cursor:pointer;" onclick="loadActivity(${i})">→</button></div>
-          </div>
-        `).join('');
+        document.getElementById('roleWarning').style.display = 'block';
       }
     }
 
     function startNewActivity() {
-      currentActivity = { stage: 1, titre: '', montant: '', responsable: '', email: '', service: '', type: '', lieu: '', date_prevue: '', nb_participants: '', duree: '' };
+      const id = 'ACT-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 1000)).padStart(3, '0');
+      activityData = { id: id };
+      currentStage = 'f1';
       document.getElementById('dashboardView').style.display = 'none';
-      document.getElementById('activityFormView').style.display = 'flex';
-      document.getElementById('activityTitle').textContent = 'Nouvelle activité';
-      document.getElementById('activityMeta').textContent = 'F1: Soumission TDR';
-      switchToF(1);
+      document.getElementById('formView').style.display = 'flex';
+      renderForm('f1');
     }
 
-    function loadActivity(index) {
-      currentActivity = activities[index];
+    function loadActivity(id) {
       document.getElementById('dashboardView').style.display = 'none';
-      document.getElementById('activityFormView').style.display = 'flex';
-      document.getElementById('activityTitle').textContent = currentActivity.titre || 'Activité (sans titre)';
-      document.getElementById('activityMeta').textContent = `F${currentActivity.stage}: `;
-      switchToF(currentActivity.stage || 1);
-      populateForm();
-    }
-
-    function switchToF(f) {
-      document.querySelectorAll('.f-form').forEach(el => el.style.display = 'none');
-      document.getElementById(`f${f}-form`).style.display = 'block';
-      
-      // Update progress
-      document.querySelectorAll('.f-progress').forEach((el, i) => {
-        if (i + 1 <= f) {
-          el.style.background = '#005c4e';
-          el.style.color = 'white';
-        } else {
-          el.style.background = '#f0f0f0';
-          el.style.color = '#333';
-        }
-      });
-
-      window.scrollTo(0, 0);
-    }
-
-    function toggleF3Materials(show) {
-      document.getElementById('f3-materials-section').style.display = show ? 'block' : 'none';
-    }
-
-    function toggleF3Vehicle(show) {
-      document.getElementById('f3-vehicle-section').style.display = show ? 'block' : 'none';
-    }
-
-    function validateAndNext(stage) {
-      saveFormToActivity(stage);
-      if (stage < 7) switchToF(stage + 1);
-    }
-
-    function saveFormToActivity(stage) {
-      if (stage === 1) {
-        currentActivity.stage = 1;
-        currentActivity.titre = document.getElementById('f1-titre').value;
-        currentActivity.montant = document.getElementById('f1-montant').value;
-        currentActivity.responsable = document.getElementById('f1-responsable').value;
-        currentActivity.email = document.getElementById('f1-email').value;
-      } else if (stage === 2) {
-        currentActivity.stage = 2;
-        currentActivity.financement = document.querySelector('input[name="f2-financement"]:checked')?.value || '';
-      } else if (stage === 3) {
-        currentActivity.stage = 3;
-      } else if (stage === 4) {
-        currentActivity.stage = 4;
-      } else if (stage === 5) {
-        currentActivity.stage = 5;
-      } else if (stage === 6) {
-        currentActivity.stage = 6;
-      } else if (stage === 7) {
-        currentActivity.stage = 7;
-      }
-    }
-
-    function populateForm() {
-      if (currentActivity.titre) document.getElementById('f1-titre').value = currentActivity.titre;
-      if (currentActivity.montant) document.getElementById('f1-montant').value = currentActivity.montant;
-    }
-
-    function closeActivity() {
-      saveFormToActivity(7);
-      currentActivity.stage = 7;
-      
-      // Save or update in list
-      const idx = activities.findIndex(a => a.titre === currentActivity.titre);
-      if (idx === -1) {
-        activities.push(currentActivity);
-      } else {
-        activities[idx] = currentActivity;
-      }
-      localStorage.setItem('activities', JSON.stringify(activities));
-      
-      backToDashboard();
-      loadActivitiesList();
+      document.getElementById('formView').style.display = 'flex';
+      currentStage = 'f3';
+      renderForm('f3');
     }
 
     function backToDashboard() {
-      document.getElementById('activityFormView').style.display = 'none';
-      document.getElementById('dashboardView').style.display = 'flex';
+      document.getElementById('formView').style.display = 'none';
+      document.getElementById('dashboardView').style.display = 'block';
     }
 
-    // Init
-    checkCreatePermission();
-    loadActivitiesList();
+    function renderForm(stage) {
+      const stageMap = {
+        f1: { title: 'F1: Soumission TDR', step: 'Étape 1 de 7', form: getF1Form },
+        f2: { title: 'F2: Validation Administration', step: 'Étape 2 de 7', form: getF2Form },
+        f3: { title: 'F3: Logistique', step: 'Étape 3 de 7', form: getF3Form },
+        f4: { title: 'F4: Signature Direction', step: 'Étape 4 de 7', form: getF4Form },
+        f5: { title: 'F5: Rapport d\'activité', step: 'Étape 5 de 7', form: getF5Form },
+        f6: { title: 'F6: Feu vert Administration', step: 'Étape 6 de 7', form: getF6Form },
+        f7: { title: 'F7: Clôture Comptabilité', step: 'Étape 7 de 7', form: getF7Form }
+      };
+
+      const info = stageMap[stage];
+      document.getElementById('formTitle').textContent = info.title;
+      document.getElementById('formSubtitle').textContent = info.step;
+      document.getElementById('formContent').innerHTML = info.form();
+
+      document.getElementById('prevBtn').style.display = stage === 'f1' ? 'none' : 'block';
+      document.getElementById('nextBtn').textContent = stage === 'f7' ? 'Clôturer' : 'Suivant →';
+      currentStage = stage;
+    }
+
+    function getF1Form() {
+      return `
+        <div class="form-section">
+          <div class="form-section-title">Informations de base</div>
+          <div class="field-group">
+            <label class="field-label">Titre de l'activité <span class="field-required">*</span></label>
+            <input type="text" placeholder="Ex: Formation hygiène publique">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Montant estimé (HTG) <span class="field-required">*</span></label>
+            <input type="number" placeholder="12500">
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-section-title">Responsable</div>
+          <div class="field-group">
+            <label class="field-label">Nom du responsable <span class="field-required">*</span></label>
+            <input type="text" placeholder="Dr. Eddy Pierre">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Email <span class="field-required">*</span></label>
+            <input type="email" placeholder="eddy@dsne.ht">
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-section-title">Dates et lieu</div>
+          <div class="field-group">
+            <label class="field-label">Date prévue <span class="field-required">*</span></label>
+            <input type="date">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Lieu <span class="field-required">*</span></label>
+            <input type="text" placeholder="Fort-Liberté">
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-section-title">Documents</div>
+          <div class="field-group">
+            <label class="field-label">Upload TDR (PDF) <span class="field-required">*</span></label>
+            <input type="file">
+          </div>
+        </div>
+      `;
+    }
+
+    function getF2Form() {
+      return `
+        <div class="form-section">
+          <div class="form-section-title">Validation budgétaire</div>
+          <div class="field-group">
+            <label class="field-label">Montant à approuver: <strong>12,500 HTG</strong></label>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Solde C1 - Fonctionnement: <strong style="color:#40b89c;">45,000 HTG</strong></label>
+            <div style="font-size:11px;color:#666;margin-top:4px;">✓ Fonds disponibles</div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Type de financement <span class="field-required">*</span></label>
+            <div class="radio-group">
+              <div class="radio-item"><input type="radio" name="funding" value="avant" checked> <label>AVANT</label></div>
+              <div class="radio-item"><input type="radio" name="funding" value="apres"> <label>APRES</label></div>
+              <div class="radio-item"><input type="radio" name="funding" value="propres"> <label>Fonds propres</label></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function getF3Form() {
+      return `
+        <div class="form-section">
+          <div class="form-section-title">Matériels requis</div>
+          <div class="field-group">
+            <label class="field-label">Matériels nécessaires? <span class="field-required">*</span></label>
+            <div class="radio-group">
+              <div class="radio-item"><input type="radio" name="materials" value="no" checked> <label>Non</label></div>
+              <div class="radio-item"><input type="radio" name="materials" value="yes"> <label>Oui, certains manquent</label></div>
+            </div>
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-section-title">Véhicules</div>
+          <div class="field-group">
+            <label class="field-label">Véhicule requis? <span class="field-required">*</span></label>
+            <div class="radio-group">
+              <div class="radio-item"><input type="radio" name="vehicle" value="no" checked> <label>Non</label></div>
+              <div class="radio-item"><input type="radio" name="vehicle" value="yes"> <label>Oui</label></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function getF4Form() {
+      return `
+        <div class="form-section">
+          <div class="form-section-title">Signature Director</div>
+          <div class="field-group">
+            <label class="field-label">Toutes les conditions réunies? <span class="field-required">*</span></label>
+            <div class="checkbox-group">
+              <div class="checkbox-item"><input type="checkbox" checked> <label>F1: TDR reçu</label></div>
+              <div class="checkbox-item"><input type="checkbox" checked> <label>F2: Budget approuvé</label></div>
+              <div class="checkbox-item"><input type="checkbox" checked> <label>F3: Logistique validée</label></div>
+            </div>
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-section-title">Signature</div>
+          <div class="field-group">
+            <label class="field-label">Signé par <span class="field-required">*</span></label>
+            <input type="text" value="Dr. Jean Clervain Dorsainvil" readonly style="background:#f5f5f5;">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Date <span class="field-required">*</span></label>
+            <input type="date">
+          </div>
+        </div>
+        <div style="background:#d1e7dd;padding:10px;border-radius:4px;font-size:11px;color:#0f5132;">✓ Feuille de route générée automatiquement</div>
+      `;
+    }
+
+    function getF5Form() {
+      return `
+        <div class="form-section">
+          <div class="form-section-title">Rapport d'activité</div>
+          <div class="field-group">
+            <label class="field-label">Date début <span class="field-required">*</span></label>
+            <input type="date">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Date fin <span class="field-required">*</span></label>
+            <input type="date">
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-section-title">Documents</div>
+          <div class="field-group">
+            <label class="field-label">Rapport (PDF/Word) <span class="field-required">*</span></label>
+            <input type="file">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Feuille de présence <span class="field-required">*</span></label>
+            <input type="file">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Justificatifs <span class="field-required">*</span></label>
+            <input type="file">
+          </div>
+        </div>
+      `;
+    }
+
+    function getF6Form() {
+      return `
+        <div style="background:#e6f1fb;padding:10px;border-radius:4px;border-left:2px solid #185fa5;font-size:11px;color:#042c53;margin-bottom:12px;">
+          <strong>Conditionnel:</strong> N'apparaît que si financement APRES
+        </div>
+        <div class="form-section">
+          <div class="form-section-title">Vérification justificatifs</div>
+          <div class="field-group">
+            <label class="field-label">Justificatifs conformes? <span class="field-required">*</span></label>
+            <div class="radio-group">
+              <div class="radio-item"><input type="radio" name="compliant" value="yes" checked> <label>Oui</label></div>
+              <div class="radio-item"><input type="radio" name="compliant" value="no"> <label>Non</label></div>
+            </div>
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-section-title">Approbation</div>
+          <div class="field-group">
+            <label class="field-label">Décaissement autorisé? <span class="field-required">*</span></label>
+            <div class="radio-group">
+              <div class="radio-item"><input type="radio" name="approve" value="yes" checked> <label>Approuvé</label></div>
+              <div class="radio-item"><input type="radio" name="approve" value="no"> <label>Rejeté</label></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function getF7Form() {
+      return `
+        <div class="form-section">
+          <div class="form-section-title">Décaissement</div>
+          <div class="field-group">
+            <label class="field-label">Montant (HTG) <span class="field-required">*</span></label>
+            <input type="number" value="12500" readonly style="background:#f5f5f5;">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Date <span class="field-required">*</span></label>
+            <input type="date">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Compte <span class="field-required">*</span></label>
+            <select>
+              <option>C1 - Fonctionnement</option>
+              <option>C2 - Fonds Externes</option>
+              <option>C3 - Réserve</option>
+              <option>C4 - Autre</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Transaction # <span class="field-required">*</span></label>
+            <input type="text" placeholder="CHQ-2026-0045">
+          </div>
+        </div>
+        <div style="background:#d1e7dd;padding:10px;border-radius:4px;font-size:11px;color:#0f5132;">✓ Activité sera clôturée après soumission</div>
+      `;
+    }
+
+    function nextStep() {
+      const stages = ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7'];
+      const idx = stages.indexOf(currentStage);
+      if (idx < 6) {
+        renderForm(stages[idx + 1]);
+      } else {
+        alert('✓ Activité clôturée!');
+        backToDashboard();
+      }
+    }
+
+    function prevStep() {
+      const stages = ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7'];
+      const idx = stages.indexOf(currentStage);
+      if (idx > 0) {
+        renderForm(stages[idx - 1]);
+      }
+    }
   </script>
 </div>
+
 
   <!-- ══ VISITES ══ -->
 <div class="panel" id="p-visites">
