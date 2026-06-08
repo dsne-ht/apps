@@ -1479,6 +1479,7 @@ let VISITES_DATA = [
 /* ── PERMISSIONS ── */
 var _USER = JSON.parse(sessionStorage.getItem('user') || '{}');
 var _ROLE = _USER.role || 'admin';
+var _viewRole = _ROLE;
 var _NAV_HIDDEN = {
   adm:  ['cm','hyg'],
   comp: ['cm','hyg','logistique','visites'],
@@ -1510,6 +1511,7 @@ function applyPermissions() {
 document.addEventListener('DOMContentLoaded', applyPermissions);
 
 function testSwitch(viewRole) {
+  _viewRole = viewRole;
   document.querySelectorAll('.nav-item').forEach(function(el) { el.style.display = ''; });
   var hidden = _NAV_HIDDEN[viewRole] || [];
   document.querySelectorAll('.nav-item').forEach(function(el) {
@@ -1794,7 +1796,7 @@ function initCompta() {
 let rpInited = false;
 function initRapportage() {
   if(rpInited) return; rpInited=true;
-  var _showCols = (_ROLE === 'comp') ? ['FIN'] : ['FIN','RH','EPI'];
+  var _showCols = (_viewRole === 'comp') ? ['FIN'] : ['FIN','RH','EPI'];
   // Use live data from Apps Script if available, otherwise fall back to embedded
   const rawData = (typeof liveRPData !== 'undefined' && liveRPData && liveRPData.length) ? liveRPData : RP_DATA;
   const liveLabel = (typeof liveRPData !== 'undefined' && liveRPData) ? ' · Données en direct' : ' · Snapshot Avr 2026';
