@@ -906,15 +906,255 @@ body {
       <div class="meta">Gestion des activités départementales · DSNE</div>
     </div>
   </div>
-  <div class="page-body" style="display:flex;align-items:center;justify-content:center;flex:1">
-    <div style="text-align:center;color:var(--ink-4);max-width:320px">
-      <div style="font-size:13px;font-weight:500;color:var(--ink-3);margin-bottom:8px">Module en cours de développement</div>
-      <div style="font-size:12px;line-height:1.6">Le système de gestion des activités (F1–F7) sera disponible prochainement.</div>
+  <div class="page-body" style="display:flex;flex-direction:column;gap:14px;padding:14px;background:#f9f9f9;">
+    
+    <!-- Dashboard View -->
+    <div id="dashboardView">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;">
+        <div style="background:white;padding:12px;border-radius:4px;border-left:3px solid #005c4e;">
+          <div style="font-size:11px;color:#666;margin-bottom:4px;">Total Activités</div>
+          <div style="font-size:20px;font-weight:600;color:#005c4e;">12</div>
+        </div>
+        <div style="background:white;padding:12px;border-radius:4px;border-left:3px solid #40b89c;">
+          <div style="font-size:11px;color:#666;margin-bottom:4px;">Complétées</div>
+          <div style="font-size:20px;font-weight:600;color:#40b89c;">8</div>
+        </div>
+        <div style="background:white;padding:12px;border-radius:4px;border-left:3px solid #fbbf24;">
+          <div style="font-size:11px;color:#666;margin-bottom:4px;">En cours</div>
+          <div style="font-size:20px;font-weight:600;color:#fbbf24;">3</div>
+        </div>
+        <div style="background:white;padding:12px;border-radius:4px;border-left:3px solid #dc2626;">
+          <div style="font-size:11px;color:#666;margin-bottom:4px;">Bloquées</div>
+          <div style="font-size:20px;font-weight:600;color:#dc2626;">1</div>
+        </div>
+      </div>
+
+      <div style="background:white;border-radius:4px;overflow:hidden;border:0.5px solid #ddd;">
+        <div style="background:#005c4e;color:white;padding:12px;font-weight:600;font-size:12px;">Activités récentes</div>
+        <div style="padding:14px;font-size:12px;">
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 0.5fr;gap:12px;padding:8px 0;border-bottom:0.5px solid #ddd;margin-bottom:8px;">
+            <div style="font-weight:500;">Titre</div>
+            <div style="font-weight:500;">Responsable</div>
+            <div style="font-weight:500;">Montant</div>
+            <div style="font-weight:500;">État</div>
+            <div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 0.5fr;gap:12px;padding:8px 0;border-bottom:0.5px solid #eee;align-items:center;">
+            <div style="cursor:pointer;color:#005c4e;" onclick="loadActivity('ACT-2026-001')"><strong>Formation hygiène</strong></div>
+            <div>Dr. Eddy P.</div>
+            <div>12,500 HTG</div>
+            <div><span style="background:#d1e7dd;color:#0f5132;padding:3px 8px;border-radius:3px;font-size:11px;">F3</span></div>
+            <div><button style="background:none;border:none;cursor:pointer;font-size:12px;" onclick="loadActivity('ACT-2026-001')">→</button></div>
+          </div>
+        </div>
+      </div>
+
+      <button style="background:#005c4e;color:white;padding:10px 14px;border:none;border-radius:4px;cursor:pointer;margin-top:12px;font-weight:500;" onclick="newActivity()">+ Nouvelle Activité</button>
     </div>
+
+    <!-- Activity Dossier View -->
+    <div id="dossierView" style="display:none;flex-direction:column;gap:12px;height:100%;">
+      <div style="background:white;padding:12px;border-radius:4px;border:0.5px solid #ddd;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <h3 style="color:#005c4e;margin:0;">ACT-2026-001: Formation hygiène publique</h3>
+            <div style="font-size:11px;color:#666;margin-top:4px;">Dr. Eddy Pierre · 12,500 HTG</div>
+          </div>
+          <button style="background:none;border:none;cursor:pointer;font-size:16px;" onclick="backToDashboard()">✕</button>
+        </div>
+      </div>
+
+      <div style="background:white;border-radius:4px;overflow:hidden;border:0.5px solid #ddd;flex:1;display:flex;flex-direction:column;">
+        <div style="display:flex;border-bottom:0.5px solid #ddd;">
+          <button class="f-tab active" data-stage="f1" onclick="switchF(this, 'f1')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid #005c4e;cursor:pointer;font-size:12px;font-weight:500;color:#005c4e;">F1</button>
+          <button class="f-tab" data-stage="f2" onclick="switchF(this, 'f2')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-size:12px;font-weight:500;color:#999;">F2</button>
+          <button class="f-tab" data-stage="f3" onclick="switchF(this, 'f3')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-size:12px;font-weight:500;color:#999;">F3</button>
+          <button class="f-tab" data-stage="f4" onclick="switchF(this, 'f4')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-size:12px;font-weight:500;color:#999;">F4</button>
+          <button class="f-tab" data-stage="f5" onclick="switchF(this, 'f5')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-size:12px;font-weight:500;color:#999;">F5</button>
+          <button class="f-tab" data-stage="f6" onclick="switchF(this, 'f6')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-size:12px;font-weight:500;color:#999;">F6</button>
+          <button class="f-tab" data-stage="f7" onclick="switchF(this, 'f7')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-size:12px;font-weight:500;color:#999;">F7</button>
+        </div>
+
+        <div style="flex:1;overflow-y:auto;padding:14px;">
+          <!-- F1 -->
+          <div id="f1-content" class="f-content" style="display:block;">
+            <div style="font-size:12px;color:#666;margin-bottom:12px;">✓ Complété</div>
+            <div style="background:#f0f9f7;padding:10px;border-radius:4px;border-left:2px solid #40b89c;">
+              <div style="font-weight:600;font-size:12px;color:#005c4e;margin-bottom:8px;">Soumission TDR</div>
+              <div style="font-size:11px;color:#333;">
+                <div>Date reçue: 10 juin 2026</div>
+                <div>Enregistré par: Daisha Dorsainvil</div>
+                <div style="margin-top:6px;color:#666;">TDR complet et validé</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- F2 -->
+          <div id="f2-content" class="f-content" style="display:none;">
+            <div style="font-size:12px;color:#666;margin-bottom:12px;">✓ Complété</div>
+            <div style="background:#f0f9f7;padding:10px;border-radius:4px;border-left:2px solid #40b89c;">
+              <div style="font-weight:600;font-size:12px;color:#005c4e;margin-bottom:8px;">Validation Administration</div>
+              <div style="font-size:11px;color:#333;">
+                <div>Solde C1: 45,000 HTG</div>
+                <div>Montant approuvé: 12,500 HTG</div>
+                <div style="margin-top:6px;color:#666;">Fonds disponibles. Financement AVANT.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- F3 -->
+          <div id="f3-content" class="f-content" style="display:none;">
+            <div style="font-size:12px;color:#999;margin-bottom:12px;">● En cours</div>
+            <div style="background:#fff3cd;padding:10px;border-radius:4px;border-left:2px solid #fbbf24;">
+              <div style="font-weight:600;font-size:12px;color:#856404;margin-bottom:8px;">Logistique - Matériels & Véhicules</div>
+              <div style="font-size:11px;color:#333;margin-bottom:8px;">
+                <div>Matériels manquants: Gants, masques</div>
+                <div>Véhicule: Non requis</div>
+              </div>
+              <button style="background:#005c4e;color:white;padding:5px 10px;border:none;border-radius:3px;cursor:pointer;font-size:11px;" onclick="startF3()">Compléter F3</button>
+            </div>
+          </div>
+
+          <!-- F4 -->
+          <div id="f4-content" class="f-content" style="display:none;">
+            <div style="font-size:12px;color:#999;margin-bottom:12px;">⏳ En attente</div>
+            <div style="background:#e6f1fb;padding:10px;border-radius:4px;border-left:2px solid #185fa5;color:#042c53;">
+              <div style="font-size:12px;margin-bottom:8px;">Direction Signature - En attente que F3 soit complété</div>
+            </div>
+          </div>
+
+          <!-- F5 -->
+          <div id="f5-content" class="f-content" style="display:none;">
+            <div style="font-size:12px;color:#999;margin-bottom:12px;">⏳ En attente</div>
+            <div style="background:#e6f1fb;padding:10px;border-radius:4px;border-left:2px solid #185fa5;color:#042c53;">
+              <div style="font-size:12px;">Rapport d'activité - En attente après exécution</div>
+            </div>
+          </div>
+
+          <!-- F6 -->
+          <div id="f6-content" class="f-content" style="display:none;">
+            <div style="font-size:12px;color:#999;margin-bottom:12px;">⏳ Conditionnel</div>
+            <div style="background:#e6f1fb;padding:10px;border-radius:4px;border-left:2px solid #185fa5;color:#042c53;">
+              <div style="font-size:12px;">Feu vert Administration - Seulement si financement APRES</div>
+            </div>
+          </div>
+
+          <!-- F7 -->
+          <div id="f7-content" class="f-content" style="display:none;">
+            <div style="font-size:12px;color:#999;margin-bottom:12px;">⏳ En attente</div>
+            <div style="background:#e6f1fb;padding:10px;border-radius:4px;border-left:2px solid #185fa5;color:#042c53;">
+              <div style="font-size:12px;">Clôture Comptabilité - Enregistrement final des décaissements</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- F3 Purchase Workflow Modal -->
+    <div id="f3Modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;padding:20px;overflow-y:auto;">
+      <div style="background:white;max-width:600px;margin:40px auto;border-radius:6px;overflow:hidden;">
+        <div style="background:#005c4e;color:white;padding:14px 18px;">
+          <h3 style="margin:0;">F3: Logistique - Matériels & Achat</h3>
+          <div style="font-size:11px;opacity:0.9;margin-top:4px;">ACT-2026-001: Formation hygiène publique</div>
+        </div>
+
+        <div style="padding:18px;font-size:12px;">
+          <div style="margin-bottom:16px;">
+            <label style="display:block;font-weight:600;color:#005c4e;margin-bottom:8px;">Avez-vous tous les matériels en stock? <span style="color:#dc2626;">*</span></label>
+            <div style="display:flex;gap:12px;">
+              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
+                <input type="radio" name="stockStatus" value="yes" checked onchange="toggleF3Purchase(false)">
+                <span>Oui, tous disponibles</span>
+              </label>
+              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
+                <input type="radio" name="stockStatus" value="no" onchange="toggleF3Purchase(true)">
+                <span>Non, certains manquent</span>
+              </label>
+            </div>
+          </div>
+
+          <div id="f3PurchaseSection" style="display:none;background:#f0f9f7;padding:10px;border-radius:4px;margin-bottom:16px;">
+            <div style="font-weight:600;color:#005c4e;margin-bottom:8px;">Items à acheter</div>
+            <textarea placeholder="HYG-001: 50 paires gants&#10;HYG-002: 100 masques..." style="width:100%;padding:8px;border:0.5px solid #ddd;border-radius:3px;min-height:60px;font-family:inherit;font-size:11px;margin-bottom:8px;"></textarea>
+            <input type="number" placeholder="Montant estimé (HTG)" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:3px;font-size:11px;margin-bottom:8px;">
+            <div style="font-size:11px;color:#666;margin-top:4px;padding:8px;background:white;border-radius:3px;">📎 Upload réquisition (ou créer via workflow existant)</div>
+          </div>
+
+          <div style="background:#f5f5f5;padding:10px;border-radius:4px;margin-bottom:16px;font-size:11px;color:#666;">
+            Validation: Tous les matériels confirmés ✓
+          </div>
+
+          <div style="display:flex;gap:10px;">
+            <button style="flex:1;background:white;border:0.5px solid #ddd;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;" onclick="closeF3()">Annuler</button>
+            <button style="flex:1;background:#005c4e;color:white;border:none;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;" onclick="submitF3()">Soumettre F3 →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
+
+  <style>
+    .f-tab { transition: all 0.2s; }
+    .f-tab:hover { color: #333 !important; }
+    .f-content { animation: fadeIn 0.2s; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  </style>
+
+  <script>
+    function switchF(btn, stage) {
+      document.querySelectorAll('.f-tab').forEach(b => {
+        b.style.borderBottom = 'none';
+        b.style.color = '#999';
+      });
+      btn.style.borderBottom = '2px solid #005c4e';
+      btn.style.color = '#005c4e';
+      
+      document.querySelectorAll('.f-content').forEach(c => c.style.display = 'none');
+      document.getElementById(stage + '-content').style.display = 'block';
+    }
+
+    function loadActivity(id) {
+      document.getElementById('dashboardView').style.display = 'none';
+      document.getElementById('dossierView').style.display = 'flex';
+    }
+
+    function backToDashboard() {
+      document.getElementById('dossierView').style.display = 'none';
+      document.getElementById('dashboardView').style.display = 'block';
+    }
+
+    function newActivity() {
+      alert('Créer nouvelle activité - Fonctionnalité à venir');
+    }
+
+    function startF3() {
+      document.getElementById('f3Modal').style.display = 'block';
+    }
+
+    function closeF3() {
+      document.getElementById('f3Modal').style.display = 'none';
+    }
+
+    function toggleF3Purchase(show) {
+      document.getElementById('f3PurchaseSection').style.display = show ? 'block' : 'none';
+    }
+
+    function submitF3() {
+      alert('F3 submitted - Activity will move to F4');
+      closeF3();
+      loadActivity('ACT-2026-001');
+    }
+
+    window.onclick = function(e) {
+      const modal = document.getElementById('f3Modal');
+      if (e.target === modal) modal.style.display = 'none';
+    }
+  </script>
 </div>
 
-<!-- ══ VISITES ══ -->
+
+  <!-- ══ VISITES ══ -->
 <div class="panel" id="p-visites">
   <div class="page-header">
     <div>
