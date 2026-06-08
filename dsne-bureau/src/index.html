@@ -682,6 +682,9 @@ body {
   <div class="nav-item" onclick="nav('compta',this)">
     <span class="icon"></span> Comptabilité
   </div>
+  <div class="nav-item" onclick="nav('activites',this)">
+    <span class="icon"></span> Activités
+  </div>
 
   <div class="nav-section">Rapports</div>
   <div class="nav-item" onclick="nav('rapportage',this)">
@@ -706,10 +709,10 @@ body {
     Paramètres
   </div>
 
-  <div class="sidebar-footer" id="sidebarUser" style="font-size:11px;color:rgba(255,255,255,.5);padding:12px 20px 4px;"></div>
-<div class="sidebar-footer">
+  <div class="sidebar-footer">
     <strong id="bureau-user-name">Daïsha Dorsainvil</strong>
-    Secrétaire de Direction
+    <span id="bureau-user-role" style="display:block;margin-top:1px;">Secrétaire de Direction</span>
+    <span onclick="if(window.dsne)window.dsne.logout()" style="display:block;margin-top:8px;cursor:pointer;color:rgba(255,255,255,.25);font-size:10px;letter-spacing:.02em;">Déconnexion</span>
   </div>
 </nav>
 
@@ -855,6 +858,22 @@ body {
         <div class="card-header"><h3>Cliniques Mobiles</h3></div>
         <div class="card-body" id="etat-cm"></div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ACTIVITÉS ══ -->
+<div class="panel" id="p-activites">
+  <div class="page-header">
+    <div>
+      <h1>Activités</h1>
+      <div class="meta">Gestion des activités départementales · DSNE</div>
+    </div>
+  </div>
+  <div class="page-body" style="display:flex;align-items:center;justify-content:center;flex:1">
+    <div style="text-align:center;color:var(--ink-4);max-width:320px">
+      <div style="font-size:13px;font-weight:500;color:var(--ink-3);margin-bottom:8px">Module en cours de développement</div>
+      <div style="font-size:12px;line-height:1.6">Le système de gestion des activités (F1–F7) sera disponible prochainement.</div>
     </div>
   </div>
 </div>
@@ -1421,6 +1440,32 @@ let VISITES_DATA = [
 ═══════════════════════════════════════════ -->
 <script>
 
+/* ── PERMISSIONS ── */
+var _USER = JSON.parse(sessionStorage.getItem('user') || '{}');
+var _ROLE = _USER.role || 'admin';
+var _NAV_HIDDEN = {
+  adm:  ['cm','hyg'],
+  comp: ['cm','hyg','logistique','visites']
+};
+var _ROLE_LABELS = {
+  admin: 'Secrétaire de Direction',
+  adm:   'Administration',
+  comp:  'Comptabilité'
+};
+function applyPermissions() {
+  var hidden = _NAV_HIDDEN[_ROLE] || [];
+  document.querySelectorAll('.nav-item').forEach(function(el) {
+    var oc = el.getAttribute('onclick') || '';
+    var m = oc.match(/nav\('([^']+)'/);
+    if (m && hidden.indexOf(m[1]) !== -1) el.style.display = 'none';
+  });
+  var nameEl = document.getElementById('bureau-user-name');
+  var roleEl = document.getElementById('bureau-user-role');
+  if (nameEl && _USER.nom_complet) nameEl.textContent = _USER.nom_complet;
+  if (roleEl) roleEl.textContent = _ROLE_LABELS[_ROLE] || 'Bureau';
+}
+document.addEventListener('DOMContentLoaded', applyPermissions);
+
 /* ── NAV ── */
 function nav(id, el) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -1690,6 +1735,7 @@ function initCompta() {
 let rpInited = false;
 function initRapportage() {
   if(rpInited) return; rpInited=true;
+  var _showCols = (_ROLE === 'comp') ? ['FIN'] : ['FIN','RH','EPI'];
   // Use live data from Apps Script if available, otherwise fall back to embedded
   const rawData = (typeof liveRPData !== 'undefined' && liveRPData && liveRPData.length) ? liveRPData : RP_DATA;
   const liveLabel = (typeof liveRPData !== 'undefined' && liveRPData) ? ' · Données en direct' : ' · Snapshot Avr 2026';
@@ -1722,16 +1768,20 @@ function initRapportage() {
   };
 
   var heatHtml = '<thead><tr><th style="min-width:200px;text-align:left;padding:5px 12px;background:#f8f6f1;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8a9ab0;border-bottom:2px solid #ede9e0">Institution</th>';
-  RP_MONTHS.forEach(function(m) { heatHtml += '<th colspan="3" style="text-align:center;font-size:9px;font-weight:700;padding:4px 2px;background:#f8f6f1;border-bottom:2px solid #ede9e0;color:#8a9ab0">' + m + '</th>'; });
+  RP_MONTHS.forEach(function(m) { heatHtml += '<th colspan="' + _showCols.length + '" style="text-align:center;font-size:9px;font-weight:700;padding:4px 2px;background:#f8f6f1;border-bottom:2px solid #ede9e0;color:#8a9ab0">' + m + '</th>'; });
   heatHtml += '</tr><tr><th style="background:#f8f6f1"></th>';
-  RP_MONTHS.forEach(function() { heatHtml += '<th style="font-size:9px;padding:3px;text-align:center;background:#f8f6f1;color:#8a9ab0">F</th><th style="font-size:9px;padding:3px;text-align:center;background:#f8f6f1;color:#8a9ab0">R</th><th style="font-size:9px;padding:3px;text-align:center;background:#f8f6f1;color:#8a9ab0">E</th>'; });
+  RP_MONTHS.forEach(function() {
+    var subHdr = '';
+    _showCols.forEach(function(c) { subHdr += '<th style="font-size:9px;padding:3px;text-align:center;background:#f8f6f1;color:#8a9ab0">' + c[0] + '</th>'; });
+    heatHtml += subHdr;
+  });
   heatHtml += '</tr></thead><tbody>';
 
   data.forEach(function(inst) {
     heatHtml += '<tr><td style="min-width:200px;white-space:nowrap;padding:5px 12px;font-size:11.5px;color:#2a3a50;border-bottom:1px solid #e8e3d9;background:#ffffff">' + esc(inst.inst) + '</td>';
     RP_MONTHS.forEach(function(m) {
       var mo = inst.months && inst.months[m] ? inst.months[m] : {FIN:'',RH:'',EPI:''};
-      ['FIN','RH','EPI'].forEach(function(p) {
+      _showCols.forEach(function(p) {
         var cv = cellVal(mo[p] || '');
         heatHtml += '<td class="' + cv.cls + '" title="' + m + ' ' + p + ': ' + (mo[p]||'--') + '" style="width:22px;height:22px;text-align:center;font-size:10px;font-weight:700">' + cv.label + '</td>';
       });
