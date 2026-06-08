@@ -906,253 +906,581 @@ body {
       <div class="meta">Gestion des activités départementales · DSNE</div>
     </div>
   </div>
-  <div class="page-body" style="display:flex;flex-direction:column;gap:14px;padding:14px;background:#f9f9f9;">
+  <div class="page-body" style="display:flex;flex-direction:column;gap:14px;padding:14px;background:#f9f9f9;height:100%;">
     
     <!-- Dashboard View -->
-    <div id="dashboardView">
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;">
+    <div id="dashboardView" style="display:flex;flex-direction:column;gap:14px;height:100%;">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
         <div style="background:white;padding:12px;border-radius:4px;border-left:3px solid #005c4e;">
           <div style="font-size:11px;color:#666;margin-bottom:4px;">Total Activités</div>
-          <div style="font-size:20px;font-weight:600;color:#005c4e;">12</div>
+          <div style="font-size:20px;font-weight:600;color:#005c4e;" id="totalCount">12</div>
         </div>
         <div style="background:white;padding:12px;border-radius:4px;border-left:3px solid #40b89c;">
           <div style="font-size:11px;color:#666;margin-bottom:4px;">Complétées</div>
-          <div style="font-size:20px;font-weight:600;color:#40b89c;">8</div>
+          <div style="font-size:20px;font-weight:600;color:#40b89c;" id="completedCount">8</div>
         </div>
         <div style="background:white;padding:12px;border-radius:4px;border-left:3px solid #fbbf24;">
           <div style="font-size:11px;color:#666;margin-bottom:4px;">En cours</div>
-          <div style="font-size:20px;font-weight:600;color:#fbbf24;">3</div>
+          <div style="font-size:20px;font-weight:600;color:#fbbf24;" id="inProgressCount">3</div>
         </div>
         <div style="background:white;padding:12px;border-radius:4px;border-left:3px solid #dc2626;">
           <div style="font-size:11px;color:#666;margin-bottom:4px;">Bloquées</div>
-          <div style="font-size:20px;font-weight:600;color:#dc2626;">1</div>
-        </div>
-      </div>
-
-      <div style="background:white;border-radius:4px;overflow:hidden;border:0.5px solid #ddd;">
-        <div style="background:#005c4e;color:white;padding:12px;font-weight:600;font-size:12px;">Activités récentes</div>
-        <div style="padding:14px;font-size:12px;">
-          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 0.5fr;gap:12px;padding:8px 0;border-bottom:0.5px solid #ddd;margin-bottom:8px;">
-            <div style="font-weight:500;">Titre</div>
-            <div style="font-weight:500;">Responsable</div>
-            <div style="font-weight:500;">Montant</div>
-            <div style="font-weight:500;">État</div>
-            <div></div>
-          </div>
-          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 0.5fr;gap:12px;padding:8px 0;border-bottom:0.5px solid #eee;align-items:center;">
-            <div style="cursor:pointer;color:#005c4e;" onclick="loadActivity('ACT-2026-001')"><strong>Formation hygiène</strong></div>
-            <div>Dr. Eddy P.</div>
-            <div>12,500 HTG</div>
-            <div><span style="background:#d1e7dd;color:#0f5132;padding:3px 8px;border-radius:3px;font-size:11px;">F3</span></div>
-            <div><button style="background:none;border:none;cursor:pointer;font-size:12px;" onclick="loadActivity('ACT-2026-001')">→</button></div>
-          </div>
-        </div>
-      </div>
-
-      <button style="background:#005c4e;color:white;padding:10px 14px;border:none;border-radius:4px;cursor:pointer;margin-top:12px;font-weight:500;" onclick="newActivity()">+ Nouvelle Activité</button>
-    </div>
-
-    <!-- Activity Dossier View -->
-    <div id="dossierView" style="display:none;flex-direction:column;gap:12px;height:100%;">
-      <div style="background:white;padding:12px;border-radius:4px;border:0.5px solid #ddd;">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div>
-            <h3 style="color:#005c4e;margin:0;">ACT-2026-001: Formation hygiène publique</h3>
-            <div style="font-size:11px;color:#666;margin-top:4px;">Dr. Eddy Pierre · 12,500 HTG</div>
-          </div>
-          <button style="background:none;border:none;cursor:pointer;font-size:16px;" onclick="backToDashboard()">✕</button>
+          <div style="font-size:20px;font-weight:600;color:#dc2626;" id="blockedCount">1</div>
         </div>
       </div>
 
       <div style="background:white;border-radius:4px;overflow:hidden;border:0.5px solid #ddd;flex:1;display:flex;flex-direction:column;">
-        <div style="display:flex;border-bottom:0.5px solid #ddd;">
-          <button class="f-tab active" data-stage="f1" onclick="switchF(this, 'f1')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid #005c4e;cursor:pointer;font-size:12px;font-weight:500;color:#005c4e;">F1</button>
-          <button class="f-tab" data-stage="f2" onclick="switchF(this, 'f2')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-size:12px;font-weight:500;color:#999;">F2</button>
-          <button class="f-tab" data-stage="f3" onclick="switchF(this, 'f3')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-size:12px;font-weight:500;color:#999;">F3</button>
-          <button class="f-tab" data-stage="f4" onclick="switchF(this, 'f4')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-size:12px;font-weight:500;color:#999;">F4</button>
-          <button class="f-tab" data-stage="f5" onclick="switchF(this, 'f5')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-size:12px;font-weight:500;color:#999;">F5</button>
-          <button class="f-tab" data-stage="f6" onclick="switchF(this, 'f6')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-size:12px;font-weight:500;color:#999;">F6</button>
-          <button class="f-tab" data-stage="f7" onclick="switchF(this, 'f7')" style="flex:1;padding:10px;border:none;background:transparent;border-bottom:2px solid transparent;cursor:pointer;font-size:12px;font-weight:500;color:#999;">F7</button>
-        </div>
-
-        <div style="flex:1;overflow-y:auto;padding:14px;">
-          <!-- F1 -->
-          <div id="f1-content" class="f-content" style="display:block;">
-            <div style="font-size:12px;color:#666;margin-bottom:12px;">✓ Complété</div>
-            <div style="background:#f0f9f7;padding:10px;border-radius:4px;border-left:2px solid #40b89c;">
-              <div style="font-weight:600;font-size:12px;color:#005c4e;margin-bottom:8px;">Soumission TDR</div>
-              <div style="font-size:11px;color:#333;">
-                <div>Date reçue: 10 juin 2026</div>
-                <div>Enregistré par: Daisha Dorsainvil</div>
-                <div style="margin-top:6px;color:#666;">TDR complet et validé</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- F2 -->
-          <div id="f2-content" class="f-content" style="display:none;">
-            <div style="font-size:12px;color:#666;margin-bottom:12px;">✓ Complété</div>
-            <div style="background:#f0f9f7;padding:10px;border-radius:4px;border-left:2px solid #40b89c;">
-              <div style="font-weight:600;font-size:12px;color:#005c4e;margin-bottom:8px;">Validation Administration</div>
-              <div style="font-size:11px;color:#333;">
-                <div>Solde C1: 45,000 HTG</div>
-                <div>Montant approuvé: 12,500 HTG</div>
-                <div style="margin-top:6px;color:#666;">Fonds disponibles. Financement AVANT.</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- F3 -->
-          <div id="f3-content" class="f-content" style="display:none;">
-            <div style="font-size:12px;color:#999;margin-bottom:12px;">● En cours</div>
-            <div style="background:#fff3cd;padding:10px;border-radius:4px;border-left:2px solid #fbbf24;">
-              <div style="font-weight:600;font-size:12px;color:#856404;margin-bottom:8px;">Logistique - Matériels & Véhicules</div>
-              <div style="font-size:11px;color:#333;margin-bottom:8px;">
-                <div>Matériels manquants: Gants, masques</div>
-                <div>Véhicule: Non requis</div>
-              </div>
-              <button style="background:#005c4e;color:white;padding:5px 10px;border:none;border-radius:3px;cursor:pointer;font-size:11px;" onclick="startF3()">Compléter F3</button>
-            </div>
-          </div>
-
-          <!-- F4 -->
-          <div id="f4-content" class="f-content" style="display:none;">
-            <div style="font-size:12px;color:#999;margin-bottom:12px;">⏳ En attente</div>
-            <div style="background:#e6f1fb;padding:10px;border-radius:4px;border-left:2px solid #185fa5;color:#042c53;">
-              <div style="font-size:12px;margin-bottom:8px;">Direction Signature - En attente que F3 soit complété</div>
-            </div>
-          </div>
-
-          <!-- F5 -->
-          <div id="f5-content" class="f-content" style="display:none;">
-            <div style="font-size:12px;color:#999;margin-bottom:12px;">⏳ En attente</div>
-            <div style="background:#e6f1fb;padding:10px;border-radius:4px;border-left:2px solid #185fa5;color:#042c53;">
-              <div style="font-size:12px;">Rapport d'activité - En attente après exécution</div>
-            </div>
-          </div>
-
-          <!-- F6 -->
-          <div id="f6-content" class="f-content" style="display:none;">
-            <div style="font-size:12px;color:#999;margin-bottom:12px;">⏳ Conditionnel</div>
-            <div style="background:#e6f1fb;padding:10px;border-radius:4px;border-left:2px solid #185fa5;color:#042c53;">
-              <div style="font-size:12px;">Feu vert Administration - Seulement si financement APRES</div>
-            </div>
-          </div>
-
-          <!-- F7 -->
-          <div id="f7-content" class="f-content" style="display:none;">
-            <div style="font-size:12px;color:#999;margin-bottom:12px;">⏳ En attente</div>
-            <div style="background:#e6f1fb;padding:10px;border-radius:4px;border-left:2px solid #185fa5;color:#042c53;">
-              <div style="font-size:12px;">Clôture Comptabilité - Enregistrement final des décaissements</div>
-            </div>
+        <div style="background:#005c4e;color:white;padding:12px;font-weight:600;font-size:12px;">Activités</div>
+        <div style="flex:1;overflow-y:auto;padding:14px;font-size:12px;">
+          <div id="activitiesList">
+            <div style="text-align:center;color:#999;padding:20px;">Aucune activité</div>
           </div>
         </div>
       </div>
+
+      <div id="newActivityBtnContainer" style="display:none;">
+        <button style="background:#005c4e;color:white;padding:10px 14px;border:none;border-radius:4px;cursor:pointer;margin-top:12px;font-weight:500;width:100%;" onclick="startNewActivity()">+ Créer une nouvelle activité</button>
+      </div>
     </div>
 
-    <!-- F3 Purchase Workflow Modal -->
-    <div id="f3Modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;padding:20px;overflow-y:auto;">
-      <div style="background:white;max-width:600px;margin:40px auto;border-radius:6px;overflow:hidden;">
-        <div style="background:#005c4e;color:white;padding:14px 18px;">
-          <h3 style="margin:0;">F3: Logistique - Matériels & Achat</h3>
-          <div style="font-size:11px;opacity:0.9;margin-top:4px;">ACT-2026-001: Formation hygiène publique</div>
+    <!-- Activity Creation/Edit View -->
+    <div id="activityFormView" style="display:none;flex-direction:column;gap:12px;height:100%;overflow:hidden;">
+      <div style="background:white;padding:12px;border-radius:4px;border:0.5px solid #ddd;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <h3 style="color:#005c4e;margin:0;" id="activityTitle">Nouvelle activité</h3>
+            <div style="font-size:11px;color:#666;margin-top:4px;" id="activityMeta">F1: Soumission TDR</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button style="background:none;border:none;cursor:pointer;font-size:12px;color:#999;padding:4px;" onclick="backToDashboard()">← Retour</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress indicator -->
+      <div style="background:white;padding:10px;border-radius:4px;border:0.5px solid #ddd;">
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;font-size:10px;">
+          <div id="fProgress-1" class="f-progress active" style="text-align:center;padding:8px;background:#005c4e;color:white;border-radius:3px;cursor:pointer;" onclick="switchToF(1)">F1</div>
+          <div id="fProgress-2" class="f-progress" style="text-align:center;padding:8px;background:#f0f0f0;border-radius:3px;cursor:pointer;" onclick="switchToF(2)">F2</div>
+          <div id="fProgress-3" class="f-progress" style="text-align:center;padding:8px;background:#f0f0f0;border-radius:3px;cursor:pointer;" onclick="switchToF(3)">F3</div>
+          <div id="fProgress-4" class="f-progress" style="text-align:center;padding:8px;background:#f0f0f0;border-radius:3px;cursor:pointer;" onclick="switchToF(4)">F4</div>
+          <div id="fProgress-5" class="f-progress" style="text-align:center;padding:8px;background:#f0f0f0;border-radius:3px;cursor:pointer;" onclick="switchToF(5)">F5</div>
+          <div id="fProgress-6" class="f-progress" style="text-align:center;padding:8px;background:#f0f0f0;border-radius:3px;cursor:pointer;" onclick="switchToF(6)">F6</div>
+          <div id="fProgress-7" class="f-progress" style="text-align:center;padding:8px;background:#f0f0f0;border-radius:3px;cursor:pointer;" onclick="switchToF(7)">F7</div>
+        </div>
+      </div>
+
+      <!-- Forms Container -->
+      <div style="background:white;border-radius:4px;border:0.5px solid #ddd;flex:1;overflow-y:auto;padding:14px;">
+        
+        <!-- F1: Soumission TDR -->
+        <div id="f1-form" class="f-form" style="display:block;">
+          <div style="font-size:12px;font-weight:600;color:#005c4e;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #005c4e;">F1: Soumission TDR</div>
+          
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Date de réception TDR <span style="color:#dc2626;">*</span></label>
+            <input type="date" id="f1-date-reception" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Titre de l'activité <span style="color:#dc2626;">*</span></label>
+            <input type="text" id="f1-titre" placeholder="Ex: Formation hygiène publique" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Montant estimé (HTG) <span style="color:#dc2626;">*</span></label>
+            <input type="number" id="f1-montant" placeholder="12500" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Type d'activité <span style="color:#dc2626;">*</span></label>
+            <select id="f1-type" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+              <option value="">Sélectionner...</option>
+              <option value="formation">Formation</option>
+              <option value="supervision">Supervision</option>
+              <option value="atelier">Atelier</option>
+              <option value="reunion">Réunion</option>
+              <option value="autre">Autre</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Service organisateur <span style="color:#dc2626;">*</span></label>
+            <input type="text" id="f1-service" placeholder="Ex: Communication & Planification" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Responsable de l'activité <span style="color:#dc2626;">*</span></label>
+            <input type="text" id="f1-responsable" placeholder="Nom complet" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Email du responsable <span style="color:#dc2626;">*</span></label>
+            <input type="email" id="f1-email" placeholder="eddy.pierre@dsne.ht" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Date prévue <span style="color:#dc2626;">*</span></label>
+            <input type="date" id="f1-date-prevue" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Lieu <span style="color:#dc2626;">*</span></label>
+            <input type="text" id="f1-lieu" placeholder="Fort-Liberté ou autre lieu" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Nombre de participants <span style="color:#dc2626;">*</span></label>
+            <input type="number" id="f1-nb-participants" placeholder="25" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Durée (en jours) <span style="color:#dc2626;">*</span></label>
+            <input type="number" id="f1-duree" placeholder="1" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Upload TDR <span style="color:#dc2626;">*</span></label>
+            <input type="file" id="f1-tdr-file" accept=".pdf,.docx" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:16px;padding-top:12px;border-top:0.5px solid #ddd;">
+            <button style="flex:1;background:#005c4e;color:white;padding:8px;border:none;border-radius:4px;cursor:pointer;font-weight:500;" onclick="validateAndNext(1)">Suivant → F2</button>
+          </div>
         </div>
 
-        <div style="padding:18px;font-size:12px;">
-          <div style="margin-bottom:16px;">
-            <label style="display:block;font-weight:600;color:#005c4e;margin-bottom:8px;">Avez-vous tous les matériels en stock? <span style="color:#dc2626;">*</span></label>
+        <!-- F2: Administration -->
+        <div id="f2-form" class="f-form" style="display:none;">
+          <div style="font-size:12px;font-weight:600;color:#005c4e;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #005c4e;">F2: Validation Administration</div>
+          
+          <div style="background:#e6f1fb;padding:10px;border-radius:4px;margin-bottom:12px;font-size:11px;color:#042c53;">
+            Vérification des soldes et disponibilité des fonds
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Solde C1 (Fonctionnement)</label>
+            <input type="number" value="45000" readonly style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;background:#f5f5f5;">
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Fonds disponibles? <span style="color:#dc2626;">*</span></label>
             <div style="display:flex;gap:12px;">
               <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
-                <input type="radio" name="stockStatus" value="yes" checked onchange="toggleF3Purchase(false)">
-                <span>Oui, tous disponibles</span>
+                <input type="radio" name="f2-fonds" value="oui" checked>
+                <span style="font-size:12px;">Oui</span>
               </label>
               <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
-                <input type="radio" name="stockStatus" value="no" onchange="toggleF3Purchase(true)">
-                <span>Non, certains manquent</span>
+                <input type="radio" name="f2-fonds" value="non">
+                <span style="font-size:12px;">Non</span>
               </label>
             </div>
           </div>
 
-          <div id="f3PurchaseSection" style="display:none;background:#f0f9f7;padding:10px;border-radius:4px;margin-bottom:16px;">
-            <div style="font-weight:600;color:#005c4e;margin-bottom:8px;">Items à acheter</div>
-            <textarea placeholder="HYG-001: 50 paires gants&#10;HYG-002: 100 masques..." style="width:100%;padding:8px;border:0.5px solid #ddd;border-radius:3px;min-height:60px;font-family:inherit;font-size:11px;margin-bottom:8px;"></textarea>
-            <input type="number" placeholder="Montant estimé (HTG)" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:3px;font-size:11px;margin-bottom:8px;">
-            <div style="font-size:11px;color:#666;margin-top:4px;padding:8px;background:white;border-radius:3px;">📎 Upload réquisition (ou créer via workflow existant)</div>
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Source de financement <span style="color:#dc2626;">*</span></label>
+            <select id="f2-financement" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+              <option value="">Sélectionner...</option>
+              <option value="avant">AVANT (fonds partenaire pré-versés)</option>
+              <option value="apres">APRES (fonds à verser après activité)</option>
+              <option value="propres">Fonds propres DSNE</option>
+            </select>
           </div>
 
-          <div style="background:#f5f5f5;padding:10px;border-radius:4px;margin-bottom:16px;font-size:11px;color:#666;">
-            Validation: Tous les matériels confirmés ✓
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Notes Admin</label>
+            <textarea id="f2-notes" placeholder="Observations..." style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;min-height:60px;font-family:inherit;font-size:11px;"></textarea>
           </div>
 
-          <div style="display:flex;gap:10px;">
-            <button style="flex:1;background:white;border:0.5px solid #ddd;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;" onclick="closeF3()">Annuler</button>
-            <button style="flex:1;background:#005c4e;color:white;border:none;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;" onclick="submitF3()">Soumettre F3 →</button>
+          <div style="display:flex;gap:10px;margin-top:16px;padding-top:12px;border-top:0.5px solid #ddd;">
+            <button style="flex:1;background:white;border:0.5px solid #ddd;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;" onclick="switchToF(1)">← Retour F1</button>
+            <button style="flex:1;background:#005c4e;color:white;padding:8px;border:none;border-radius:4px;cursor:pointer;font-weight:500;" onclick="validateAndNext(2)">Suivant → F3</button>
           </div>
         </div>
+
+        <!-- F3: Logistique -->
+        <div id="f3-form" class="f-form" style="display:none;">
+          <div style="font-size:12px;font-weight:600;color:#005c4e;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #005c4e;">F3: Logistique</div>
+          
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Matériels requis? <span style="color:#dc2626;">*</span></label>
+            <div style="display:flex;gap:12px;">
+              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
+                <input type="radio" name="f3-materiels" value="non" checked onchange="toggleF3Materials(false)">
+                <span style="font-size:12px;">Non</span>
+              </label>
+              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
+                <input type="radio" name="f3-materiels" value="oui" onchange="toggleF3Materials(true)">
+                <span style="font-size:12px;">Oui</span>
+              </label>
+            </div>
+          </div>
+
+          <div id="f3-materials-section" style="display:none;background:#f0f9f7;padding:10px;border-radius:4px;margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#005c4e;margin-bottom:6px;">Items à prendre</label>
+            <textarea id="f3-materials-list" placeholder="HYG-001: 50 paires gants&#10;HYG-002: 100 masques..." style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;min-height:60px;font-family:inherit;font-size:11px;"></textarea>
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Véhicule requis?</label>
+            <div style="display:flex;gap:12px;">
+              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
+                <input type="radio" name="f3-vehicule" value="non" checked onchange="toggleF3Vehicle(false)">
+                <span style="font-size:12px;">Non</span>
+              </label>
+              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
+                <input type="radio" name="f3-vehicule" value="oui" onchange="toggleF3Vehicle(true)">
+                <span style="font-size:12px;">Oui</span>
+              </label>
+            </div>
+          </div>
+
+          <div id="f3-vehicle-section" style="display:none;">
+            <input type="text" id="f3-vehicle-name" placeholder="Véhicule assigné" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;margin-bottom:12px;">
+            <input type="text" id="f3-driver" placeholder="Chauffeur" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;margin-bottom:12px;">
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Notes Logistique</label>
+            <textarea id="f3-notes" placeholder="Observations..." style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;min-height:60px;font-family:inherit;font-size:11px;"></textarea>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:16px;padding-top:12px;border-top:0.5px solid #ddd;">
+            <button style="flex:1;background:white;border:0.5px solid #ddd;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;" onclick="switchToF(2)">← Retour F2</button>
+            <button style="flex:1;background:#005c4e;color:white;padding:8px;border:none;border-radius:4px;cursor:pointer;font-weight:500;" onclick="validateAndNext(3)">Suivant → F4</button>
+          </div>
+        </div>
+
+        <!-- F4: Direction Signature -->
+        <div id="f4-form" class="f-form" style="display:none;">
+          <div style="font-size:12px;font-weight:600;color:#005c4e;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #005c4e;">F4: Direction Signature</div>
+          
+          <div style="background:#e6f1fb;padding:10px;border-radius:4px;margin-bottom:12px;font-size:11px;color:#042c53;">
+            Signature du Directeur Départemental. Génération automatique de la feuille de route.
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Tous les critères sont satisfaits? <span style="color:#dc2626;">*</span></label>
+            <div style="display:flex;gap:12px;">
+              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
+                <input type="radio" name="f4-criteres" value="oui" checked>
+                <span style="font-size:12px;">Oui</span>
+              </label>
+              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
+                <input type="radio" name="f4-criteres" value="non">
+                <span style="font-size:12px;">Non</span>
+              </label>
+            </div>
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Date de signature <span style="color:#dc2626;">*</span></label>
+            <input type="date" id="f4-date-sig" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Notes Direction</label>
+            <textarea id="f4-notes" placeholder="Observations..." style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;min-height:60px;font-family:inherit;font-size:11px;"></textarea>
+          </div>
+
+          <div style="background:#f0f9f7;padding:10px;border-radius:4px;margin-bottom:12px;font-size:11px;color:#005c4e;">
+            ✓ Feuille de route sera générée automatiquement et envoyée au Secrétariat
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:16px;padding-top:12px;border-top:0.5px solid #ddd;">
+            <button style="flex:1;background:white;border:0.5px solid #ddd;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;" onclick="switchToF(3)">← Retour F3</button>
+            <button style="flex:1;background:#005c4e;color:white;padding:8px;border:none;border-radius:4px;cursor:pointer;font-weight:500;" onclick="validateAndNext(4)">Signer et soumettre → F5</button>
+          </div>
+        </div>
+
+        <!-- F5: Rapport -->
+        <div id="f5-form" class="f-form" style="display:none;">
+          <div style="font-size:12px;font-weight:600;color:#005c4e;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #005c4e;">F5: Rapport d'activité (après exécution)</div>
+          
+          <div style="background:#fef3c7;padding:10px;border-radius:4px;margin-bottom:12px;font-size:11px;color:#856404;">
+            ⏳ Cette étape se complète après que l'activité soit exécutée
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Date de début <span style="color:#dc2626;">*</span></label>
+            <input type="date" id="f5-date-debut" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Date de fin <span style="color:#dc2626;">*</span></label>
+            <input type="date" id="f5-date-fin" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Upload rapport <span style="color:#dc2626;">*</span></label>
+            <input type="file" id="f5-rapport" accept=".pdf,.docx" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Upload feuille de présence <span style="color:#dc2626;">*</span></label>
+            <input type="file" id="f5-presence" accept=".pdf,.jpg,.png" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Notes</label>
+            <textarea id="f5-notes" placeholder="Observations..." style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;min-height:60px;font-family:inherit;font-size:11px;"></textarea>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:16px;padding-top:12px;border-top:0.5px solid #ddd;">
+            <button style="flex:1;background:white;border:0.5px solid #ddd;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;" onclick="switchToF(4)">← Retour F4</button>
+            <button style="flex:1;background:#005c4e;color:white;padding:8px;border:none;border-radius:4px;cursor:pointer;font-weight:500;" onclick="validateAndNext(5)">Soumettre rapport → F6/F7</button>
+          </div>
+        </div>
+
+        <!-- F6: Feu Vert (Conditionnel) -->
+        <div id="f6-form" class="f-form" style="display:none;">
+          <div style="font-size:12px;font-weight:600;color:#005c4e;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #005c4e;">F6: Feu Vert Administration (si financement APRES)</div>
+          
+          <div style="background:#e6f1fb;padding:10px;border-radius:4px;margin-bottom:12px;font-size:11px;color:#042c53;">
+            Cette étape s'affiche seulement si le financement est APRES (F2)
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Justificatifs conformes? <span style="color:#dc2626;">*</span></label>
+            <div style="display:flex;gap:12px;">
+              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
+                <input type="radio" name="f6-conformes" value="oui" checked>
+                <span style="font-size:12px;">Oui</span>
+              </label>
+              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
+                <input type="radio" name="f6-conformes" value="non">
+                <span style="font-size:12px;">Non</span>
+              </label>
+            </div>
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Autoriser le décaissement? <span style="color:#dc2626;">*</span></label>
+            <div style="display:flex;gap:12px;">
+              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
+                <input type="radio" name="f6-autorise" value="oui" checked>
+                <span style="font-size:12px;">Oui</span>
+              </label>
+              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
+                <input type="radio" name="f6-autorise" value="non">
+                <span style="font-size:12px;">Non</span>
+              </label>
+            </div>
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Notes Admin</label>
+            <textarea id="f6-notes" placeholder="Observations..." style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;min-height:60px;font-family:inherit;font-size:11px;"></textarea>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:16px;padding-top:12px;border-top:0.5px solid #ddd;">
+            <button style="flex:1;background:white;border:0.5px solid #ddd;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;" onclick="switchToF(5)">← Retour F5</button>
+            <button style="flex:1;background:#005c4e;color:white;padding:8px;border:none;border-radius:4px;cursor:pointer;font-weight:500;" onclick="validateAndNext(6)">Approuver → F7</button>
+          </div>
+        </div>
+
+        <!-- F7: Clôture Comptabilité -->
+        <div id="f7-form" class="f-form" style="display:none;">
+          <div style="font-size:12px;font-weight:600;color:#005c4e;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid #005c4e;">F7: Clôture Comptabilité</div>
+          
+          <div style="background:#e6f1fb;padding:10px;border-radius:4px;margin-bottom:12px;font-size:11px;color:#042c53;">
+            Enregistrement final des décaissements et clôture de l'activité
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Montant décaissé (HTG) <span style="color:#dc2626;">*</span></label>
+            <input type="number" id="f7-montant" placeholder="12500" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Date de décaissement <span style="color:#dc2626;">*</span></label>
+            <input type="date" id="f7-date-decaisse" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Compte bancaire <span style="color:#dc2626;">*</span></label>
+            <select id="f7-compte" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+              <option value="">Sélectionner...</option>
+              <option value="c1">C1 - Fonctionnement</option>
+              <option value="c2">C2 - Fonds Externes</option>
+              <option value="c3">C3 - Réserve</option>
+              <option value="c4">C4 - Autre</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Numéro transaction/chèque <span style="color:#dc2626;">*</span></label>
+            <input type="text" id="f7-transaction" placeholder="CHQ-2026-0045 ou TRX-12345" style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;">
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Justificatifs archivés?</label>
+            <div style="display:flex;gap:12px;">
+              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
+                <input type="radio" name="f7-archives" value="oui" checked>
+                <span style="font-size:12px;">Oui</span>
+              </label>
+              <label style="display:flex;gap:6px;align-items:center;cursor:pointer;">
+                <input type="radio" name="f7-archives" value="non">
+                <span style="font-size:12px;">Non</span>
+              </label>
+            </div>
+          </div>
+
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-weight:500;color:#333;margin-bottom:4px;">Notes de clôture</label>
+            <textarea id="f7-notes" placeholder="Observations..." style="width:100%;padding:7px;border:0.5px solid #ddd;border-radius:4px;min-height:60px;font-family:inherit;font-size:11px;"></textarea>
+          </div>
+
+          <div style="background:#d1e7dd;padding:10px;border-radius:4px;margin-bottom:12px;font-size:11px;color:#0f5132;">
+            ✓ Activité sera marquée comme CLÔTURÉE après soumission
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:16px;padding-top:12px;border-top:0.5px solid #ddd;">
+            <button style="flex:1;background:white;border:0.5px solid #ddd;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;" onclick="switchToF(6)">← Retour F6</button>
+            <button style="flex:1;background:#005c4e;color:white;padding:8px;border:none;border-radius:4px;cursor:pointer;font-weight:500;" onclick="closeActivity()">Clôturer l'activité ✓</button>
+          </div>
+        </div>
+
       </div>
     </div>
 
   </div>
 
-  <style>
-    .f-tab { transition: all 0.2s; }
-    .f-tab:hover { color: #333 !important; }
-    .f-content { animation: fadeIn 0.2s; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  </style>
-
   <script>
-    function switchF(btn, stage) {
-      document.querySelectorAll('.f-tab').forEach(b => {
-        b.style.borderBottom = 'none';
-        b.style.color = '#999';
-      });
-      btn.style.borderBottom = '2px solid #005c4e';
-      btn.style.color = '#005c4e';
-      
-      document.querySelectorAll('.f-content').forEach(c => c.style.display = 'none');
-      document.getElementById(stage + '-content').style.display = 'block';
+    let currentActivity = null;
+    let activities = JSON.parse(localStorage.getItem('activities') || '[]');
+    let userPin = window.currentUserPin || '174838'; // From Bureau main.js
+
+    // Check if user can create activities
+    function checkCreatePermission() {
+      if (userPin === '174838') {
+        document.getElementById('newActivityBtnContainer').style.display = 'block';
+      }
     }
 
-    function loadActivity(id) {
+    // Load activities on init
+    function loadActivitiesList() {
+      const list = document.getElementById('activitiesList');
+      if (activities.length === 0) {
+        list.innerHTML = '<div style="text-align:center;color:#999;padding:20px;">Aucune activité</div>';
+      } else {
+        list.innerHTML = activities.map((a, i) => `
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 0.5fr;gap:12px;padding:8px 0;border-bottom:0.5px solid #eee;align-items:center;">
+            <div style="cursor:pointer;color:#005c4e;" onclick="loadActivity(${i})"><strong>${a.titre || 'Sans titre'}</strong></div>
+            <div style="font-size:11px;color:#666;">${a.responsable || '-'}</div>
+            <div style="font-size:11px;color:#666;">${a.montant || '-'} HTG</div>
+            <div><span style="background:#d1e7dd;color:#0f5132;padding:3px 8px;border-radius:3px;font-size:11px;">F${a.stage || 1}</span></div>
+            <div><button style="background:none;border:none;cursor:pointer;" onclick="loadActivity(${i})">→</button></div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function startNewActivity() {
+      currentActivity = { stage: 1, titre: '', montant: '', responsable: '', email: '', service: '', type: '', lieu: '', date_prevue: '', nb_participants: '', duree: '' };
       document.getElementById('dashboardView').style.display = 'none';
-      document.getElementById('dossierView').style.display = 'flex';
+      document.getElementById('activityFormView').style.display = 'flex';
+      document.getElementById('activityTitle').textContent = 'Nouvelle activité';
+      document.getElementById('activityMeta').textContent = 'F1: Soumission TDR';
+      switchToF(1);
+    }
+
+    function loadActivity(index) {
+      currentActivity = activities[index];
+      document.getElementById('dashboardView').style.display = 'none';
+      document.getElementById('activityFormView').style.display = 'flex';
+      document.getElementById('activityTitle').textContent = currentActivity.titre || 'Activité (sans titre)';
+      document.getElementById('activityMeta').textContent = `F${currentActivity.stage}: `;
+      switchToF(currentActivity.stage || 1);
+      populateForm();
+    }
+
+    function switchToF(f) {
+      document.querySelectorAll('.f-form').forEach(el => el.style.display = 'none');
+      document.getElementById(`f${f}-form`).style.display = 'block';
+      
+      // Update progress
+      document.querySelectorAll('.f-progress').forEach((el, i) => {
+        if (i + 1 <= f) {
+          el.style.background = '#005c4e';
+          el.style.color = 'white';
+        } else {
+          el.style.background = '#f0f0f0';
+          el.style.color = '#333';
+        }
+      });
+
+      window.scrollTo(0, 0);
+    }
+
+    function toggleF3Materials(show) {
+      document.getElementById('f3-materials-section').style.display = show ? 'block' : 'none';
+    }
+
+    function toggleF3Vehicle(show) {
+      document.getElementById('f3-vehicle-section').style.display = show ? 'block' : 'none';
+    }
+
+    function validateAndNext(stage) {
+      saveFormToActivity(stage);
+      if (stage < 7) switchToF(stage + 1);
+    }
+
+    function saveFormToActivity(stage) {
+      if (stage === 1) {
+        currentActivity.stage = 1;
+        currentActivity.titre = document.getElementById('f1-titre').value;
+        currentActivity.montant = document.getElementById('f1-montant').value;
+        currentActivity.responsable = document.getElementById('f1-responsable').value;
+        currentActivity.email = document.getElementById('f1-email').value;
+      } else if (stage === 2) {
+        currentActivity.stage = 2;
+        currentActivity.financement = document.querySelector('input[name="f2-financement"]:checked')?.value || '';
+      } else if (stage === 3) {
+        currentActivity.stage = 3;
+      } else if (stage === 4) {
+        currentActivity.stage = 4;
+      } else if (stage === 5) {
+        currentActivity.stage = 5;
+      } else if (stage === 6) {
+        currentActivity.stage = 6;
+      } else if (stage === 7) {
+        currentActivity.stage = 7;
+      }
+    }
+
+    function populateForm() {
+      if (currentActivity.titre) document.getElementById('f1-titre').value = currentActivity.titre;
+      if (currentActivity.montant) document.getElementById('f1-montant').value = currentActivity.montant;
+    }
+
+    function closeActivity() {
+      saveFormToActivity(7);
+      currentActivity.stage = 7;
+      
+      // Save or update in list
+      const idx = activities.findIndex(a => a.titre === currentActivity.titre);
+      if (idx === -1) {
+        activities.push(currentActivity);
+      } else {
+        activities[idx] = currentActivity;
+      }
+      localStorage.setItem('activities', JSON.stringify(activities));
+      
+      backToDashboard();
+      loadActivitiesList();
     }
 
     function backToDashboard() {
-      document.getElementById('dossierView').style.display = 'none';
-      document.getElementById('dashboardView').style.display = 'block';
+      document.getElementById('activityFormView').style.display = 'none';
+      document.getElementById('dashboardView').style.display = 'flex';
     }
 
-    function newActivity() {
-      alert('Créer nouvelle activité - Fonctionnalité à venir');
-    }
-
-    function startF3() {
-      document.getElementById('f3Modal').style.display = 'block';
-    }
-
-    function closeF3() {
-      document.getElementById('f3Modal').style.display = 'none';
-    }
-
-    function toggleF3Purchase(show) {
-      document.getElementById('f3PurchaseSection').style.display = show ? 'block' : 'none';
-    }
-
-    function submitF3() {
-      alert('F3 submitted - Activity will move to F4');
-      closeF3();
-      loadActivity('ACT-2026-001');
-    }
-
-    window.onclick = function(e) {
-      const modal = document.getElementById('f3Modal');
-      if (e.target === modal) modal.style.display = 'none';
-    }
+    // Init
+    checkCreatePermission();
+    loadActivitiesList();
   </script>
 </div>
-
 
   <!-- ══ VISITES ══ -->
 <div class="panel" id="p-visites">
