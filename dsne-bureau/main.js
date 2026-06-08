@@ -57,6 +57,10 @@ function initDB() {
   `);
   db.prepare("INSERT OR IGNORE INTO users (code, nom_complet, role) VALUES (?, ?, ?)")
     .run('174839', 'Daisha Dorsainvil', 'admin');
+  db.prepare("INSERT OR IGNORE INTO users (code, nom_complet, role) VALUES (?, ?, ?)")
+    .run('678079', 'Pierre Décius', 'adm');
+  db.prepare("INSERT OR IGNORE INTO users (code, nom_complet, role) VALUES (?, ?, ?)")
+    .run('560037', 'Voldking Jean Prospere', 'comp');
 }
 
 function createWindow() {
