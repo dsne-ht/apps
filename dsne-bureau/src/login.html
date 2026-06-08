@@ -77,6 +77,11 @@ async function submitCode() {
   if (!code || code.length !== 6) { showAlert('Veuillez saisir un code à 6 chiffres.'); return; }
   const result = await window.dsne.checkCode({ code });
   if (!result.ok) { showAlert(result.message); return; }
+  if (result.autoLogin) {
+    sessionStorage.setItem('user', JSON.stringify(result.user));
+    window.location.href = 'index.html';
+    return;
+  }
   currentCode = code;
   document.getElementById('step-code').style.display='none';
   if (!result.activated) {
