@@ -1,0 +1,329 @@
+<div id="f1-form" style="max-width:700px;">
+  <style>
+    .f1-section { margin-bottom: 20px; }
+    .f1-section-title { font-size: 13px; font-weight: 700; color: #005c4e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid #005c4e; }
+    .f1-field { margin-bottom: 14px; }
+    .f1-label { display: block; font-size: 12px; font-weight: 500; color: #333; margin-bottom: 6px; }
+    .f1-required { color: #dc2626; }
+    .f1-input, .f1-select, .f1-textarea { width: 100%; padding: 8px 10px; font-size: 12px; border: 0.5px solid #ddd; border-radius: 4px; font-family: inherit; }
+    .f1-input:focus, .f1-select:focus, .f1-textarea:focus { outline: none; border-color: #005c4e; box-shadow: 0 0 0 2px rgba(0,92,78,0.1); }
+    .f1-textarea { resize: vertical; min-height: 70px; }
+    .f1-error { border-color: #dc2626 !important; }
+    .f1-error-msg { color: #dc2626; font-size: 11px; margin-top: 4px; display: none; }
+    .f1-error-msg.show { display: block; }
+    .f1-checkbox-group, .f1-radio-group { display: flex; flex-direction: column; gap: 8px; }
+    .f1-checkbox-item, .f1-radio-item { display: flex; gap: 8px; align-items: flex-start; }
+    .f1-checkbox-item input, .f1-radio-item input { margin-top: 3px; flex-shrink: 0; }
+    .f1-checkbox-item label, .f1-radio-item label { font-size: 12px; cursor: pointer; }
+    .f1-helper-text { font-size: 11px; color: #666; margin-top: 4px; font-style: italic; }
+    .f1-file-input { display: none; }
+    .f1-file-button { background: white; border: 0.5px dashed #ddd; padding: 10px; border-radius: 4px; cursor: pointer; text-align: center; font-size: 12px; color: #666; transition: all 0.2s; }
+    .f1-file-button:hover { background: #f9f9f9; border-color: #005c4e; }
+    .f1-file-name { font-size: 11px; color: #40b89c; margin-top: 4px; font-weight: 500; }
+    .f1-submit-btn { background: #005c4e; color: white; padding: 10px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: 500; font-size: 12px; width: 100%; margin-top: 20px; }
+    .f1-submit-btn:hover { background: #004039; }
+    .f1-submit-btn:disabled { background: #ccc; cursor: not-allowed; }
+    .f1-readonly { background: #f5f5f5; color: #666; }
+  </style>
+
+  <!-- SECTION 1: Informations de base -->
+  <div class="f1-section">
+    <div class="f1-section-title">Informations de base</div>
+    
+    <div class="f1-field">
+      <label class="f1-label">1. Date de réception du TDR <span class="f1-required">*</span></label>
+      <input type="date" id="f1-date-reception" class="f1-input" required>
+      <div class="f1-error-msg">Ce champ est obligatoire</div>
+    </div>
+
+    <div class="f1-field">
+      <label class="f1-label">2. Titre de l'activité <span class="f1-required">*</span></label>
+      <input type="text" id="f1-titre" class="f1-input" placeholder="Ex: Formation hygiène publique" required>
+      <div class="f1-error-msg">Ce champ est obligatoire</div>
+    </div>
+
+    <div class="f1-field">
+      <label class="f1-label">3. Montant estimé (HTG) <span class="f1-required">*</span></label>
+      <input type="number" id="f1-montant" class="f1-input" placeholder="12500" min="0" required>
+      <div class="f1-error-msg">Ce champ est obligatoire</div>
+    </div>
+
+    <div class="f1-field">
+      <label class="f1-label">4. Type d'activité <span class="f1-required">*</span></label>
+      <select id="f1-type" class="f1-select" required>
+        <option value="">Sélectionner un type...</option>
+        <option value="formation">Formation</option>
+        <option value="supervision">Supervision</option>
+        <option value="atelier">Atelier</option>
+        <option value="reunion">Réunion</option>
+        <option value="campagne">Campagne</option>
+        <option value="autre">Autre</option>
+      </select>
+      <div class="f1-error-msg">Ce champ est obligatoire</div>
+    </div>
+
+    <div class="f1-field">
+      <label class="f1-label">5. Service organisateur <span class="f1-required">*</span></label>
+      <input type="text" id="f1-service" class="f1-input" placeholder="Ex: Communication & Planning" required>
+      <div class="f1-error-msg">Ce champ est obligatoire</div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: Responsable de l'activité -->
+  <div class="f1-section">
+    <div class="f1-section-title">Responsable de l'activité</div>
+    
+    <div class="f1-field">
+      <label class="f1-label">6. Nom du responsable <span class="f1-required">*</span></label>
+      <input type="text" id="f1-responsable" class="f1-input" placeholder="Dr. Eddy Pierre" required>
+      <div class="f1-error-msg">Ce champ est obligatoire</div>
+    </div>
+
+    <div class="f1-field">
+      <label class="f1-label">7. Email <span class="f1-required">*</span></label>
+      <input type="email" id="f1-email" class="f1-input" placeholder="eddy@dsne.ht" required>
+      <div class="f1-error-msg">Email invalide</div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: Dates et lieu -->
+  <div class="f1-section">
+    <div class="f1-section-title">Dates et lieu d'exécution</div>
+    
+    <div class="f1-field">
+      <label class="f1-label">8. Date prévue de l'activité <span class="f1-required">*</span></label>
+      <input type="date" id="f1-date-prevue" class="f1-input" required>
+      <div class="f1-error-msg">Ce champ est obligatoire</div>
+    </div>
+
+    <div class="f1-field">
+      <label class="f1-label">9. Lieu <span class="f1-required">*</span></label>
+      <input type="text" id="f1-lieu" class="f1-input" placeholder="Fort-Liberté" required>
+      <div class="f1-error-msg">Ce champ est obligatoire</div>
+    </div>
+
+    <div class="f1-field">
+      <label class="f1-label">10. Nombre de participants <span class="f1-required">*</span></label>
+      <input type="number" id="f1-nb-participants" class="f1-input" placeholder="25" min="1" required>
+      <div class="f1-error-msg">Ce champ est obligatoire</div>
+    </div>
+
+    <div class="f1-field">
+      <label class="f1-label">11. Durée de l'activité (jours) <span class="f1-required">*</span></label>
+      <input type="number" id="f1-duree" class="f1-input" placeholder="1" min="0.5" step="0.5" required>
+      <div class="f1-error-msg">Ce champ est obligatoire</div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: Notifications calendrier -->
+  <div class="f1-section">
+    <div class="f1-section-title">Calendriers à notifier</div>
+    <div class="f1-helper-text" style="margin-bottom: 10px;">Sélectionner les calendriers qui doivent être notifiés</div>
+    
+    <div class="f1-checkbox-group">
+      <div class="f1-checkbox-item">
+        <input type="checkbox" id="f1-cal-soss" value="soss" class="f1-calendar-check">
+        <label for="f1-cal-soss">SOSS</label>
+      </div>
+      <div class="f1-checkbox-item">
+        <input type="checkbox" id="f1-cal-tb" value="tb" class="f1-calendar-check">
+        <label for="f1-cal-tb">TB</label>
+      </div>
+      <div class="f1-checkbox-item">
+        <input type="checkbox" id="f1-cal-epidem" value="epidem" class="f1-calendar-check">
+        <label for="f1-cal-epidem">Epidem</label>
+      </div>
+      <div class="f1-checkbox-item">
+        <input type="checkbox" id="f1-cal-labo" value="labo" class="f1-calendar-check">
+        <label for="f1-cal-labo">Labo</label>
+      </div>
+      <div class="f1-checkbox-item">
+        <input type="checkbox" id="f1-cal-malaria" value="malaria" class="f1-calendar-check">
+        <label for="f1-cal-malaria">Malaria</label>
+      </div>
+      <div class="f1-checkbox-item">
+        <input type="checkbox" id="f1-cal-nutrition" value="nutrition" class="f1-calendar-check">
+        <label for="f1-cal-nutrition">Nutrition</label>
+      </div>
+      <div class="f1-checkbox-item">
+        <input type="checkbox" id="f1-cal-pev" value="pev" class="f1-calendar-check">
+        <label for="f1-cal-pev">PEV</label>
+      </div>
+      <div class="f1-checkbox-item">
+        <input type="checkbox" id="f1-cal-pharmacie" value="pharmacie" class="f1-calendar-check">
+        <label for="f1-cal-pharmacie">Pharmacie</label>
+      </div>
+      <div class="f1-checkbox-item">
+        <input type="checkbox" id="f1-cal-sante-com" value="sante-com" class="f1-calendar-check">
+        <label for="f1-cal-sante-com">Sante Communautaire</label>
+      </div>
+      <div class="f1-checkbox-item">
+        <input type="checkbox" id="f1-cal-sante-mat" value="sante-mat" class="f1-calendar-check">
+        <label for="f1-cal-sante-mat">Sante Maternelle</label>
+      </div>
+      <div class="f1-checkbox-item">
+        <input type="checkbox" id="f1-cal-vih" value="vih" class="f1-calendar-check">
+        <label for="f1-cal-vih">VIH</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: Upload TDR -->
+  <div class="f1-section">
+    <div class="f1-section-title">Upload TDR et vérification</div>
+    
+    <div class="f1-field">
+      <label class="f1-label">13. Upload du TDR (PDF ou Word) <span class="f1-required">*</span></label>
+      <input type="file" id="f1-tdr-file" class="f1-file-input" accept=".pdf,.doc,.docx" required onchange="updateFileName('f1-tdr-file', 'f1-tdr-name')">
+      <div class="f1-file-button" onclick="document.getElementById('f1-tdr-file').click();">📎 Cliquez pour uploader ou glissez un fichier</div>
+      <div id="f1-tdr-name" class="f1-file-name"></div>
+      <div class="f1-error-msg">Veuillez uploader le TDR</div>
+    </div>
+
+    <div class="f1-field">
+      <label class="f1-label">14. Le TDR contient les éléments suivants <span class="f1-required">*</span></label>
+      <div class="f1-helper-text" style="margin-bottom: 10px;">Plusieurs réponses possibles</div>
+      <div class="f1-checkbox-group">
+        <div class="f1-checkbox-item">
+          <input type="checkbox" id="f1-tdr-budget" value="budget" class="f1-tdr-check">
+          <label for="f1-tdr-budget">Budget détaillé</label>
+        </div>
+        <div class="f1-checkbox-item">
+          <input type="checkbox" id="f1-tdr-participants" value="participants" class="f1-tdr-check">
+          <label for="f1-tdr-participants">Liste des participants</label>
+        </div>
+        <div class="f1-checkbox-item">
+          <input type="checkbox" id="f1-tdr-programme" value="programme" class="f1-tdr-check">
+          <label for="f1-tdr-programme">Programme/agenda de l'activité</label>
+        </div>
+        <div class="f1-checkbox-item">
+          <input type="checkbox" id="f1-tdr-justification" value="justification" class="f1-tdr-check">
+          <label for="f1-tdr-justification">Justification de l'activité</label>
+        </div>
+      </div>
+      <div class="f1-error-msg">Sélectionner au moins un élément</div>
+    </div>
+
+    <div class="f1-field">
+      <label class="f1-label">15. Si éléments manquants: Préciser</label>
+      <textarea id="f1-elements-manquants" class="f1-textarea" placeholder="Décrire les éléments manquants et pourquoi..."></textarea>
+      <div class="f1-helper-text">Laisser vide si tous les éléments sont présents</div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: Enregistrement -->
+  <div class="f1-section">
+    <div class="f1-section-title">Enregistrement</div>
+    
+    <div class="f1-field">
+      <label class="f1-label">16. Enregistré par (Secrétariat) <span class="f1-required">*</span></label>
+      <input type="text" id="f1-enregistre-par" class="f1-input f1-readonly" value="Daisha Dorsainvil" readonly>
+    </div>
+  </div>
+
+  <!-- Submit Button -->
+  <button class="f1-submit-btn" onclick="submitF1Form()">Soumettre à F2 →</button>
+</div>
+
+<script>
+function updateFileName(inputId, displayId) {
+  const input = document.getElementById(inputId);
+  const display = document.getElementById(displayId);
+  if (input.files && input.files[0]) {
+    display.textContent = '✓ ' + input.files[0].name;
+  }
+}
+
+function validateF1Form() {
+  const errors = [];
+  
+  // Check required text fields
+  const requiredFields = [
+    'f1-date-reception',
+    'f1-titre',
+    'f1-montant',
+    'f1-type',
+    'f1-service',
+    'f1-responsable',
+    'f1-email',
+    'f1-date-prevue',
+    'f1-lieu',
+    'f1-nb-participants',
+    'f1-duree'
+  ];
+
+  requiredFields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    const errorMsg = field.parentElement.querySelector('.f1-error-msg');
+    if (!field.value) {
+      field.classList.add('f1-error');
+      errorMsg.classList.add('show');
+      errors.push(fieldId);
+    } else {
+      field.classList.remove('f1-error');
+      errorMsg.classList.remove('show');
+    }
+  });
+
+  // Check email format
+  const emailField = document.getElementById('f1-email');
+  const emailError = emailField.parentElement.querySelector('.f1-error-msg');
+  if (emailField.value && !emailField.value.includes('@')) {
+    emailField.classList.add('f1-error');
+    emailError.classList.add('show');
+    errors.push('f1-email');
+  }
+
+  // Check file upload
+  const fileInput = document.getElementById('f1-tdr-file');
+  const fileError = fileInput.parentElement.querySelector('.f1-error-msg');
+  if (!fileInput.files || !fileInput.files[0]) {
+    fileError.classList.add('show');
+    errors.push('f1-tdr-file');
+  } else {
+    fileError.classList.remove('show');
+  }
+
+  // Check TDR checkboxes
+  const tdrChecks = document.querySelectorAll('.f1-tdr-check:checked');
+  const tdrError = document.querySelector('[id="f1-tdr-participants"]').parentElement.parentElement.querySelector('.f1-error-msg');
+  if (tdrChecks.length === 0) {
+    tdrError.classList.add('show');
+    errors.push('f1-tdr-check');
+  } else {
+    tdrError.classList.remove('show');
+  }
+
+  return errors.length === 0;
+}
+
+function submitF1Form() {
+  if (!validateF1Form()) {
+    alert('⚠️ Veuillez remplir tous les champs obligatoires');
+    return;
+  }
+
+  // Collect form data
+  const formData = {
+    dateReception: document.getElementById('f1-date-reception').value,
+    titre: document.getElementById('f1-titre').value,
+    montant: document.getElementById('f1-montant').value,
+    type: document.getElementById('f1-type').value,
+    service: document.getElementById('f1-service').value,
+    responsable: document.getElementById('f1-responsable').value,
+    email: document.getElementById('f1-email').value,
+    datePrevue: document.getElementById('f1-date-prevue').value,
+    lieu: document.getElementById('f1-lieu').value,
+    nbParticipants: document.getElementById('f1-nb-participants').value,
+    duree: document.getElementById('f1-duree').value,
+    calendriers: Array.from(document.querySelectorAll('.f1-calendar-check:checked')).map(c => c.value),
+    tdrElements: Array.from(document.querySelectorAll('.f1-tdr-check:checked')).map(c => c.value),
+    elementsManquants: document.getElementById('f1-elements-manquants').value,
+    enregistrePar: document.getElementById('f1-enregistre-par').value
+  };
+
+  console.log('F1 Form Data:', formData);
+  alert('✓ F1 Soumission TDR enregistrée!\n\nActivité: ' + formData.titre + '\nMontant: ' + formData.montant + ' HTG\n\nEn attente de F2 - Validation Administration');
+  // TODO: Send to Google Sheets API
+}
+</script>
