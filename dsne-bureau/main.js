@@ -78,7 +78,7 @@ function createWindow() {
   });
   win.loadFile(path.join(__dirname, 'src', 'login.html'));
   win.setMenuBarVisibility(false);
-  win.once('ready-to-show', () => win.show());
+  win.once('ready-to-show', () => { win.show(); win.webContents.openDevTools(); });
   win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
