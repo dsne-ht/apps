@@ -160,24 +160,26 @@ const PAGE_META = {
   rapports:    ['Suivi Rapports',    'Rapports institutionnels · lecture seule'],
 };
 
-document.querySelectorAll('.sb-item[data-page]').forEach(el => {
-  el.addEventListener('click', () => {
-    const page = el.dataset.page;
-    document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
-    document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    const p = document.getElementById('page-' + page);
-    if (p) p.classList.add('active');
-    const [title, sub] = PAGE_META[page] || [page, ''];
-    document.getElementById('pageTitle').textContent = title;
-    document.getElementById('pageSub').textContent = sub;
-    if (page === 'visites') loadVisites();
-    if (page === 'hygiene') loadHyg();
-    if (page === 'activites') loadActivites();
-    if (page === 'cm') loadCM();
-    if (page === 'logistique') loadLog();
+function initNav() {
+  document.querySelectorAll('.sb-item[data-page]').forEach(el => {
+    el.addEventListener('click', () => {
+      const page = el.dataset.page;
+      document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+      document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      const p = document.getElementById('page-' + page);
+      if (p) p.classList.add('active');
+      const [title, sub] = PAGE_META[page] || [page, ''];
+      document.getElementById('pageTitle').textContent = title;
+      document.getElementById('pageSub').textContent = sub;
+      if (page === 'visites') loadVisites();
+      if (page === 'hygiene') loadHyg();
+      if (page === 'activites') loadActivites();
+      if (page === 'cm') loadCM();
+      if (page === 'logistique') loadLog();
+    });
   });
-});
+}
 
 // ── DATE ──
 (function() {
@@ -357,6 +359,7 @@ function formatTime(ts) {
 
 // ── INIT ──
 window.addEventListener('DOMContentLoaded', () => {
+  initNav();
   loadVisites();
 });
 </script>
