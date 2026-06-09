@@ -71,7 +71,7 @@
       </div>
       <div class="card">
         <div class="card-shine"></div>
-        <div class="card-hdr"><span class="card-hdr-title">Liste d'attente</span><span class="card-hdr-action" onclick="loadVisites()">Actualiser</span></div>
+        <div class="card-hdr"><span class="card-hdr-title">Liste d&#39;attente</span><span class="card-hdr-action" onclick="loadVisites()">Actualiser</span></div>
         <div id="visites-list"><div class="placeholder"><i class="ti ti-loader"></i><div class="placeholder-txt">Chargement...</div></div></div>
       </div>
     </div>
@@ -239,7 +239,7 @@ async function loadVisites() {
     document.getElementById('vs-docs').textContent = docs.length;
     document.getElementById('vs-week').textContent = week.length;
     if (today.length === 0) {
-      list.innerHTML = '<div class="placeholder"><i class="ti ti-users"></i><div class="placeholder-txt">Aucune visite aujourd'hui</div></div>';
+      list.innerHTML = '<div class="placeholder"><i class="ti ti-users"></i><div class="placeholder-txt">Aucune visite aujourd&#39;hui</div></div>';
       return;
     }
     list.innerHTML = today.slice(0,8).map(v => {
