@@ -999,72 +999,7 @@ body {
     .f1-readonly { background: #f3f4f6; cursor: not-allowed; }
   </style>
 
-  <div id="f1-form" style="padding:20px;">
-  <h3 style="margin:0 0 20px 0; font-size:14px; color:#005c4e;">F1: Soumission TDR</h3>
-  
-  <div style="margin-bottom:16px;">
-    <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Titre de l'activité *</label>
-    <input type="text" id="f1-titre-input" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="Formation hygiène publique">
-  </div>
-
-  <div style="margin-bottom:16px;">
-    <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Montant (HTG) *</label>
-    <input type="number" id="f1-montant-input" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="12500">
-  </div>
-
-  <div style="margin-bottom:16px;">
-    <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Responsable *</label>
-    <input type="text" id="f1-responsable-input" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="Dr. Eddy Pierre">
-  </div>
-
-  <div style="margin-bottom:16px;">
-    <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Email *</label>
-    <input type="email" id="f1-email-input" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="eddy@dsne.ht">
-  </div>
-
-  <div style="margin-bottom:16px;">
-    <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Date prévue *</label>
-    <input type="date" id="f1-date-input" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;">
-  </div>
-
-  <div style="margin-bottom:16px;">
-    <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Lieu *</label>
-    <input type="text" id="f1-lieu-input" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="Fort-Liberté">
-  </div>
-
-  <div style="margin-bottom:16px;">
-    <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Participants *</label>
-    <input type="number" id="f1-participants-input" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="25">
-  </div>
-
-  <div style="margin-bottom:20px;">
-    <label style="display:block; margin-bottom:8px; font-size:12px; font-weight:500;">Calendriers à notifier</label>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px;">
-      <div><input type="checkbox"> <label>Direction</label></div>
-      <div><input type="checkbox"> <label>Administration</label></div>
-      <div><input type="checkbox"> <label>Comptabilité</label></div>
-      <div><input type="checkbox"> <label>Réception</label></div>
-      <div><input type="checkbox"> <label>SOSS</label></div>
-      <div><input type="checkbox"> <label>TB</label></div>
-      <div><input type="checkbox"> <label>Épidém</label></div>
-      <div><input type="checkbox"> <label>Labo</label></div>
-      <div><input type="checkbox"> <label>Malaria</label></div>
-      <div><input type="checkbox"> <label>Nutrition</label></div>
-      <div><input type="checkbox"> <label>PEV</label></div>
-      <div><input type="checkbox"> <label>Pharmacie</label></div>
-      <div><input type="checkbox"> <label>S. Communautaire</label></div>
-      <div><input type="checkbox"> <label>S. Maternelle</label></div>
-      <div><input type="checkbox"> <label>VIH</label></div>
-    </div>
-  </div>
-
-  <div style="margin-bottom:16px;">
-    <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Upload TDR *</label>
-    <input type="file" id="f1-tdr-input" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" accept=".pdf,.doc,.docx">
-  </div>
-
-  <button id="f1-submit-btn" style="background:#005c4e; color:white; padding:10px; border:none; cursor:pointer; font-weight:600; font-size:12px; width:100%;">Soumettre à F2 →</button>
-</div>
+  <div style="padding:20px; color:#999; text-align:center;">Activities section removed - rebuilding...</div>
 
 <script>
 document.getElementById('f1-submit-btn').addEventListener('click', function() {
@@ -1120,79 +1055,7 @@ document.getElementById('f1-submit-btn').addEventListener('click', function() {
       </div>
 
       <!-- Action Buttons -->
-      <div id="formActions" style="display:flex;gap:10px;background:white;padding:12px;border-radius:4px;border:0.5px solid #ddd;">
-        <button style="flex:1;background:white;border:0.5px solid #ddd;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;" onclick="backToDashboard()">← Retour au tableau</button>
-        <button id="submitBtn" style="flex:1;background:#005c4e;color:white;border:none;padding:8px;border-radius:4px;cursor:pointer;font-weight:500;display:none;" onclick="submitCurrentForm()">Soumettre</button>
-      </div>
-    </div>
-
-  </div>
-
-  <style>
-    #p-activites input[type="text"], #p-activites input[type="email"], #p-activites input[type="date"], #p-activites input[type="number"], #p-activites select, #p-activites textarea {
-      width: 100%; padding: 7px 9px; font-size: 12px; border: 0.5px solid #ddd; border-radius: 4px; font-family: inherit;
-    }
-    #p-activites input:focus, #p-activites select:focus, #p-activites textarea:focus {
-      outline: none; border-color: #005c4e; box-shadow: 0 0 0 2px rgba(0,92,78,0.1);
-    }
-    .form-section { margin-bottom: 16px; }
-    .form-section-title { font-size: 12px; font-weight: 600; color: #005c4e; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid #005c4e; }
-    .field-group { margin-bottom: 12px; }
-    .field-label { display: block; font-size: 12px; font-weight: 500; color: #333; margin-bottom: 4px; }
-    .field-required { color: #dc2626; }
-    .radio-group, .checkbox-group { display: flex; flex-direction: column; gap: 6px; }
-    .radio-item, .checkbox-item { display: flex; gap: 6px; align-items: flex-start; }
-    .radio-item input, .checkbox-item input { margin-top: 2px; flex-shrink: 0; }
-    .radio-item label, .checkbox-item label { font-size: 12px; cursor: pointer; }
-    .readonly { background: #f5f5f5; color: #999; }
-    .f-tab.active { color: #005c4e !important; border-bottom-color: #005c4e !important; }
-    .f-tab.editable { color: #333 !important; }
-    .f-content { display: none; }
-    .f-content.active { display: block; }
-  </style>
-
-  <script>
-    let currentUser = '174838';
-    let currentActivity = null;
-    let currentF = 'f1';
-
-    // Detect user on load
-    window.addEventListener('load', function() {
-      const pin = window.currentUserPin || '174838';
-      currentUser = pin;
-      initializeDashboard();
-    });
-
-    function initializeDashboard() {
-      const activities = getActivitiesForUser();
-      renderActivityList(activities);
-      
-      // Show role-specific elements
-      if (currentUser === '174838') { // Dory
-        document.getElementById('dorypanel').style.display = 'block';
-      }
-    }
-
-    function getActivitiesForUser() {
-      // Mock data - will be replaced with Google Sheets API call
-      const allActivities = [
-        { id: 'ACT-2026-001', title: 'Formation hygiène', responsible: 'Dr. Eddy P.', amount: '12,500 HTG', currentF: 'f3', status: 'En cours' }
-      ];
-
-      // Filter by role
-      if (currentUser === '560037') { // COMP - only F7
-        return allActivities.filter(a => parseInt(a.currentF.substring(1)) >= 7);
-      } else if (currentUser === '879992') { // LOG - only F3
-        return allActivities.filter(a => a.currentF === 'f3');
-      }
-      // Dory and ADM see all
-      return allActivities;
-    }
-
-    function renderActivityList(activities) {
-      const list = document.getElementById('activitiesList');
-      if (activities.length === 0) {
-        list.innerHTML = '<div style="padding:14px;text-align:center;color:#999;font-size:12px;">Aucune activité assignée à votre rôle</div>';
+      ';
         return;
       }
 
