@@ -181,29 +181,35 @@ function initNav() {
 }
 
 // ── DATE ──
-(function() {
+function initDate() {
   const days = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
   const months = ['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov','Déc'];
   const d = new Date();
-  document.getElementById('hdrDate').textContent = days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
-})();
+  const el = document.getElementById('hdrDate');
+  if (el) el.textContent = days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+}
 
 // ── USER ──
-(function() {
+function initUser() {
   try {
     const u = JSON.parse(sessionStorage.getItem('user') || '{}');
     if (u.nom_complet) {
       const parts = u.nom_complet.trim().split(' ');
-      document.getElementById('hdrInitials').textContent = (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase();
+      const el = document.getElementById('hdrInitials');
+      if (el) el.textContent = (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase();
     }
   } catch(e) {}
-})();
+}
 
 // ── LOGOUT ──
-document.getElementById('btnLogout').addEventListener('click', () => {
-  sessionStorage.removeItem('user');
-  window.location.href = 'login.html';
-});
+function initLogout() {
+  const btn = document.getElementById('btnLogout');
+  if (btn) btn.addEventListener('click', () => {
+    sessionStorage.removeItem('user');
+    if (window.dsne && window.dsne.logout) window.dsne.logout();
+    window.location.href = 'login.html';
+  });
+}
 
 // ── TOAST ──
 function showToast(msg, type='info') {
@@ -390,9 +396,11 @@ function safeLoad(page) {
 }
 
 // ── INIT ──
-// Nav must init immediately — no dependency on data loaders
 document.addEventListener('DOMContentLoaded', function() {
   initNav();
+  initDate();
+  initUser();
+  initLogout();
   safeLoad('visites');
 });
 </script>
