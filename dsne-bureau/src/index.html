@@ -9,12 +9,10 @@
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f3f4f6; }
     
     .container { display: flex; height: 100vh; }
-    
     .sidebar { width: 230px; background: #005c4e; color: white; overflow-y: auto; padding: 20px 0; }
     .sidebar-header { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
     .sidebar-header h1 { font-size: 14px; font-weight: 600; }
     .sidebar-header p { font-size: 11px; opacity: 0.8; margin-top: 4px; }
-    
     .sidebar-section { padding: 0; margin-bottom: 20px; }
     .sidebar-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 0 20px; margin-bottom: 8px; opacity: 0.7; }
     .sidebar-item { padding: 10px 20px; font-size: 13px; cursor: pointer; transition: all 0.2s; }
@@ -25,8 +23,28 @@
     .header { background: white; padding: 16px 24px; border-bottom: 1px solid #e5e7eb; }
     .header h2 { font-size: 16px; color: #1f2937; }
     
-    .content { flex: 1; overflow-y: auto; padding: 24px; }
-    .content-placeholder { text-align: center; color: #9ca3af; padding: 40px; }
+    .content { flex: 1; overflow: hidden; display: flex; gap: 16px; padding: 16px; }
+    .content > div { display: none; }
+    .content > div.active { display: flex; width: 100%; gap: 16px; }
+    
+    .activity-log { width: 300px; background: white; border: 1px solid #e5e7eb; border-radius: 0; overflow-y: auto; padding: 12px; }
+    .activity-item { padding: 10px; border-bottom: 1px solid #e5e7eb; font-size: 11px; cursor: pointer; transition: all 0.2s; }
+    .activity-item:hover { background: #f3f4f6; }
+    .activity-item.selected { background: #e6f1fb; border-left: 2px solid #005c4e; }
+    .activity-item-title { font-weight: 500; color: #1f2937; }
+    .activity-item-meta { font-size: 10px; color: #9ca3af; margin-top: 2px; }
+    
+    .form-area { flex: 1; background: white; border: 1px solid #e5e7eb; border-radius: 0; overflow-y: auto; padding: 20px; }
+    .f1-field { margin-bottom: 12px; }
+    .f1-label { display: block; margin-bottom: 4px; font-size: 11px; font-weight: 500; }
+    .f1-input, .f1-select { width: 100%; padding: 6px; font-size: 12px; border: 1px solid #d1d5db; }
+    .f1-input:focus, .f1-select:focus { outline: none; border-color: #005c4e; background: #f9fafb; }
+    .f1-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .f1-submit { background: #005c4e; color: white; padding: 8px 12px; border: none; cursor: pointer; font-weight: 600; font-size: 11px; width: 100%; margin-top: 12px; }
+    .f1-section-title { font-size: 11px; font-weight: 600; color: #005c4e; text-transform: uppercase; margin: 14px 0 8px 0; }
+    .f1-checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px; }
+    .f1-checkbox-item { display: flex; gap: 4px; align-items: center; }
+    .f1-checkbox-item input { margin: 0; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -40,40 +58,23 @@
       
       <div class="sidebar-section">
         <div class="sidebar-section-title">Institution</div>
-        <div class="sidebar-item">DSNE</div>
-        <div class="sidebar-item">État du Jour</div>
+        <div class="sidebar-item" onclick="switchPage('dsne')">DSNE</div>
+        <div class="sidebar-item" onclick="switchPage('etatjour')">État du Jour</div>
       </div>
       
       <div class="sidebar-section">
         <div class="sidebar-section-title">Opérations</div>
-        <div class="sidebar-item">Visites</div>
-        <div class="sidebar-item">Hygiène</div>
-        <div class="sidebar-item">Cliniques Mobiles</div>
-        <div class="sidebar-item">Logistique</div>
-        <div class="sidebar-item">Comptabilité</div>
-        <div class="sidebar-item active" onclick="showActivities()">Activités</div>
+        <div class="sidebar-item" onclick="switchPage('visites')">Visites</div>
+        <div class="sidebar-item" onclick="switchPage('hygiene')">Hygiène</div>
+        <div class="sidebar-item" onclick="switchPage('cm')">Cliniques Mobiles</div>
+        <div class="sidebar-item" onclick="switchPage('logistique')">Logistique</div>
+        <div class="sidebar-item" onclick="switchPage('comptabilite')">Comptabilité</div>
+        <div class="sidebar-item active" onclick="switchPage('activites')">Activités</div>
       </div>
       
       <div class="sidebar-section">
         <div class="sidebar-section-title">Rapports</div>
-        <div class="sidebar-item">Suivi Rapports</div>
-      </div>
-      
-      <div class="sidebar-section">
-        <div class="sidebar-section-title">Outils</div>
-        <div class="sidebar-item">Courrier</div>
-        <div class="sidebar-item">Notes</div>
-        <div class="sidebar-item">Documents</div>
-      </div>
-      
-      <div class="sidebar-section">
-        <div class="sidebar-section-title">Notes</div>
-        <div class="sidebar-item">Notes</div>
-      </div>
-      
-      <div class="sidebar-section">
-        <div class="sidebar-section-title">Système</div>
-        <div class="sidebar-item">Paramètres</div>
+        <div class="sidebar-item" onclick="switchPage('rapports')">Suivi Rapports</div>
       </div>
     </div>
     
@@ -84,54 +85,88 @@
       </div>
       
       <div class="content">
-        <div id="activitiesView">
-          <div style="margin-bottom: 20px;">
-            <button onclick="showAddForm()" style="background: #005c4e; color: white; padding: 8px 14px; border: none; cursor: pointer; font-weight: 600; font-size: 12px;">+ Nouvelle Activité</button>
+        <!-- Activités Page -->
+        <div id="activites-page" class="active">
+          <div class="activity-log">
+            <div style="font-weight: 600; margin-bottom: 8px; font-size: 11px;">LOG D'ACTIVITÉS</div>
+            <div class="activity-item selected">
+              <div class="activity-item-title">Formation hygiène publique</div>
+              <div class="activity-item-meta">Dr. Eddy Pierre • 12,500 HTG</div>
+            </div>
           </div>
           
-          <table style="width: 100%; border-collapse: collapse; font-size: 12px; background: white;">
-            <thead>
-              <tr style="background: #f3f4f6; border-bottom: 1px solid #e5e7eb;">
-                <th style="padding: 10px; text-align: left; font-weight: 600;">ID</th>
-                <th style="padding: 10px; text-align: left; font-weight: 600;">Titre</th>
-                <th style="padding: 10px; text-align: left; font-weight: 600;">Responsable</th>
-                <th style="padding: 10px; text-align: left; font-weight: 600;">Montant</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr style="border-bottom: 1px solid #e5e7eb;">
-                <td style="padding: 10px;">ACT-2026-001</td>
-                <td style="padding: 10px;">Formation hygiène publique</td>
-                <td style="padding: 10px;">Dr. Eddy Pierre</td>
-                <td style="padding: 10px;">12,500 HTG</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="form-area">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <h3 style="font-size: 13px; color: #005c4e;">F1: Soumission TDR</h3>
+              <button style="background: #005c4e; color: white; padding: 6px 10px; border: none; cursor: pointer; font-weight: 600; font-size: 11px;">+ Nouvelle</button>
+            </div>
+            
+            <div class="f1-section-title">Informations de base</div>
+            <div class="f1-grid">
+              <div class="f1-field"><label class="f1-label">Date réception *</label><input type="date" class="f1-input"></div>
+              <div class="f1-field"><label class="f1-label">Type *</label><select class="f1-select"><option>Formation</option><option>Supervision</option></select></div>
+            </div>
+            <div class="f1-field"><label class="f1-label">Titre *</label><input type="text" class="f1-input" placeholder="Formation hygiène publique"></div>
+            <div class="f1-grid">
+              <div class="f1-field"><label class="f1-label">Montant (HTG) *</label><input type="number" class="f1-input" placeholder="12500"></div>
+              <div class="f1-field"><label class="f1-label">Service *</label><input type="text" class="f1-input" placeholder="Communication"></div>
+            </div>
+            
+            <div class="f1-section-title">Responsable</div>
+            <div class="f1-grid">
+              <div class="f1-field"><label class="f1-label">Nom *</label><input type="text" class="f1-input" placeholder="Dr. Eddy Pierre"></div>
+              <div class="f1-field"><label class="f1-label">Email *</label><input type="email" class="f1-input" placeholder="eddy@dsne.ht"></div>
+            </div>
+            
+            <div class="f1-section-title">Exécution</div>
+            <div class="f1-grid">
+              <div class="f1-field"><label class="f1-label">Date prévue *</label><input type="date" class="f1-input"></div>
+              <div class="f1-field"><label class="f1-label">Lieu *</label><input type="text" class="f1-input" placeholder="Fort-Liberté"></div>
+            </div>
+            <div class="f1-grid">
+              <div class="f1-field"><label class="f1-label">Participants *</label><input type="number" class="f1-input" placeholder="25"></div>
+              <div class="f1-field"><label class="f1-label">Durée (jours) *</label><input type="number" class="f1-input" placeholder="1" step="0.5"></div>
+            </div>
+            
+            <div class="f1-section-title">Calendriers à notifier</div>
+            <div class="f1-checkbox-group">
+              <div class="f1-checkbox-item"><input type="checkbox"><label>Direction</label></div>
+              <div class="f1-checkbox-item"><input type="checkbox"><label>Administration</label></div>
+              <div class="f1-checkbox-item"><input type="checkbox"><label>Comptabilité</label></div>
+              <div class="f1-checkbox-item"><input type="checkbox"><label>Réception</label></div>
+              <div class="f1-checkbox-item"><input type="checkbox"><label>SOSS</label></div>
+              <div class="f1-checkbox-item"><input type="checkbox"><label>TB</label></div>
+              <div class="f1-checkbox-item"><input type="checkbox"><label>Épidém</label></div>
+              <div class="f1-checkbox-item"><input type="checkbox"><label>Labo</label></div>
+              <div class="f1-checkbox-item"><input type="checkbox"><label>Malaria</label></div>
+              <div class="f1-checkbox-item"><input type="checkbox"><label>Nutrition</label></div>
+              <div class="f1-checkbox-item"><input type="checkbox"><label>PEV</label></div>
+              <div class="f1-checkbox-item"><input type="checkbox"><label>Pharmacie</label></div>
+              <div class="f1-checkbox-item"><input type="checkbox"><label>S. Communautaire</label></div>
+              <div class="f1-checkbox-item"><input type="checkbox"><label>S. Maternelle</label></div>
+              <div class="f1-checkbox-item"><input type="checkbox"><label>VIH</label></div>
+            </div>
+            
+            <div class="f1-section-title">TDR et vérification</div>
+            <div class="f1-field"><label class="f1-label">Upload TDR *</label><input type="file" class="f1-input" accept=".pdf,.doc,.docx"></div>
+            <div class="f1-field"><label class="f1-label">Le TDR contient *</label>
+              <div class="f1-checkbox-group">
+                <div class="f1-checkbox-item"><input type="checkbox"><label>Budget</label></div>
+                <div class="f1-checkbox-item"><input type="checkbox"><label>Participants</label></div>
+                <div class="f1-checkbox-item"><input type="checkbox"><label>Programme</label></div>
+                <div class="f1-checkbox-item"><input type="checkbox"><label>Justification</label></div>
+              </div>
+            </div>
+            
+            <button class="f1-submit" onclick="alert('✓ F1 Soumise!')">Soumettre à F2 →</button>
+          </div>
         </div>
         
-        <div id="addFormView" style="display: none;">
-          <h3 style="margin-bottom: 16px;">Nouvelle Activité</h3>
-          <div style="background: white; padding: 20px; max-width: 500px;">
-            <div style="margin-bottom: 14px;">
-              <label style="display: block; margin-bottom: 4px; font-size: 12px; font-weight: 500;">Titre *</label>
-              <input type="text" id="formTitle" style="width: 100%; padding: 8px; font-size: 13px; border: 1px solid #d1d5db;">
-            </div>
-            <div style="margin-bottom: 14px;">
-              <label style="display: block; margin-bottom: 4px; font-size: 12px; font-weight: 500;">Responsable *</label>
-              <input type="text" id="formResponsible" style="width: 100%; padding: 8px; font-size: 13px; border: 1px solid #d1d5db;">
-            </div>
-            <div style="margin-bottom: 14px;">
-              <label style="display: block; margin-bottom: 4px; font-size: 12px; font-weight: 500;">Email *</label>
-              <input type="email" id="formEmail" style="width: 100%; padding: 8px; font-size: 13px; border: 1px solid #d1d5db;">
-            </div>
-            <div style="margin-bottom: 14px;">
-              <label style="display: block; margin-bottom: 4px; font-size: 12px; font-weight: 500;">Montant (HTG) *</label>
-              <input type="number" id="formAmount" style="width: 100%; padding: 8px; font-size: 13px; border: 1px solid #d1d5db;">
-            </div>
-            <div style="display: flex; gap: 8px;">
-              <button onclick="submitForm()" style="background: #005c4e; color: white; padding: 8px 12px; border: none; cursor: pointer; font-weight: 600; font-size: 12px;">Soumettre</button>
-              <button onclick="cancelForm()" style="background: #e5e7eb; color: #374151; padding: 8px 12px; border: none; cursor: pointer; font-weight: 600; font-size: 12px;">Annuler</button>
-            </div>
+        <!-- Other pages placeholder -->
+        <div id="other-page" style="display: flex; align-items: center; justify-content: center; width: 100%;">
+          <div style="color: #9ca3af; text-align: center;">
+            <div style="font-size: 14px; margin-bottom: 8px;">Page en construction</div>
+            <div style="font-size: 12px;">Cliquez sur Activités pour revenir</div>
           </div>
         </div>
       </div>
@@ -139,37 +174,23 @@
   </div>
   
   <script>
-    function showActivities() {
-      document.getElementById('activitiesView').style.display = 'block';
-      document.getElementById('addFormView').style.display = 'none';
-    }
-    
-    function showAddForm() {
-      document.getElementById('activitiesView').style.display = 'none';
-      document.getElementById('addFormView').style.display = 'block';
-    }
-    
-    function cancelForm() {
-      document.getElementById('formTitle').value = '';
-      document.getElementById('formResponsible').value = '';
-      document.getElementById('formEmail').value = '';
-      document.getElementById('formAmount').value = '';
-      showActivities();
-    }
-    
-    function submitForm() {
-      const title = document.getElementById('formTitle').value;
-      const responsible = document.getElementById('formResponsible').value;
-      const email = document.getElementById('formEmail').value;
-      const amount = document.getElementById('formAmount').value;
+    function switchPage(page) {
+      // Hide all pages
+      document.querySelectorAll('.content > div').forEach(el => el.classList.remove('active'));
       
-      if (!title || !responsible || !email || !amount) {
-        alert('⚠️ Veuillez remplir tous les champs');
-        return;
+      // Hide all sidebar items active state
+      document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+      
+      // Show selected page or other page
+      if (page === 'activites') {
+        document.getElementById('activites-page').classList.add('active');
+        document.querySelector('[onclick="switchPage('activites')"]').classList.add('active');
+        document.getElementById('pageTitle').textContent = 'Activités';
+      } else {
+        document.getElementById('other-page').classList.add('active');
+        document.querySelector('[onclick="switchPage('' + page + '')"]').classList.add('active');
+        document.getElementById('pageTitle').textContent = page.charAt(0).toUpperCase() + page.slice(1);
       }
-      
-      alert('✓ Activité créée!\n\n' + title + '\n' + amount + ' HTG');
-      cancelForm();
     }
   </script>
 </body>
