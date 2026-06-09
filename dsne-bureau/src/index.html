@@ -6,44 +6,43 @@
   <title>Bureau de Direction - DSNE</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f3f4f6; }
     
-    .container { display: flex; height: 100vh; }
-    .sidebar { width: 230px; background: #005c4e; color: white; overflow-y: auto; padding: 20px 0; }
+    .container { display: flex; height: 100%; }
+    .sidebar { width: 230px; background: #005c4e; color: white; overflow-y: auto; padding: 20px 0; flex-shrink: 0; }
     .sidebar-header { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
     .sidebar-header h1 { font-size: 14px; font-weight: 600; }
     .sidebar-header p { font-size: 11px; opacity: 0.8; margin-top: 4px; }
-    .sidebar-section { padding: 0; margin-bottom: 20px; }
+    .sidebar-section { margin-bottom: 20px; }
     .sidebar-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 0 20px; margin-bottom: 8px; opacity: 0.7; }
-    .sidebar-item { padding: 10px 20px; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+    .sidebar-item { padding: 10px 20px; font-size: 13px; cursor: pointer; user-select: none; transition: background 0.2s; }
     .sidebar-item:hover { background: rgba(255,255,255,0.1); }
     .sidebar-item.active { background: rgba(255,255,255,0.2); font-weight: 500; }
     
-    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-    .header { background: white; padding: 16px 24px; border-bottom: 1px solid #e5e7eb; }
+    .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .header { background: white; padding: 16px 24px; border-bottom: 1px solid #e5e7eb; flex-shrink: 0; }
     .header h2 { font-size: 16px; color: #1f2937; }
     
-    .content { flex: 1; overflow-y: auto; padding: 20px; background: white; }
+    .content { flex: 1; overflow-y: auto; padding: 20px; }
     .page { display: none; }
     .page.active { display: block; }
     
-    .activity-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 20px; }
+    .activity-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 20px; background: white; }
     .activity-table th { background: #f3f4f6; padding: 10px; text-align: left; font-weight: 600; border-bottom: 1px solid #e5e7eb; }
     .activity-table td { padding: 10px; border-bottom: 1px solid #e5e7eb; }
-    .activity-table tr:hover { background: #f9fafb; }
     
-    .form-container { background: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; }
+    .form-container { background: white; padding: 20px; border: 1px solid #e5e7eb; }
     .form-title { font-size: 14px; font-weight: 600; color: #005c4e; margin-bottom: 16px; }
     .f1-field { margin-bottom: 12px; }
-    .f1-label { display: block; margin-bottom: 4px; font-size: 11px; font-weight: 500; color: #333; }
-    .f1-input, .f1-select { width: 100%; padding: 8px; font-size: 12px; border: 1px solid #d1d5db; background: white; }
-    .f1-input:focus, .f1-select:focus { outline: none; border-color: #005c4e; box-shadow: 0 0 0 2px rgba(0,92,78,0.1); }
+    .f1-label { display: block; margin-bottom: 4px; font-size: 11px; font-weight: 500; }
+    .f1-input, .f1-select { width: 100%; padding: 8px; font-size: 12px; border: 1px solid #d1d5db; }
+    .f1-input:focus, .f1-select:focus { outline: none; border-color: #005c4e; }
     .f1-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .f1-section { margin-bottom: 16px; }
     .f1-section-title { font-size: 11px; font-weight: 600; color: #005c4e; text-transform: uppercase; margin-bottom: 10px; }
     .f1-checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px; }
     .f1-checkbox-item { display: flex; gap: 4px; align-items: center; }
-    .f1-checkbox-item input { cursor: pointer; }
     .f1-submit { background: #005c4e; color: white; padding: 10px 16px; border: none; cursor: pointer; font-weight: 600; font-size: 12px; width: 100%; margin-top: 16px; }
     .placeholder { text-align: center; color: #9ca3af; padding: 40px; }
   </style>
@@ -59,23 +58,23 @@
       
       <div class="sidebar-section">
         <div class="sidebar-section-title">Institution</div>
-        <div class="sidebar-item" id="nav-dsne" onclick="navigate('dsne')">DSNE</div>
-        <div class="sidebar-item" id="nav-etatjour" onclick="navigate('etatjour')">État du Jour</div>
+        <div class="sidebar-item" data-page="dsne">DSNE</div>
+        <div class="sidebar-item" data-page="etatjour">État du Jour</div>
       </div>
       
       <div class="sidebar-section">
         <div class="sidebar-section-title">Opérations</div>
-        <div class="sidebar-item" id="nav-visites" onclick="navigate('visites')">Visites</div>
-        <div class="sidebar-item" id="nav-hygiene" onclick="navigate('hygiene')">Hygiène</div>
-        <div class="sidebar-item" id="nav-cm" onclick="navigate('cm')">Cliniques Mobiles</div>
-        <div class="sidebar-item" id="nav-logistique" onclick="navigate('logistique')">Logistique</div>
-        <div class="sidebar-item" id="nav-comptabilite" onclick="navigate('comptabilite')">Comptabilité</div>
-        <div class="sidebar-item active" id="nav-activites" onclick="navigate('activites')">Activités</div>
+        <div class="sidebar-item" data-page="visites">Visites</div>
+        <div class="sidebar-item" data-page="hygiene">Hygiène</div>
+        <div class="sidebar-item" data-page="cm">Cliniques Mobiles</div>
+        <div class="sidebar-item" data-page="logistique">Logistique</div>
+        <div class="sidebar-item" data-page="comptabilite">Comptabilité</div>
+        <div class="sidebar-item active" data-page="activites">Activités</div>
       </div>
       
       <div class="sidebar-section">
         <div class="sidebar-section-title">Rapports</div>
-        <div class="sidebar-item" id="nav-rapports" onclick="navigate('rapports')">Suivi Rapports</div>
+        <div class="sidebar-item" data-page="rapports">Suivi Rapports</div>
       </div>
     </div>
     
@@ -182,7 +181,7 @@
               </div>
             </div>
             
-            <button class="f1-submit" onclick="alert('✓ F1 Soumise à F2!')">Soumettre à F2 →</button>
+            <button class="f1-submit">Soumettre à F2 →</button>
           </div>
         </div>
         
@@ -198,21 +197,32 @@
   </div>
   
   <script>
-    function navigate(page) {
-      // Hide all pages
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-      
-      if (page === 'activites') {
-        document.getElementById('page-activites').classList.add('active');
-        document.getElementById('pageTitle').textContent = 'Activités';
-        document.getElementById('nav-activites').classList.add('active');
-      } else {
-        document.getElementById('page-other').classList.add('active');
-        document.getElementById('pageTitle').textContent = page.charAt(0).toUpperCase() + page.slice(1);
-        document.getElementById('nav-' + page).classList.add('active');
-      }
-    }
+    // Add click listeners to all sidebar items
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+      item.addEventListener('click', function() {
+        const page = this.getAttribute('data-page');
+        
+        // Hide all pages
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+        
+        // Show selected page
+        if (page === 'activites') {
+          document.getElementById('page-activites').classList.add('active');
+        } else {
+          document.getElementById('page-other').classList.add('active');
+        }
+        
+        // Update title and active state
+        document.getElementById('pageTitle').textContent = this.textContent;
+        this.classList.add('active');
+      });
+    });
+    
+    // Submit button
+    document.querySelector('.f1-submit').addEventListener('click', function() {
+      alert('✓ F1 Soumise à F2!');
+    });
   </script>
 </body>
 </html>
