@@ -146,243 +146,63 @@
 <div id="toast"></div>
 
 <script>
-// ── NAV ──
+// PAGE META
 const PAGE_META = {
-  visites:     ['Visites',           'Registre des visites · lecture seule'],
-  dsne:        ['DSNE',              'Vue institutionnelle · Nord-Est'],
-  etatjour:    ['État du Jour', 'Résumé quotidien · tous modules'],
-  hygiene:     ['Hygiène Publique', 'Certificats hygiène · lecture seule'],
-  cm:          ['Cliniques Mobiles', 'Autorisations CM · lecture seule'],
-  logistique:  ['Logistique',        'Missions & entretiens · lecture seule'],
-  comptabilite:['Comptabilité', 'Suivi financier · lecture seule'],
-  activites:   ['Activités',    'Log activités F1–F7 · lecture seule'],
-  rapports:    ['Suivi Rapports',    'Rapports institutionnels · lecture seule'],
+  visites:      ['Visites',            'Registre des visites \u00b7 lecture seule'],
+  dsne:         ['DSNE',               'Vue institutionnelle \u00b7 Nord-Est'],
+  etatjour:     ['\u00c9tat du Jour',  'R\u00e9sum\u00e9 quotidien \u00b7 tous modules'],
+  hygiene:      ['Hygi\u00e8ne Publique', 'Certificats hygi\u00e8ne \u00b7 lecture seule'],
+  cm:           ['Cliniques Mobiles',  'Autorisations CM \u00b7 lecture seule'],
+  logistique:   ['Logistique',         'Missions & entretiens \u00b7 lecture seule'],
+  comptabilite: ['Comptabilit\u00e9',  'Suivi financier \u00b7 lecture seule'],
+  activites:    ['Activit\u00e9s',     'Log activit\u00e9s F1-F7 \u00b7 lecture seule'],
+  rapports:     ['Suivi Rapports',     'Rapports institutionnels \u00b7 lecture seule'],
 };
 
 function initNav() {
-  document.querySelectorAll('.sb-item[data-page]').forEach(el => {
-    el.addEventListener('click', () => {
-      const page = el.dataset.page;
-      document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
-      document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.sb-item[data-page]').forEach(function(el) {
+    el.addEventListener('click', function() {
+      var page = el.getAttribute('data-page');
+      document.querySelectorAll('.sb-item').forEach(function(i) { i.classList.remove('active'); });
+      document.querySelectorAll('.content').forEach(function(c) { c.classList.remove('active'); });
       el.classList.add('active');
-      const p = document.getElementById('page-' + page);
+      var p = document.getElementById('page-' + page);
       if (p) p.classList.add('active');
-      const [title, sub] = PAGE_META[page] || [page, ''];
-      document.getElementById('pageTitle').textContent = title;
-      document.getElementById('pageSub').textContent = sub;
-      if (page === 'visites') loadVisites();
-      if (page === 'hygiene') loadHyg();
-      if (page === 'activites') loadActivites();
-      if (page === 'cm') loadCM();
-      if (page === 'logistique') loadLog();
+      var meta = PAGE_META[page] || [page, ''];
+      document.getElementById('pageTitle').textContent = meta[0];
+      document.getElementById('pageSub').textContent = meta[1];
+      safeLoad(page);
     });
   });
 }
 
-// ── DATE ──
 function initDate() {
-  const days = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
-  const months = ['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov','Déc'];
-  const d = new Date();
-  const el = document.getElementById('hdrDate');
+  var days = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  var months = ['Jan','F\u00e9v','Mar','Avr','Mai','Juin','Juil','Ao\u00fbt','Sep','Oct','Nov','D\u00e9c'];
+  var d = new Date();
+  var el = document.getElementById('hdrDate');
   if (el) el.textContent = days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
 }
 
-// ── USER ──
 function initUser() {
   try {
-    const u = JSON.parse(sessionStorage.getItem('user') || '{}');
+    var u = JSON.parse(sessionStorage.getItem('user') || '{}');
     if (u.nom_complet) {
-      const parts = u.nom_complet.trim().split(' ');
-      const el = document.getElementById('hdrInitials');
-      if (el) el.textContent = (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase();
+      var parts = u.nom_complet.trim().split(' ');
+      var el = document.getElementById('hdrInitials');
+      if (el) el.textContent = (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
     }
   } catch(e) {}
 }
 
-// ── LOGOUT ──
 function initLogout() {
-  const btn = document.getElementById('btnLogout');
-  if (btn) btn.addEventListener('click', () => {
+  var btn = document.getElementById('btnLogout');
+  if (btn) btn.addEventListener('click', function() {
     sessionStorage.removeItem('user');
-    if (window.dsne && window.dsne.logout) window.dsne.logout();
     window.location.href = 'login.html';
   });
 }
 
-// ── TOAST ──
-function showToast(msg, type='info') {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'show ' + type;
-  setTimeout(() => { t.className = ''; }, 3000);
-}
-
-// ── SYNC STATUS ──
-function setSyncStatus(msg) { document.getElementById('syncStatus').textContent = msg; }
-
-// ── LOAD VISITES ──
-async function loadVisites() {
-  try {
-    if (!window.dsne || !window.dsne.getVisites) {
-      document.getElementById('visites-list').innerHTML = `<div class="placeholder"><i class="ti ti-database-off"></i><div class="placeholder-txt">Données non connectées</div><div class="placeholder-sub">Fonction getVisites non disponible</div></div>`;
-      return;
-    }
-    const data = await window.dsne.getVisites();
-    const list = document.getElementById('visites-list');
-    const today = data.filter(v => isToday(v.timestamp));
-    const waiting = today.filter(v => v.status === 'En attente' || v.status === 'Présent');
-    const docs = data.filter(v => isToday(v.timestamp) && v.type === 'Document');
-    const week = data.filter(v => isThisWeek(v.timestamp));
-    document.getElementById('vs-count').textContent = today.length;
-    document.getElementById('vs-waiting').textContent = waiting.length;
-    document.getElementById('vs-docs').textContent = docs.length;
-    document.getElementById('vs-week').textContent = week.length;
-    if (today.length === 0) {
-      list.innerHTML = `<div class="placeholder"><i class="ti ti-users"></i><div class="placeholder-txt">Aucune visite aujourd&#39;hui</div></div>`;
-      return;
-    }
-    list.innerHTML = today.slice(0,8).map(v => {
-      const initials = v.nom ? v.nom.trim().split(' ').map(p=>p[0]).join('').substring(0,2).toUpperCase() : '?';
-      const isActive = v.status === 'Actif' || v.status === 'Présent';
-      const badgeCls = isActive ? 'badge-active' : (v.status === 'En attente' ? 'badge-wait' : 'badge-neutral');
-      const avatarCls = isActive ? 'av-green' : 'av-neutral';
-      const rowCls = isActive ? 'list-row highlight' : 'list-row';
-      return \`<div class="\${rowCls}">
-        <div class="row-left">
-          <div class="avatar \${avatarCls}"><span>\${initials}</span></div>
-          <div><div class="row-name">\${v.nom || '—'}</div><div class="row-meta">\${formatTime(v.timestamp)} · \${v.motif || v.type || '—'}</div></div>
-        </div>
-        <span class="badge \${badgeCls}">\${v.status || '—'}</span>
-      </div>\`;
-    }).join('');
-    setSyncStatus('Sync: ' + new Date().toLocaleTimeString('fr-HT', {hour:'2-digit',minute:'2-digit'}));
-  } catch(e) {
-    document.getElementById('visites-list').innerHTML = `<div class="placeholder"><i class="ti ti-wifi-off"></i><div class="placeholder-txt">Données indisponibles</div><div class="placeholder-sub">' + e.message + '</div></div>`;
-  }
-}
-
-// ── LOAD HYG ──
-async function loadHyg() {
-  try {
-    if (!window.dsne || !window.dsne.getHyg) {
-      document.getElementById('hyg-list').innerHTML = `<div class="placeholder"><i class="ti ti-database-off"></i><div class="placeholder-txt">Données non connectées</div></div>`;
-      return;
-    }
-    const data = await window.dsne.getHyg();
-    const list = document.getElementById('hyg-list');
-    const approved = data.filter(r => r.statut === 'Approuvé' || r.approved === true);
-    const pending = data.filter(r => !r.statut || r.statut === 'En attente');
-    document.getElementById('hyg-total').textContent = data.length;
-    document.getElementById('hyg-approved').textContent = approved.length;
-    document.getElementById('hyg-pending').textContent = pending.length;
-    if (data.length === 0) {
-      list.innerHTML = `<div class="placeholder"><i class="ti ti-certificate"></i><div class="placeholder-txt">Aucun certificat</div></div>`;
-      return;
-    }
-    list.innerHTML = '<table class="tbl"><thead><tr><th>Référence</th><th>Établissement</th><th>Date</th><th>Statut</th></tr></thead><tbody>' +
-      data.slice(0,10).map(r => {
-        const b = r.statut === 'Approuvé' ? 'badge-active' : 'badge-wait';
-        return \`<tr><td style="color:#AAA;font-size:10px">\${r.ref||'—'}</td><td>\${r.etablissement||r.nom||'—'}</td><td>\${r.date||'—'}</td><td><span class="badge \${b}">\${r.statut||'Attente'}</span></td></tr>\`;
-      }).join('') + '</tbody></table>';
-  } catch(e) {
-    document.getElementById('hyg-list').innerHTML = `<div class="placeholder"><i class="ti ti-wifi-off"></i><div class="placeholder-txt">Données indisponibles</div></div>`;
-  }
-}
-
-// ── LOAD CM ──
-async function loadCM() {
-  try {
-    if (!window.dsne || !window.dsne.getCM) {
-      document.getElementById('cm-list').innerHTML = `<div class="placeholder"><i class="ti ti-database-off"></i><div class="placeholder-txt">Données non connectées</div></div>`;
-      return;
-    }
-    const data = await window.dsne.getCM();
-    const list = document.getElementById('cm-list');
-    if (!data || data.length === 0) {
-      list.innerHTML = `<div class="placeholder"><i class="ti ti-truck"></i><div class="placeholder-txt">Aucune autorisation CM</div></div>`;
-      return;
-    }
-    list.innerHTML = '<table class="tbl"><thead><tr><th>Référence</th><th>Site</th><th>Date</th><th>Statut</th></tr></thead><tbody>' +
-      data.slice(0,10).map(r => {
-        const b = r.statut === 'Approuvé' ? 'badge-active' : 'badge-wait';
-        return \`<tr><td style="color:#AAA;font-size:10px">\${r.ref||r.id||'—'}</td><td>\${r.site||r.nom||'—'}</td><td>\${r.date||'—'}</td><td><span class="badge \${b}">\${r.statut||'Attente'}</span></td></tr>\`;
-      }).join('') + '</tbody></table>';
-  } catch(e) {
-    document.getElementById('cm-list').innerHTML = `<div class="placeholder"><i class="ti ti-wifi-off"></i><div class="placeholder-txt">Données indisponibles</div></div>`;
-  }
-}
-
-// ── LOAD LOG ──
-async function loadLog() {
-  try {
-    if (!window.dsne || !window.dsne.getLog) {
-      document.getElementById('log-list').innerHTML = `<div class="placeholder"><i class="ti ti-database-off"></i><div class="placeholder-txt">Données non connectées</div></div>`;
-      return;
-    }
-    const data = await window.dsne.getLog();
-    const list = document.getElementById('log-list');
-    if (!data || data.length === 0) {
-      list.innerHTML = `<div class="placeholder"><i class="ti ti-package"></i><div class="placeholder-txt">Aucune donnée logistique</div></div>`;
-      return;
-    }
-    list.innerHTML = '<table class="tbl"><thead><tr><th>Type</th><th>Objet</th><th>Date</th><th>Statut</th></tr></thead><tbody>' +
-      data.slice(0,10).map(r => {
-        const b = r.statut === 'Complété' ? 'badge-active' : 'badge-wait';
-        return \`<tr><td>\${r.type||'—'}</td><td>\${r.objet||r.nom||'—'}</td><td>\${r.date||'—'}</td><td><span class="badge \${b}">\${r.statut||'—'}</span></td></tr>\`;
-      }).join('') + '</tbody></table>';
-  } catch(e) {
-    document.getElementById('log-list').innerHTML = `<div class="placeholder"><i class="ti ti-wifi-off"></i><div class="placeholder-txt">Données indisponibles</div></div>`;
-  }
-}
-
-// ── LOAD ACTIVITÉS ──
-async function loadActivites() {
-  try {
-    if (!window.dsne || !window.dsne.getActivites) {
-      document.getElementById('act-list').innerHTML = `<div class="placeholder"><i class="ti ti-database-off"></i><div class="placeholder-txt">Données non connectées</div></div>`;
-      return;
-    }
-    const data = await window.dsne.getActivites();
-    const list = document.getElementById('act-list');
-    const pending = data.filter(a => a.statut !== 'Complété');
-    const total = data.reduce((s,a) => s + (parseFloat(a.montant)||0), 0);
-    document.getElementById('act-total').textContent = data.length;
-    document.getElementById('act-pending').textContent = pending.length;
-    document.getElementById('act-budget').textContent = total > 0 ? total.toLocaleString('fr-HT') : '—';
-    if (data.length === 0) {
-      list.innerHTML = `<div class="placeholder"><i class="ti ti-clipboard-list"></i><div class="placeholder-txt">Aucune activité</div></div>`;
-      return;
-    }
-    list.innerHTML = '<table class="tbl"><thead><tr><th>ID</th><th>Titre</th><th>Responsable</th><th>Montant</th><th>Statut</th></tr></thead><tbody>' +
-      data.slice(0,10).map(a => {
-        const b = a.statut === 'Complété' ? 'badge-active' : (a.statut === 'En cours' ? 'badge-wait' : 'badge-neutral');
-        const m = a.montant ? parseFloat(a.montant).toLocaleString('fr-HT') + ' HTG' : '—';
-        return \`<tr><td style="color:#AAA;font-size:10px">\${a.id||'—'}</td><td>\${a.titre||'—'}</td><td>\${a.responsable||'—'}</td><td>\${m}</td><td><span class="badge \${b}">\${a.statut||'—'}</span></td></tr>\`;
-      }).join('') + '</tbody></table>';
-  } catch(e) {
-    document.getElementById('act-list').innerHTML = `<div class="placeholder"><i class="ti ti-wifi-off"></i><div class="placeholder-txt">Données indisponibles</div></div>`;
-  }
-}
-
-// ── HELPERS ──
-function isToday(ts) {
-  if (!ts) return false;
-  const d = new Date(ts), n = new Date();
-  return d.getDate()===n.getDate() && d.getMonth()===n.getMonth() && d.getFullYear()===n.getFullYear();
-}
-function isThisWeek(ts) {
-  if (!ts) return false;
-  const d = new Date(ts), n = new Date();
-  const start = new Date(n); start.setDate(n.getDate() - n.getDay());
-  return d >= start && d <= n;
-}
-function formatTime(ts) {
-  if (!ts) return '—';
-  try { return new Date(ts).toLocaleTimeString('fr-HT', {hour:'2-digit',minute:'2-digit'}); } catch(e) { return ts; }
-}
-
-// ── SAFE LOAD ──
 function safeLoad(page) {
   try {
     if (page === 'visites') loadVisites();
@@ -391,11 +211,166 @@ function safeLoad(page) {
     else if (page === 'cm') loadCM();
     else if (page === 'logistique') loadLog();
   } catch(e) {
-    console.warn('safeLoad error for', page, e);
+    console.warn('safeLoad error:', page, e);
   }
 }
 
-// ── INIT ──
+function setSyncStatus(msg) {
+  var el = document.getElementById('syncStatus');
+  if (el) el.textContent = msg;
+}
+
+function showPlaceholder(id, icon, txt, sub) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var s = sub ? ('<div class="placeholder-sub">' + sub + '</div>') : '';
+  el.innerHTML = '<div class="placeholder"><i class="ti ti-' + icon + '"></i><div class="placeholder-txt">' + txt + '</div>' + s + '</div>';
+}
+
+function isToday(ts) {
+  if (!ts) return false;
+  var d = new Date(ts), n = new Date();
+  return d.getDate() === n.getDate() && d.getMonth() === n.getMonth() && d.getFullYear() === n.getFullYear();
+}
+
+function isThisWeek(ts) {
+  if (!ts) return false;
+  var d = new Date(ts), n = new Date();
+  var start = new Date(n); start.setDate(n.getDate() - n.getDay());
+  return d >= start && d <= n;
+}
+
+function formatTime(ts) {
+  if (!ts) return '--';
+  try { return new Date(ts).toLocaleTimeString('fr-HT', {hour: '2-digit', minute: '2-digit'}); } catch(e) { return ts; }
+}
+
+function makeBadge(status) {
+  var cls = 'badge-neutral', label = status || '--';
+  if (status === 'Actif' || status === 'Approuv\u00e9' || status === 'Pr\u00e9sent') cls = 'badge-active';
+  else if (status === 'En attente' || status === 'Attente') cls = 'badge-wait';
+  return '<span class="badge ' + cls + '">' + label + '</span>';
+}
+
+function loadVisites() {
+  var list = document.getElementById('visites-list');
+  if (!list) return;
+  if (!window.dsne || !window.dsne.getVisites) {
+    showPlaceholder('visites-list', 'database-off', 'Donn\u00e9es non connect\u00e9es', 'getVisites non disponible');
+    return;
+  }
+  window.dsne.getVisites().then(function(data) {
+    var today = data.filter(function(v) { return isToday(v.timestamp); });
+    var waiting = today.filter(function(v) { return v.status === 'En attente' || v.status === 'Pr\u00e9sent'; });
+    var docs = data.filter(function(v) { return isToday(v.timestamp) && v.type === 'Document'; });
+    var week = data.filter(function(v) { return isThisWeek(v.timestamp); });
+    var c1 = document.getElementById('vs-count'), c2 = document.getElementById('vs-waiting');
+    var c3 = document.getElementById('vs-docs'), c4 = document.getElementById('vs-week');
+    if (c1) c1.textContent = today.length;
+    if (c2) c2.textContent = waiting.length;
+    if (c3) c3.textContent = docs.length;
+    if (c4) c4.textContent = week.length;
+    if (today.length === 0) { showPlaceholder('visites-list', 'users', 'Aucune visite aujourd\'hui', ''); return; }
+    var html = '';
+    today.slice(0,8).forEach(function(v) {
+      var nm = v.nom || '--';
+      var parts = nm.trim().split(' ');
+      var initials = (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+      var active = v.status === 'Actif' || v.status === 'Pr\u00e9sent';
+      var rowCls = active ? 'list-row highlight' : 'list-row';
+      var avCls = active ? 'av-green' : 'av-neutral';
+      html += '<div class="' + rowCls + '">';
+      html += '<div class="row-left"><div class="avatar ' + avCls + '"><span>' + initials + '</span></div>';
+      html += '<div><div class="row-name">' + nm + '</div>';
+      html += '<div class="row-meta">' + formatTime(v.timestamp) + ' \u00b7 ' + (v.motif || v.type || '--') + '</div></div></div>';
+      html += makeBadge(v.status) + '</div>';
+    });
+    list.innerHTML = html;
+    setSyncStatus('Sync: ' + new Date().toLocaleTimeString('fr-HT', {hour:'2-digit', minute:'2-digit'}));
+  }).catch(function(e) {
+    showPlaceholder('visites-list', 'wifi-off', 'Donn\u00e9es indisponibles', e.message);
+  });
+}
+
+function loadHyg() {
+  if (!window.dsne || !window.dsne.getHyg) { showPlaceholder('hyg-list', 'database-off', 'Donn\u00e9es non connect\u00e9es', ''); return; }
+  window.dsne.getHyg().then(function(data) {
+    var approved = data.filter(function(r) { return r.statut === 'Approuv\u00e9' || r.approved === true; });
+    var pending = data.filter(function(r) { return !r.statut || r.statut === 'En attente'; });
+    var t = document.getElementById('hyg-total'), a = document.getElementById('hyg-approved'), p = document.getElementById('hyg-pending');
+    if (t) t.textContent = data.length;
+    if (a) a.textContent = approved.length;
+    if (p) p.textContent = pending.length;
+    if (data.length === 0) { showPlaceholder('hyg-list', 'certificate', 'Aucun certificat', ''); return; }
+    var html = '<table class="tbl"><thead><tr><th>R\u00e9f\u00e9rence</th><th>\u00c9tablissement</th><th>Date</th><th>Statut</th></tr></thead><tbody>';
+    data.slice(0,10).forEach(function(r) {
+      html += '<tr><td style="color:#AAA;font-size:10px">' + (r.ref||'--') + '</td>';
+      html += '<td>' + (r.etablissement||r.nom||'--') + '</td>';
+      html += '<td>' + (r.date||'--') + '</td>';
+      html += '<td>' + makeBadge(r.statut||'Attente') + '</td></tr>';
+    });
+    html += '</tbody></table>';
+    document.getElementById('hyg-list').innerHTML = html;
+  }).catch(function(e) { showPlaceholder('hyg-list', 'wifi-off', 'Donn\u00e9es indisponibles', ''); });
+}
+
+function loadCM() {
+  if (!window.dsne || !window.dsne.getCM) { showPlaceholder('cm-list', 'database-off', 'Donn\u00e9es non connect\u00e9es', ''); return; }
+  window.dsne.getCM().then(function(data) {
+    if (!data || data.length === 0) { showPlaceholder('cm-list', 'truck', 'Aucune autorisation CM', ''); return; }
+    var html = '<table class="tbl"><thead><tr><th>R\u00e9f\u00e9rence</th><th>Site</th><th>Date</th><th>Statut</th></tr></thead><tbody>';
+    data.slice(0,10).forEach(function(r) {
+      html += '<tr><td style="color:#AAA;font-size:10px">' + (r.ref||r.id||'--') + '</td>';
+      html += '<td>' + (r.site||r.nom||'--') + '</td>';
+      html += '<td>' + (r.date||'--') + '</td>';
+      html += '<td>' + makeBadge(r.statut||'Attente') + '</td></tr>';
+    });
+    html += '</tbody></table>';
+    document.getElementById('cm-list').innerHTML = html;
+  }).catch(function(e) { showPlaceholder('cm-list', 'wifi-off', 'Donn\u00e9es indisponibles', ''); });
+}
+
+function loadLog() {
+  if (!window.dsne || !window.dsne.getLog) { showPlaceholder('log-list', 'database-off', 'Donn\u00e9es non connect\u00e9es', ''); return; }
+  window.dsne.getLog().then(function(data) {
+    if (!data || data.length === 0) { showPlaceholder('log-list', 'package', 'Aucune donn\u00e9e logistique', ''); return; }
+    var html = '<table class="tbl"><thead><tr><th>Type</th><th>Objet</th><th>Date</th><th>Statut</th></tr></thead><tbody>';
+    data.slice(0,10).forEach(function(r) {
+      html += '<tr><td>' + (r.type||'--') + '</td>';
+      html += '<td>' + (r.objet||r.nom||'--') + '</td>';
+      html += '<td>' + (r.date||'--') + '</td>';
+      html += '<td>' + makeBadge(r.statut||'--') + '</td></tr>';
+    });
+    html += '</tbody></table>';
+    document.getElementById('log-list').innerHTML = html;
+  }).catch(function(e) { showPlaceholder('log-list', 'wifi-off', 'Donn\u00e9es indisponibles', ''); });
+}
+
+function loadActivites() {
+  if (!window.dsne || !window.dsne.getActivites) { showPlaceholder('act-list', 'database-off', 'Donn\u00e9es non connect\u00e9es', ''); return; }
+  window.dsne.getActivites().then(function(data) {
+    var pending = data.filter(function(a) { return a.statut !== 'Compl\u00e9t\u00e9'; });
+    var total = data.reduce(function(s,a) { return s + (parseFloat(a.montant)||0); }, 0);
+    var t = document.getElementById('act-total'), p = document.getElementById('act-pending'), b = document.getElementById('act-budget');
+    if (t) t.textContent = data.length;
+    if (p) p.textContent = pending.length;
+    if (b) b.textContent = total > 0 ? total.toLocaleString('fr-HT') : '--';
+    if (data.length === 0) { showPlaceholder('act-list', 'clipboard-list', 'Aucune activit\u00e9', ''); return; }
+    var html = '<table class="tbl"><thead><tr><th>ID</th><th>Titre</th><th>Responsable</th><th>Montant</th><th>Statut</th></tr></thead><tbody>';
+    data.slice(0,10).forEach(function(a) {
+      var m = a.montant ? parseFloat(a.montant).toLocaleString('fr-HT') + ' HTG' : '--';
+      html += '<tr><td style="color:#AAA;font-size:10px">' + (a.id||'--') + '</td>';
+      html += '<td>' + (a.titre||'--') + '</td>';
+      html += '<td>' + (a.responsable||'--') + '</td>';
+      html += '<td>' + m + '</td>';
+      html += '<td>' + makeBadge(a.statut||'--') + '</td></tr>';
+    });
+    html += '</tbody></table>';
+    document.getElementById('act-list').innerHTML = html;
+  }).catch(function(e) { showPlaceholder('act-list', 'wifi-off', 'Donn\u00e9es indisponibles', ''); });
+}
+
+// INIT
 document.addEventListener('DOMContentLoaded', function() {
   initNav();
   initDate();
