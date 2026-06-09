@@ -145,7 +145,6 @@
 
 <div id="toast"></div>
 
-<script src="preload.js" type="module"></script>
 <script>
 // ── NAV ──
 const PAGE_META = {
@@ -219,6 +218,10 @@ function setSyncStatus(msg) { document.getElementById('syncStatus').textContent 
 // ── LOAD VISITES ──
 async function loadVisites() {
   try {
+    if (!window.dsne || !window.dsne.getVisites) {
+      document.getElementById('visites-list').innerHTML = '<div class="placeholder"><i class="ti ti-database-off"></i><div class="placeholder-txt">Données non connectées</div><div class="placeholder-sub">Fonction getVisites non disponible</div></div>';
+      return;
+    }
     const data = await window.dsne.getVisites();
     const list = document.getElementById('visites-list');
     const today = data.filter(v => isToday(v.timestamp));
@@ -256,6 +259,10 @@ async function loadVisites() {
 // ── LOAD HYG ──
 async function loadHyg() {
   try {
+    if (!window.dsne || !window.dsne.getHyg) {
+      document.getElementById('hyg-list').innerHTML = '<div class="placeholder"><i class="ti ti-database-off"></i><div class="placeholder-txt">Données non connectées</div></div>';
+      return;
+    }
     const data = await window.dsne.getHyg();
     const list = document.getElementById('hyg-list');
     const approved = data.filter(r => r.statut === 'Approuvé' || r.approved === true);
@@ -280,6 +287,10 @@ async function loadHyg() {
 // ── LOAD CM ──
 async function loadCM() {
   try {
+    if (!window.dsne || !window.dsne.getCM) {
+      document.getElementById('cm-list').innerHTML = '<div class="placeholder"><i class="ti ti-database-off"></i><div class="placeholder-txt">Données non connectées</div></div>';
+      return;
+    }
     const data = await window.dsne.getCM();
     const list = document.getElementById('cm-list');
     if (!data || data.length === 0) {
@@ -299,6 +310,10 @@ async function loadCM() {
 // ── LOAD LOG ──
 async function loadLog() {
   try {
+    if (!window.dsne || !window.dsne.getLog) {
+      document.getElementById('log-list').innerHTML = '<div class="placeholder"><i class="ti ti-database-off"></i><div class="placeholder-txt">Données non connectées</div></div>';
+      return;
+    }
     const data = await window.dsne.getLog();
     const list = document.getElementById('log-list');
     if (!data || data.length === 0) {
@@ -318,6 +333,10 @@ async function loadLog() {
 // ── LOAD ACTIVITÉS ──
 async function loadActivites() {
   try {
+    if (!window.dsne || !window.dsne.getActivites) {
+      document.getElementById('act-list').innerHTML = '<div class="placeholder"><i class="ti ti-database-off"></i><div class="placeholder-txt">Données non connectées</div></div>';
+      return;
+    }
     const data = await window.dsne.getActivites();
     const list = document.getElementById('act-list');
     const pending = data.filter(a => a.statut !== 'Complété');
@@ -357,10 +376,24 @@ function formatTime(ts) {
   try { return new Date(ts).toLocaleTimeString('fr-HT', {hour:'2-digit',minute:'2-digit'}); } catch(e) { return ts; }
 }
 
+// ── SAFE LOAD ──
+function safeLoad(page) {
+  try {
+    if (page === 'visites') loadVisites();
+    else if (page === 'hygiene') loadHyg();
+    else if (page === 'activites') loadActivites();
+    else if (page === 'cm') loadCM();
+    else if (page === 'logistique') loadLog();
+  } catch(e) {
+    console.warn('safeLoad error for', page, e);
+  }
+}
+
 // ── INIT ──
-window.addEventListener('DOMContentLoaded', () => {
+// Nav must init immediately — no dependency on data loaders
+document.addEventListener('DOMContentLoaded', function() {
   initNav();
-  loadVisites();
+  safeLoad('visites');
 });
 </script>
 </body>
