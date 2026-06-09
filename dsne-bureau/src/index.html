@@ -1004,42 +1004,42 @@ body {
   
   <div style="margin-bottom:16px;">
     <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Titre de l'activité *</label>
-    <input type="text" id="f1-titre-input" style="width:60%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="Formation hygiène publique">
+    <input type="text" id="f1-titre-input" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="Formation hygiène publique">
   </div>
 
   <div style="margin-bottom:16px;">
     <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Montant (HTG) *</label>
-    <input type="number" id="f1-montant-input" style="width:60%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="12500">
+    <input type="number" id="f1-montant-input" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="12500">
   </div>
 
   <div style="margin-bottom:16px;">
     <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Responsable *</label>
-    <input type="text" id="f1-responsable-input" style="width:60%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="Dr. Eddy Pierre">
+    <input type="text" id="f1-responsable-input" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="Dr. Eddy Pierre">
   </div>
 
   <div style="margin-bottom:16px;">
     <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Email *</label>
-    <input type="email" id="f1-email-input" style="width:60%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="eddy@dsne.ht">
+    <input type="email" id="f1-email-input" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="eddy@dsne.ht">
   </div>
 
   <div style="margin-bottom:16px;">
     <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Date prévue *</label>
-    <input type="date" id="f1-date-input" style="width:60%; padding:8px; font-size:13px; border:1px solid #ccc;">
+    <input type="date" id="f1-date-input" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;">
   </div>
 
   <div style="margin-bottom:16px;">
     <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Lieu *</label>
-    <input type="text" id="f1-lieu-input" style="width:60%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="Fort-Liberté">
+    <input type="text" id="f1-lieu-input" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="Fort-Liberté">
   </div>
 
   <div style="margin-bottom:16px;">
     <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Participants *</label>
-    <input type="number" id="f1-participants-input" style="width:60%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="25">
+    <input type="number" id="f1-participants-input" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" placeholder="25">
   </div>
 
   <div style="margin-bottom:20px;">
     <label style="display:block; margin-bottom:8px; font-size:12px; font-weight:500;">Calendriers à notifier</label>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px; width:60%;">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px;">
       <div><input type="checkbox"> <label>Direction</label></div>
       <div><input type="checkbox"> <label>Administration</label></div>
       <div><input type="checkbox"> <label>Comptabilité</label></div>
@@ -1060,11 +1060,25 @@ body {
 
   <div style="margin-bottom:16px;">
     <label style="display:block; margin-bottom:4px; font-size:12px; font-weight:500;">Upload TDR *</label>
-    <input type="file" id="f1-tdr-input" style="width:60%; padding:8px; font-size:13px; border:1px solid #ccc;" accept=".pdf,.doc,.docx">
+    <input type="file" id="f1-tdr-input" style="width:100%; padding:8px; font-size:13px; border:1px solid #ccc;" accept=".pdf,.doc,.docx">
   </div>
 
-  <button id="f1-submit-btn" style="background:#005c4e; color:white; padding:10px; border:none; cursor:pointer; font-weight:600; font-size:12px; width:60%;">Soumettre à F2 →</button>
+  <button id="f1-submit-btn" style="background:#005c4e; color:white; padding:10px; border:none; cursor:pointer; font-weight:600; font-size:12px; width:100%;">Soumettre à F2 →</button>
 </div>
+
+<script>
+document.getElementById('f1-submit-btn').addEventListener('click', function() {
+  const titre = document.getElementById('f1-titre-input').value;
+  const montant = document.getElementById('f1-montant-input').value;
+  
+  if (!titre || !montant) {
+    alert('⚠️ Veuillez remplir Titre et Montant');
+    return;
+  }
+  
+  alert('✓ F1 Soumise!\n\n' + titre + '\n' + montant + ' HTG\n\nEn attente F2 - Administration');
+});
+</script>
 
 <script>
 document.getElementById('f1-submit-btn').addEventListener('click', function() {
