@@ -225,7 +225,7 @@ function setSyncStatus(msg) { document.getElementById('syncStatus').textContent 
 async function loadVisites() {
   try {
     if (!window.dsne || !window.dsne.getVisites) {
-      document.getElementById('visites-list').innerHTML = '<div class="placeholder"><i class="ti ti-database-off"></i><div class="placeholder-txt">Données non connectées</div><div class="placeholder-sub">Fonction getVisites non disponible</div></div>';
+      document.getElementById('visites-list').innerHTML = `<div class="placeholder"><i class="ti ti-database-off"></i><div class="placeholder-txt">Données non connectées</div><div class="placeholder-sub">Fonction getVisites non disponible</div></div>`;
       return;
     }
     const data = await window.dsne.getVisites();
@@ -239,7 +239,7 @@ async function loadVisites() {
     document.getElementById('vs-docs').textContent = docs.length;
     document.getElementById('vs-week').textContent = week.length;
     if (today.length === 0) {
-      list.innerHTML = '<div class="placeholder"><i class="ti ti-users"></i><div class="placeholder-txt">Aucune visite aujourd&#39;hui</div></div>';
+      list.innerHTML = `<div class="placeholder"><i class="ti ti-users"></i><div class="placeholder-txt">Aucune visite aujourd&#39;hui</div></div>`;
       return;
     }
     list.innerHTML = today.slice(0,8).map(v => {
@@ -258,7 +258,7 @@ async function loadVisites() {
     }).join('');
     setSyncStatus('Sync: ' + new Date().toLocaleTimeString('fr-HT', {hour:'2-digit',minute:'2-digit'}));
   } catch(e) {
-    document.getElementById('visites-list').innerHTML = '<div class="placeholder"><i class="ti ti-wifi-off"></i><div class="placeholder-txt">Données indisponibles</div><div class="placeholder-sub">' + e.message + '</div></div>';
+    document.getElementById('visites-list').innerHTML = `<div class="placeholder"><i class="ti ti-wifi-off"></i><div class="placeholder-txt">Données indisponibles</div><div class="placeholder-sub">' + e.message + '</div></div>`;
   }
 }
 
@@ -266,7 +266,7 @@ async function loadVisites() {
 async function loadHyg() {
   try {
     if (!window.dsne || !window.dsne.getHyg) {
-      document.getElementById('hyg-list').innerHTML = '<div class="placeholder"><i class="ti ti-database-off"></i><div class="placeholder-txt">Données non connectées</div></div>';
+      document.getElementById('hyg-list').innerHTML = `<div class="placeholder"><i class="ti ti-database-off"></i><div class="placeholder-txt">Données non connectées</div></div>`;
       return;
     }
     const data = await window.dsne.getHyg();
@@ -277,7 +277,7 @@ async function loadHyg() {
     document.getElementById('hyg-approved').textContent = approved.length;
     document.getElementById('hyg-pending').textContent = pending.length;
     if (data.length === 0) {
-      list.innerHTML = '<div class="placeholder"><i class="ti ti-certificate"></i><div class="placeholder-txt">Aucun certificat</div></div>';
+      list.innerHTML = `<div class="placeholder"><i class="ti ti-certificate"></i><div class="placeholder-txt">Aucun certificat</div></div>`;
       return;
     }
     list.innerHTML = '<table class="tbl"><thead><tr><th>Référence</th><th>Établissement</th><th>Date</th><th>Statut</th></tr></thead><tbody>' +
@@ -286,7 +286,7 @@ async function loadHyg() {
         return \`<tr><td style="color:#AAA;font-size:10px">\${r.ref||'—'}</td><td>\${r.etablissement||r.nom||'—'}</td><td>\${r.date||'—'}</td><td><span class="badge \${b}">\${r.statut||'Attente'}</span></td></tr>\`;
       }).join('') + '</tbody></table>';
   } catch(e) {
-    document.getElementById('hyg-list').innerHTML = '<div class="placeholder"><i class="ti ti-wifi-off"></i><div class="placeholder-txt">Données indisponibles</div></div>';
+    document.getElementById('hyg-list').innerHTML = `<div class="placeholder"><i class="ti ti-wifi-off"></i><div class="placeholder-txt">Données indisponibles</div></div>`;
   }
 }
 
@@ -294,13 +294,13 @@ async function loadHyg() {
 async function loadCM() {
   try {
     if (!window.dsne || !window.dsne.getCM) {
-      document.getElementById('cm-list').innerHTML = '<div class="placeholder"><i class="ti ti-database-off"></i><div class="placeholder-txt">Données non connectées</div></div>';
+      document.getElementById('cm-list').innerHTML = `<div class="placeholder"><i class="ti ti-database-off"></i><div class="placeholder-txt">Données non connectées</div></div>`;
       return;
     }
     const data = await window.dsne.getCM();
     const list = document.getElementById('cm-list');
     if (!data || data.length === 0) {
-      list.innerHTML = '<div class="placeholder"><i class="ti ti-truck"></i><div class="placeholder-txt">Aucune autorisation CM</div></div>';
+      list.innerHTML = `<div class="placeholder"><i class="ti ti-truck"></i><div class="placeholder-txt">Aucune autorisation CM</div></div>`;
       return;
     }
     list.innerHTML = '<table class="tbl"><thead><tr><th>Référence</th><th>Site</th><th>Date</th><th>Statut</th></tr></thead><tbody>' +
@@ -309,7 +309,7 @@ async function loadCM() {
         return \`<tr><td style="color:#AAA;font-size:10px">\${r.ref||r.id||'—'}</td><td>\${r.site||r.nom||'—'}</td><td>\${r.date||'—'}</td><td><span class="badge \${b}">\${r.statut||'Attente'}</span></td></tr>\`;
       }).join('') + '</tbody></table>';
   } catch(e) {
-    document.getElementById('cm-list').innerHTML = '<div class="placeholder"><i class="ti ti-wifi-off"></i><div class="placeholder-txt">Données indisponibles</div></div>';
+    document.getElementById('cm-list').innerHTML = `<div class="placeholder"><i class="ti ti-wifi-off"></i><div class="placeholder-txt">Données indisponibles</div></div>`;
   }
 }
 
@@ -317,13 +317,13 @@ async function loadCM() {
 async function loadLog() {
   try {
     if (!window.dsne || !window.dsne.getLog) {
-      document.getElementById('log-list').innerHTML = '<div class="placeholder"><i class="ti ti-database-off"></i><div class="placeholder-txt">Données non connectées</div></div>';
+      document.getElementById('log-list').innerHTML = `<div class="placeholder"><i class="ti ti-database-off"></i><div class="placeholder-txt">Données non connectées</div></div>`;
       return;
     }
     const data = await window.dsne.getLog();
     const list = document.getElementById('log-list');
     if (!data || data.length === 0) {
-      list.innerHTML = '<div class="placeholder"><i class="ti ti-package"></i><div class="placeholder-txt">Aucune donnée logistique</div></div>';
+      list.innerHTML = `<div class="placeholder"><i class="ti ti-package"></i><div class="placeholder-txt">Aucune donnée logistique</div></div>`;
       return;
     }
     list.innerHTML = '<table class="tbl"><thead><tr><th>Type</th><th>Objet</th><th>Date</th><th>Statut</th></tr></thead><tbody>' +
@@ -332,7 +332,7 @@ async function loadLog() {
         return \`<tr><td>\${r.type||'—'}</td><td>\${r.objet||r.nom||'—'}</td><td>\${r.date||'—'}</td><td><span class="badge \${b}">\${r.statut||'—'}</span></td></tr>\`;
       }).join('') + '</tbody></table>';
   } catch(e) {
-    document.getElementById('log-list').innerHTML = '<div class="placeholder"><i class="ti ti-wifi-off"></i><div class="placeholder-txt">Données indisponibles</div></div>';
+    document.getElementById('log-list').innerHTML = `<div class="placeholder"><i class="ti ti-wifi-off"></i><div class="placeholder-txt">Données indisponibles</div></div>`;
   }
 }
 
@@ -340,7 +340,7 @@ async function loadLog() {
 async function loadActivites() {
   try {
     if (!window.dsne || !window.dsne.getActivites) {
-      document.getElementById('act-list').innerHTML = '<div class="placeholder"><i class="ti ti-database-off"></i><div class="placeholder-txt">Données non connectées</div></div>';
+      document.getElementById('act-list').innerHTML = `<div class="placeholder"><i class="ti ti-database-off"></i><div class="placeholder-txt">Données non connectées</div></div>`;
       return;
     }
     const data = await window.dsne.getActivites();
@@ -351,7 +351,7 @@ async function loadActivites() {
     document.getElementById('act-pending').textContent = pending.length;
     document.getElementById('act-budget').textContent = total > 0 ? total.toLocaleString('fr-HT') : '—';
     if (data.length === 0) {
-      list.innerHTML = '<div class="placeholder"><i class="ti ti-clipboard-list"></i><div class="placeholder-txt">Aucune activité</div></div>';
+      list.innerHTML = `<div class="placeholder"><i class="ti ti-clipboard-list"></i><div class="placeholder-txt">Aucune activité</div></div>`;
       return;
     }
     list.innerHTML = '<table class="tbl"><thead><tr><th>ID</th><th>Titre</th><th>Responsable</th><th>Montant</th><th>Statut</th></tr></thead><tbody>' +
@@ -361,7 +361,7 @@ async function loadActivites() {
         return \`<tr><td style="color:#AAA;font-size:10px">\${a.id||'—'}</td><td>\${a.titre||'—'}</td><td>\${a.responsable||'—'}</td><td>\${m}</td><td><span class="badge \${b}">\${a.statut||'—'}</span></td></tr>\`;
       }).join('') + '</tbody></table>';
   } catch(e) {
-    document.getElementById('act-list').innerHTML = '<div class="placeholder"><i class="ti ti-wifi-off"></i><div class="placeholder-txt">Données indisponibles</div></div>';
+    document.getElementById('act-list').innerHTML = `<div class="placeholder"><i class="ti ti-wifi-off"></i><div class="placeholder-txt">Données indisponibles</div></div>`;
   }
 }
 
