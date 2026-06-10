@@ -99,7 +99,8 @@ function createWindow(page) {
   win.once('ready-to-show', () => win.show());
 }
 
-app.whenReady().then(() => { initDB(); autoBackupDB(path.join(app.getPath('userData'), 'dsne_hyg.db'), 'dsne-hyg'); createWindow(); });
+app.whenReady().then(() => {
+  autoUpdater.checkForUpdatesAndNotify(); initDB(); autoBackupDB(path.join(app.getPath('userData'), 'dsne_hyg.db'), 'dsne-hyg'); createWindow(); });
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
 
 // ── CHECK CODE ──
