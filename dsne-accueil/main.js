@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
+const { autoUpdater } = require('electron-updater')
 const path = require('path')
 const Database = require('better-sqlite3')
 const { google } = require('googleapis')
@@ -120,6 +121,7 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  autoUpdater.checkForUpdatesAndNotify();
   initDB()
   // Force insert users
   try {
