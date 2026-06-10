@@ -1,21 +1,32 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
-
 :root {
-  --green: #005C4E;
-  --green-dark: #004d41;
-  --green-light: rgba(0,92,78,.1);
-  --green-border: rgba(0,92,78,.2);
-  --teal: #5DCAA5;
-  --amber: #8B6914;
-  --bg: #F7F5F0;
-  --white: #ffffff;
-  --text: #1A1A18;
-  --muted: #AAA;
-  --subtle: #CCC;
-  --danger: #A32D2D;
-  --danger-bg: #FCEBEB;
-  --success: #27500A;
-  --success-bg: #EAF3DE;
+  --forest:      #0d2b1f;
+  --forest-2:    #143826;
+  --teal-dark:   #005C4E;
+  --teal:        #007a66;
+  --teal-lt:     #00a388;
+  --bg:          #f0ede8;
+  --surface:     #f8f7f4;
+  --white:       #ffffff;
+  --border:      #dedad4;
+  --border-dk:   #c8c3bb;
+  --ink:         #0f1f15;
+  --ink-2:       #2d4038;
+  --ink-3:       #5a7060;
+  --ink-4:       #8fa898;
+  --gold:        #b8912a;
+  --danger:      #c0392b;
+  --danger-bg:   #fdf0ef;
+  --success:     #1a6b3c;
+  --success-bg:  #e3f5eb;
+  --amber:       #b45309;
+  --c50:#e6f2f0;--c100:#b3d9d3;--c200:#7fc5bb;--c400:#26a08a;
+  --c600:#005C4E;--c800:#003d35;--c900:#002920;
+  --g50:#f8f7f4;--g100:#dedad4;--g200:#c8c3bb;
+  --g400:#8fa898;--g600:#5a7060;--g800:#0d2b1f;
+  --green:#005C4E;--green-dark:#003d35;
+  --green-light:rgba(0,92,78,.08);--green-border:rgba(0,92,78,.2);
+  --font:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -152,3 +163,33 @@ body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--bg); col
 .login-card { background: linear-gradient(180deg,#fff 0%,#f9f7f3 100%); padding: 2.5rem; width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,.3), inset 0 1px 0 #fff; }
 .login-dsne { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 700; color: var(--green); text-align: center; letter-spacing: .04em; }
 .login-appname { font-size: 11px; font-weight: 500; color: var(--muted); text-align: center; margin-top: 4px; margin-bottom: 1.5rem; letter-spacing: .06em; text-transform: uppercase; }
+
+
+/* === Bureau Design System v2 === */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+html,body{font-family:var(--font)!important;background:var(--bg)!important;color:var(--ink);}
+.topbar{background:linear-gradient(135deg,#005C4E 0%,#003d35 60%,#002920 100%)!important;border-bottom:1px solid rgba(0,0,0,.25)!important;position:relative;}
+.topbar::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,transparent 60%);pointer-events:none;}
+.topbar-dsne{color:rgba(255,255,255,.5)!important;font-size:10px!important;font-weight:700!important;letter-spacing:.16em!important;text-transform:uppercase!important;}
+.topbar-sep{display:none!important;}
+.topbar-name{color:#fff!important;font-size:15px!important;font-weight:700!important;letter-spacing:-.01em!important;}
+.topbar-user{color:rgba(255,255,255,.55)!important;font-size:11px!important;}
+.topbar-sync{color:rgba(255,255,255,.35)!important;font-size:10px!important;font-family:var(--mono)!important;}
+.sidebar{background:#0d2b1f!important;}
+.sidebar-label{color:rgba(255,255,255,.22)!important;font-size:9px!important;font-weight:700!important;letter-spacing:.18em!important;text-transform:uppercase!important;padding:18px 16px 5px!important;}
+.sidebar-item{color:rgba(255,255,255,.5)!important;font-size:12.5px!important;border-left:2px solid transparent!important;border-radius:0!important;padding:9px 16px!important;}
+.sidebar-item:hover{color:rgba(255,255,255,.85)!important;background:#143826!important;}
+.sidebar-item.active{color:#fff!important;background:rgba(0,163,136,.15)!important;border-left-color:#00a388!important;font-weight:500!important;}
+.sidebar-footer{border-top:1px solid rgba(255,255,255,.06)!important;}
+.sidebar-footer .sidebar-item{color:rgba(255,255,255,.3)!important;}
+.card,.panel-card,.form-card,.info-card,.section-card{border-radius:0!important;box-shadow:none!important;}
+.btn,.btn-primary,.btn-secondary,.btn-danger{border-radius:0!important;font-family:var(--font)!important;}
+.btn-primary{background:var(--teal-dark)!important;border-color:var(--teal-dark)!important;color:#fff!important;}
+.btn-primary:hover{background:var(--teal)!important;}
+input,select,textarea{border-radius:0!important;font-family:var(--font)!important;}
+input:focus,select:focus,textarea:focus{border-color:var(--teal-dark)!important;outline:none!important;box-shadow:none!important;}
+.login-wrap,.login-screen{background:#0d2b1f!important;}
+.login-card,.login-box{border-radius:0!important;box-shadow:none!important;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border-dk);border-radius:0;}
